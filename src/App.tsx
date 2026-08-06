@@ -2,7 +2,8 @@
 // File: src/App.tsx
 
 import React, { useState, useEffect, useCallback } from "react";
-import { db, seedDatabaseIfEmpty, LocalFarmer, LocalOfficer, LocalTruck, LocalVariety, LocalReceipt, LocalSetting } from "./db/index.ts";
+import { db, LocalFarmer, LocalOfficer, LocalTruck, LocalVariety, LocalReceipt, LocalSetting } from "./db/index.ts";
+import { seedDatabaseIfEmpty } from "./db/seeder.ts";
 import HeaderNavigation from "./app/portal/components/HeaderNavigation.tsx";
 import DashboardModule from "./features/modules/DashboardModule.tsx";
 import WeighingSessionModule from "./features/modules/WeighingSessionModule.tsx";
