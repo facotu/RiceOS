@@ -1,7 +1,7 @@
 // Drying operation Domain Service implementing State Machine, costing and logs
 // File: src/features/drying/services/dryingService.ts
 
-import { IDryingRepository } from "../repository/dryingRepository.ts";
+import { IDryingRepository, dryingRepo } from "../repository/dryingRepository.ts";
 import { DryingCalculationEngine } from "../domain/calculationEngine.ts";
 import { DryingRulesEngine } from "../domain/rulesEngine.ts";
 import { DryingStateMachine, DryingState } from "../domain/dryingStateMachine.ts";
@@ -300,3 +300,6 @@ export class DryingService {
     await db.table("drying_operation_logs").add(log);
   }
 }
+
+export const dryingService = new DryingService(dryingRepo);
+export default dryingService;
