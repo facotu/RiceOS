@@ -11,7 +11,7 @@ import CompleteDryingModal from "./CompleteDryingModal.tsx";
 import DryingAlertPanel from "./DryingAlertPanel.tsx";
 import OperationLogPanel from "./OperationLogPanel.tsx";
 import DryingBatchCard from "./DryingBatchCard.tsx";
-import { Cpu, Settings, CheckSquare, CircleAlert, Flame, Scale, Thermometer, ShieldAlert, Award } from "lucide-react";
+import { Cpu, Settings, CheckSquare, AlertCircle, Flame, Scale, Thermometer, ShieldAlert, Award } from "lucide-react";
 
 interface DryingWorkspaceProps {
   operatorName: string;

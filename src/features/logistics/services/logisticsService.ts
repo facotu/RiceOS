@@ -5,6 +5,7 @@ import { LogisticsRepository } from "../repository/logisticsRepository.ts";
 import { Vehicle, Driver, Trip, PickupLocation, FuelLog, MaintenanceLog, ProofOfDelivery } from "../domain/logisticsTypes.ts";
 import { eventBus } from "../../../core/events/eventBus.ts";
 import { BaseDomainEvent } from "../../../core/events/domainEvents.ts";
+import { db } from "../../../db/index.ts";
 
 export class LogisticsService {
   private repo: LogisticsRepository;

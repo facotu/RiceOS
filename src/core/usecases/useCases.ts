@@ -8,7 +8,8 @@ import { ExecutiveKPI } from "../../features/executive-dashboard/domain/types.ts
 import { IntelligenceEngine } from "../../features/intelligence/services/intelligenceEngine.ts";
 import { AlertEngine } from "../../features/alerts/services/alertEngine.ts";
 import { AIContextBuilder } from "../../features/ai/services/aiContextBuilder.ts";
-import { eventBus, KPIUpdatedEvent, BusinessInsightGeneratedEvent, AlertGeneratedEvent } from "../events/eventBus.ts";
+import { eventBus } from "../events/eventBus.ts";
+import { KPIUpdatedEvent, BusinessInsightGeneratedEvent, AlertGeneratedEvent } from "../events/domainEvents.ts";
 
 const repo = new ExecutiveDashboardRepository();
 const service = new ExecutiveDashboardService(repo);

@@ -6,7 +6,7 @@ import { usePortal } from "../context/PortalContext.tsx";
 import useWarehouse from "../../../features/warehouse/hooks/useWarehouse.ts";
 import useDrying from "../../../features/drying/hooks/useDrying.ts";
 import DryingWorkspace from "../../../features/drying/components/DryingWorkspace.tsx";
-import { Thermometer, Layers, RefreshCw, Play, CircleAlert, Flame, Cpu, CheckSquare } from "lucide-react";
+import { Thermometer, Layers, RefreshCw, Play, AlertCircle, Flame, Cpu, CheckSquare } from "lucide-react";
 
 export default function WarehousePage() {
   const { user } = usePortal();

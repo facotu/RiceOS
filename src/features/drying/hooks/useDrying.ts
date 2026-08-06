@@ -161,8 +161,13 @@ export function useDrying() {
     startCooling,
     qualityCheck,
     completeDrying,
+    completeDryingOrder: completeDrying,
     closeBatch,
     addOperationLog,
+    logSensors: async (orderId: string, temp: number, moisture: number) => {
+      await service.addOperationLog(orderId, "DRYING", `Nhiệt độ: ${temp}°C, Độ ẩm: ${moisture}%`, "SensorGateway");
+      return true;
+    },
     refresh: loadDryingData
   };
 }

@@ -1,4 +1,4 @@
-import Dexie, { Table } from "https://esm.sh/dexie@3.2.4";
+import Dexie, { Table } from "dexie";
 
 // Khai báo các Interface cho IndexedDB
 export interface LocalFarmer {
