@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 // Supabase Client for Cloud Synchronization & Authentication
 // File: src/lib/supabaseClient.ts
 

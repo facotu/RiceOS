@@ -1,4 +1,4 @@
-import { create } from "https://esm.sh/zustand@4.5.1";
+import { create } from "zustand";
 
 interface AuthState {
   token: string | null;
