@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FieldPlot, Farmer, UserProfile, GPSLatLng } from '../types';
+import { FieldPlot, Farmer, UserProfile } from '../types';
 import { SAMPLE_FARMERS } from '../supabaseClient';
 import { MapPin, Navigation, Users, Scale, ExternalLink, Plus, Map as MapIcon, ChevronRight, Layers, Edit2 } from 'lucide-react';
 
