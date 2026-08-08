@@ -7,12 +7,13 @@
   --top-header-border: #e2e8f0;
   --top-header-text: #0e1e25;
   
-  --sidebar-bg: #0e1e25;
-  --sidebar-hover: #152932;
+  --sidebar-bg: #09171f;
+  --sidebar-hover: #142732;
   --sidebar-active-bg: #18333e;
   --sidebar-text: #94a3b8;
   --sidebar-text-active: #ffffff;
   --sidebar-accent-amber: #f39c12;
+  --sidebar-accent-cyan: #00d2d3;
   
   --brand-primary: #1877f2;
   --brand-primary-hover: #1464cc;
@@ -225,58 +226,69 @@ body {
   overflow: hidden;
 }
 
-/* Dark Slate Sidebar */
+/* Modern Dark Slate & Cyan Accent Sidebar */
 .misa-sidebar {
-  width: 220px;
-  background-color: var(--sidebar-bg);
+  width: 230px;
+  background: linear-gradient(180deg, #07131b 0%, #0e1e25 100%);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 90;
   user-select: none;
+  box-shadow: 4px 0 16px rgba(0, 0, 0, 0.15);
 }
 
 .misa-sidebar.collapsed {
-  width: 60px;
+  width: 64px;
 }
 
 .misa-sidebar-inner {
-  padding: 12px 10px;
+  padding: 14px 10px;
   overflow-y: auto;
   overflow-x: hidden;
 }
 
 .misa-btn-quick-add {
   width: 100%;
-  height: 36px;
-  background: linear-gradient(135deg, #10b981, #059669);
+  height: 38px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: white;
   border: none;
   border-radius: var(--radius-pill);
-  font-weight: 600;
+  font-weight: 700;
   font-size: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
   cursor: pointer;
-  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);
-  transition: transform 0.1s, box-shadow 0.2s;
-  margin-bottom: 16px;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+  transition: transform 0.2s, box-shadow 0.2s;
+  margin-bottom: 18px;
+  white-space: nowrap;
 }
 
 .misa-btn-quick-add:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.5);
+}
+
+.spin-icon-on-hover {
+  transition: transform 0.3s ease;
+}
+
+.misa-btn-quick-add:hover .spin-icon-on-hover {
+  transform: rotate(90deg);
 }
 
 .misa-sidebar-section {
   font-size: 10px;
-  font-weight: 700;
-  color: #64748b;
-  letter-spacing: 0.5px;
-  padding: 8px 8px 4px 8px;
+  font-weight: 800;
+  color: #475569;
+  letter-spacing: 0.8px;
+  padding: 10px 8px 6px 8px;
   text-transform: uppercase;
 }
 
@@ -288,8 +300,8 @@ body {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  margin-bottom: 16px;
+  gap: 4px;
+  margin-bottom: 18px;
 }
 
 .misa-nav-item {
@@ -297,24 +309,40 @@ body {
   align-items: center;
   gap: 10px;
   padding: 9px 12px;
-  color: var(--sidebar-text);
+  color: #94a3b8;
   border-radius: var(--radius-md);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.2s ease;
   position: relative;
   font-weight: 500;
   white-space: nowrap;
 }
 
+.misa-nav-item .nav-icon {
+  color: #64748b;
+  transition: color 0.2s, transform 0.2s;
+}
+
 .misa-nav-item:hover {
   background-color: var(--sidebar-hover);
   color: #ffffff;
+  transform: translateX(3px);
+}
+
+.misa-nav-item:hover .nav-icon {
+  color: var(--sidebar-accent-cyan);
+  transform: scale(1.1);
 }
 
 .misa-nav-item.active {
-  background-color: var(--sidebar-active-bg);
+  background: linear-gradient(90deg, #18333e 0%, #0f2b36 100%);
   color: #ffffff;
-  font-weight: 600;
+  font-weight: 700;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
+}
+
+.misa-nav-item.active .nav-icon {
+  color: var(--sidebar-accent-cyan);
 }
 
 .misa-nav-item.active::before {
@@ -324,13 +352,61 @@ body {
   top: 6px;
   bottom: 6px;
   width: 4px;
-  background-color: var(--sidebar-accent-amber);
+  background: linear-gradient(180deg, #f39c12 0%, #e67e22 100%);
   border-radius: 0 4px 4px 0;
+  box-shadow: 0 0 8px rgba(243, 156, 18, 0.6);
 }
 
+.nav-label {
+  flex: 1;
+}
+
+.nav-badge {
+  font-size: 9px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 10px;
+  letter-spacing: 0.3px;
+}
+
+.nav-badge.emerald {
+  background-color: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.nav-badge.blue {
+  background-color: rgba(2, 132, 199, 0.2);
+  color: #38bdf8;
+  border: 1px solid rgba(2, 132, 199, 0.3);
+}
+
+.nav-badge.purple {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(236, 72, 153, 0.3));
+  color: #c084fc;
+  border: 1px solid rgba(192, 132, 252, 0.4);
+}
+
+/* Sidebar Footer & Status */
 .misa-sidebar-footer {
   padding: 12px 10px;
-  border-top: 1px solid #1e293b;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.station-status-box {
+  background-color: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-radius: var(--radius-md);
+  padding: 6px 10px;
+  font-size: 11px;
+  color: #10b981;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
 }
 
 .misa-btn-collapse {
@@ -345,6 +421,8 @@ body {
   cursor: pointer;
   border-radius: var(--radius-md);
   font-size: 12px;
+  font-weight: 600;
+  transition: all 0.2s;
 }
 
 .misa-btn-collapse:hover {
