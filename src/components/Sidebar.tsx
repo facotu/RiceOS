@@ -12,10 +12,11 @@ import {
   PanelLeftClose, 
   PanelLeftOpen,
   Sparkles,
-  Zap
+  Zap,
+  MapPin
 } from 'lucide-react';
 
-export type NavTabId = 'dashboard' | 'weighing' | 'settlement' | 'vehicles' | 'history' | 'reports' | 'aicamera' | 'settings';
+export type NavTabId = 'dashboard' | 'fieldmap' | 'weighing' | 'settlement' | 'vehicles' | 'history' | 'reports' | 'aicamera' | 'settings';
 
 interface SidebarProps {
   activeTab: NavTabId;
@@ -49,6 +50,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {!collapsed && <div className="misa-sidebar-section">⭐ HAY DÙNG NHẤT</div>}
         <ul className="misa-nav-menu">
           <li
+            className={`misa-nav-item ${activeTab === 'fieldmap' ? 'active' : ''}`}
+            onClick={() => onTabChange('fieldmap')}
+            title="Bản Đồ Google Maps Lô Ruộng"
+          >
+            <MapPin size={18} className="nav-icon" />
+            {!collapsed && <span className="nav-label">Bản Đồ Google Maps</span>}
+            {!collapsed && <span className="nav-badge emerald">GIS</span>}
+          </li>
+          <li
             className={`misa-nav-item ${activeTab === 'weighing' ? 'active' : ''}`}
             onClick={() => onTabChange('weighing')}
             title="Phiên Cân Mới"
@@ -65,15 +75,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <Receipt size={18} className="nav-icon" />
             {!collapsed && <span className="nav-label">Quyết Toán Hộ Dân</span>}
           </li>
-          <li
-            className={`misa-nav-item ${activeTab === 'vehicles' ? 'active' : ''}`}
-            onClick={() => onTabChange('vehicles')}
-            title="Xe Nhận Lúa"
-          >
-            <Truck size={18} className="nav-icon" />
-            {!collapsed && <span className="nav-label">Xe Nhận & Tải Trọng</span>}
-            {!collapsed && <span className="nav-badge blue">2 xe</span>}
-          </li>
         </ul>
 
         {/* Section 2: All Business Modules */}
@@ -86,6 +87,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
           >
             <LayoutGrid size={18} className="nav-icon" />
             {!collapsed && <span className="nav-label">Tổng quan (Dashboard)</span>}
+          </li>
+
+          <li
+            className={`misa-nav-item ${activeTab === 'fieldmap' ? 'active' : ''}`}
+            onClick={() => onTabChange('fieldmap')}
+            title="Vùng Trồng & Lô Ruộng Google Maps"
+          >
+            <MapPin size={18} className="nav-icon" />
+            {!collapsed && <span className="nav-label">Vùng Trồng & Lô GIS</span>}
           </li>
 
           <li

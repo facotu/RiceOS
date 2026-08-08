@@ -19,6 +19,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
 }) => {
   const titles: Record<NavTabId, string> = {
     'dashboard': 'Phân hệ Tổng quan Dashboard (MISA AMIS ERP)',
+    'fieldmap': 'Vùng Trồng GIS > Định vị Google Maps Lô Ruộng & Quản lý Hộ Dân Sản Xuất',
     'weighing': 'Nghiệp vụ Thu mua > Cân Lúa Tươi Thực Địa (Phiên Cân)',
     'settlement': 'Tài chính > Quyết Toán Tiền Lúa Hộ Dân',
     'vehicles': 'Vận tải > Quản lý Xe Nhận & Tải Trọng Cầu Cân',

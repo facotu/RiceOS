@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import { UserProfile, SystemSettings, AppNotification } from './types';
+import { UserProfile, SystemSettings, AppNotification, Farmer } from './types';
 
 // Read Supabase environment variables
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://demo-riceos.supabase.co';
@@ -38,7 +38,91 @@ export const DEMO_USERS: UserProfile[] = [
   }
 ];
 
-// Default System Settings
+// Master Farmers list mapped to plots
+export const SAMPLE_FARMERS: Farmer[] = [
+  {
+    id: 'f-01',
+    name: 'Nguyễn Văn Bình',
+    phone: '0914.123.456',
+    cccd: '048092001234',
+    cccd_issue_date: '15/05/2021',
+    cccd_issue_place: 'Cục CSQLHC về TTXH',
+    cccd_expiry_date: '15/05/2036',
+    field_name: 'Xứ đồng An Trạch 1',
+    plot_no: 'Lô A2',
+    plot_id: 'fp-1',
+    area_sao: 12.5,
+    variety_code: 'HT1',
+    estimated_yield_ton: 7.5,
+    harvest_status: 'harvesting'
+  },
+  {
+    id: 'f-02',
+    name: 'Trần Văn Cường',
+    phone: '0988.765.432',
+    cccd: '048095005678',
+    cccd_issue_date: '20/10/2020',
+    cccd_issue_place: 'Công an TP Đà Nẵng',
+    cccd_expiry_date: '20/10/2035',
+    field_name: 'Xứ đồng Hòa Tiến',
+    plot_no: 'Lô B',
+    plot_id: 'fp-2',
+    area_sao: 18.0,
+    variety_code: 'J02',
+    estimated_yield_ton: 11.2,
+    harvest_status: 'harvesting'
+  },
+  {
+    id: 'f-03',
+    name: 'Lê Thị Mai',
+    phone: '0905.888.999',
+    cccd: '048188009999',
+    cccd_issue_date: '10/01/2022',
+    cccd_issue_place: 'Cục CSQLHC về TTXH',
+    cccd_expiry_date: '10/01/2037',
+    field_name: 'Xứ đồng Đa Phước 3',
+    plot_no: 'Lô C',
+    plot_id: 'fp-3',
+    area_sao: 15.0,
+    variety_code: 'HG12',
+    estimated_yield_ton: 9.0,
+    harvest_status: 'waiting'
+  },
+  {
+    id: 'f-04',
+    name: 'Phạm Văn Hùng',
+    phone: '0913.777.888',
+    cccd: '048096001122',
+    cccd_issue_date: '05/04/2019',
+    cccd_issue_place: 'Công an TP Đà Nẵng',
+    cccd_expiry_date: '05/04/2034',
+    field_name: 'Xứ đồng An Trạch 1',
+    plot_no: 'Lô A2',
+    plot_id: 'fp-1',
+    area_sao: 10.0,
+    variety_code: 'HT1',
+    estimated_yield_ton: 6.0,
+    harvest_status: 'harvesting'
+  },
+  {
+    id: 'f-05',
+    name: 'Võ Thị Hồng',
+    phone: '0935.444.555',
+    cccd: '048192003344',
+    cccd_issue_date: '12/08/2022',
+    cccd_issue_place: 'Cục CSQLHC về TTXH',
+    cccd_expiry_date: '12/08/2037',
+    field_name: 'Xứ đồng Hòa Tiến',
+    plot_no: 'Lô B',
+    plot_id: 'fp-2',
+    area_sao: 14.5,
+    variety_code: 'J02',
+    estimated_yield_ton: 8.8,
+    harvest_status: 'completed'
+  }
+];
+
+// Default System Settings with Google Maps Plot Coordinates
 export const DEFAULT_SETTINGS: SystemSettings = {
   tare_formula: 'percent',
   default_tare_percent: 5.0,
@@ -51,9 +135,45 @@ export const DEFAULT_SETTINGS: SystemSettings = {
     'J02': 8500
   },
   fields_plots: [
-    { id: 'fp-1', field_name: 'Xứ đồng An Trạch 1', plot_no: 'Lô A2', description: 'Đất phù sa bãi bồi' },
-    { id: 'fp-2', field_name: 'Xứ đồng Hòa Tiến', plot_no: 'Lô B', description: 'Cánh đồng mẫu lớn' },
-    { id: 'fp-3', field_name: 'Xứ đồng Đa Phước 3', plot_no: 'Lô C', description: 'Khu vực chuyên canh HT1' }
+    {
+      id: 'fp-1',
+      field_name: 'Xứ đồng An Trạch 1',
+      plot_no: 'Lô A2',
+      address: 'Thôn An Trạch, Xã Hòa Tiến, Huyện Hòa Vang, Đà Nẵng',
+      lat: 15.9625,
+      lng: 108.2045,
+      area_total_sao: 22.5,
+      main_variety: 'HT1',
+      status: 'harvesting',
+      description: 'Cánh đồng bãi bồi đất phù sa chuyên canh lúa chất lượng cao HT1',
+      farmers_count: 2
+    },
+    {
+      id: 'fp-2',
+      field_name: 'Xứ đồng Hòa Tiến',
+      plot_no: 'Lô B',
+      address: 'Thôn La Bông, Xã Hòa Tiến, Huyện Hòa Vang, Đà Nẵng',
+      lat: 15.9712,
+      lng: 108.1988,
+      area_total_sao: 32.5,
+      main_variety: 'J02',
+      status: 'harvesting',
+      description: 'Cánh đồng mẫu lớn liên kết sản xuất gạo Nhật J02 xuất khẩu',
+      farmers_count: 2
+    },
+    {
+      id: 'fp-3',
+      field_name: 'Xứ đồng Đa Phước 3',
+      plot_no: 'Lô C',
+      address: 'Thôn Đa Phước, Xã Hòa Nhơn, Huyện Hòa Vang, Đà Nẵng',
+      lat: 15.9550,
+      lng: 108.2110,
+      area_total_sao: 15.0,
+      main_variety: 'HG12',
+      status: 'waiting',
+      description: 'Vùng thu mua lúa thuần HG12 chuẩn bị thu hoạch đợt 2',
+      farmers_count: 1
+    }
   ]
 };
 
@@ -61,5 +181,5 @@ export const DEFAULT_SETTINGS: SystemSettings = {
 export const INITIAL_NOTIFICATIONS: AppNotification[] = [
   { id: 'n-1', title: 'Phiên cân mới', message: 'Cán bộ Đoàn Thị Ngọc Phương vừa hoàn thành phiên cân #PC-2026-088 cho hộ Nguyễn Văn Bình (140 bao - 7.000kg tươi).', timestamp: '11:15 Hôm nay', read: false, type: 'weighing' },
   { id: 'n-2', title: 'Xe đã đầy tải', message: 'Xe 43C-123.45 đã nhận đủ 490 bao lúa tươi (24.500kg). Chuẩn bị xuất phát.', timestamp: '10:45 Hôm nay', read: false, type: 'vehicle' },
-  { id: 'n-3', title: 'Tài khoản mới', message: 'Cán bộ Trần Văn Nam đã kích hoạt tài khoản Editor thành công.', timestamp: '09:00 Hôm nay', read: true, type: 'user' }
+  { id: 'n-3', title: 'Vùng trồng Google Maps', message: 'Hệ thống vừa cập nhật tọa độ GPS Lô A2 (Xứ đồng An Trạch 1) trên bản đồ Google Maps.', timestamp: '09:00 Hôm nay', read: true, type: 'system' }
 ];

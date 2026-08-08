@@ -12,6 +12,7 @@ import { ReportsView } from './components/ReportsView';
 import { AICameraView } from './components/AICameraView';
 import { SettingsView } from './components/SettingsView';
 import { UserManagementView } from './components/UserManagementView';
+import { FieldMapView } from './components/FieldMapView';
 
 const INITIAL_SESSIONS: WeighingSession[] = [
   {
@@ -147,6 +148,15 @@ export const App: React.FC = () => {
                 currentUser={currentUser}
                 sessions={visibleSessions}
                 onNavigateTab={onTabChange}
+              />
+            );
+
+          case 'fieldmap':
+            return (
+              <FieldMapView
+                currentUser={currentUser}
+                plots={settings.fields_plots}
+                onNavigateWeighing={() => onTabChange('weighing')}
               />
             );
 

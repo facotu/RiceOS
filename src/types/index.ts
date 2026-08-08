@@ -24,7 +24,11 @@ export interface Farmer {
   cccd_expiry_date?: string;
   field_name: string; // Xứ đồng
   plot_no: string;    // Lô
+  plot_id?: string;   // ID Lô ruộng liên kết
   area_sao: number;   // Diện tích (sào)
+  variety_code?: string; // Giống lúa đang trồng
+  estimated_yield_ton?: number; // Sản lượng dự kiến (tấn)
+  harvest_status?: 'pending' | 'harvesting' | 'completed';
 }
 
 export interface Officer {
@@ -54,11 +58,20 @@ export interface RiceVariety {
   default_price: number;
 }
 
+// Field & Plot GIS Type with Google Maps Coordinates
 export interface FieldPlot {
   id: string;
-  field_name: string; // Xứ đồng
-  plot_no: string;    // Lô
+  field_name: string;    // Xứ đồng (VD: Xứ đồng An Trạch 1)
+  plot_no: string;       // Mã Lô (VD: Lô A2)
+  address: string;       // Địa chỉ cụ thể
+  lat: number;           // Vĩ độ Google Maps (e.g. 15.9625)
+  lng: number;           // Kinh độ Google Maps (e.g. 108.2045)
+  zoom_level?: number;
+  area_total_sao: number; // Tổng diện tích Lô (sào)
+  main_variety: string;   // Giống lúa chủ đạo (HT1, J02, v.v.)
+  status: 'harvesting' | 'waiting' | 'completed';
   description?: string;
+  farmers_count?: number; // Số hộ sản xuất thuộc lô
 }
 
 // Push Notification Type
