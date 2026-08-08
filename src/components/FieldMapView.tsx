@@ -25,14 +25,27 @@ export const FieldMapView: React.FC<FieldMapViewProps> = ({
   const [newLat, setNewLat] = useState('15.9625');
   const [newLng, setNewLng] = useState('108.2045');
 
-  const selectedPlot = plots.find(p => p.id === selectedPlotId) || plots[0];
+  const selectedPlot = plots.find(p => p.id === selectedPlotId) || plots[0] || {
+    id: 'fp-1',
+    field_name: 'Xứ đồng An Trạch 1',
+    plot_no: 'Lô A2',
+    address: 'Thôn An Trạch, Xã Hòa Tiến, Đà Nẵng',
+    lat: 15.9625,
+    lng: 108.2045,
+    area_total_sao: 22.5,
+    main_variety: 'HT1',
+    status: 'harvesting'
+  };
+
   const plotFarmers = farmers.filter(f => f.plot_id === selectedPlotId || (f.field_name === selectedPlot?.field_name && f.plot_no === selectedPlot?.plot_no));
 
-  const totalAreaSao = plots.reduce((sum, p) => sum + p.area_total_sao, 0);
+  const totalAreaSao = plots.reduce((sum, p) => sum + (p.area_total_sao || 0), 0);
   const totalFarmers = farmers.length;
 
   const handleOpenGoogleMapsNav = (plot: FieldPlot) => {
-    const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${plot.lat},${plot.lng}`;
+    const lat = plot.lat || 15.9625;
+    const lng = plot.lng || 108.2045;
+    const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
     window.open(googleMapsUrl, '_blank');
   };
 
@@ -126,12 +139,12 @@ export const FieldMapView: React.FC<FieldMapViewProps> = ({
                 </div>
 
                 <div style={{ fontSize: 11, color: '#64748b', marginBottom: 6, lineHeight: 1.4 }}>
-                  📍 {plot.address}
+                  📍 {plot.address || 'Hòa Tiến, Hòa Vang, Đà Nẵng'}
                 </div>
 
                 <div style={{ fontSize: 11, display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: '#334155' }}>
-                  <span>• Giống: <strong>{plot.main_variety}</strong></span>
-                  <span>• Diện tích: <strong>{plot.area_total_sao} sào</strong></span>
+                  <span>• Giống: <strong>{plot.main_variety || 'HT1'}</strong></span>
+                  <span>• Diện tích: <strong>{plot.area_total_sao || 10} sào</strong></span>
                   <span style={{ color: '#0b6bbf', fontWeight: 700 }}>{count} Hộ dân</span>
                 </div>
               </div>
@@ -176,7 +189,7 @@ export const FieldMapView: React.FC<FieldMapViewProps> = ({
                 height="100%"
                 frameBorder="0"
                 style={{ border: 0 }}
-                src={`https://maps.google.com/maps?q=${selectedPlot.lat},${selectedPlot.lng}&hl=vi&z=15&output=embed`}
+                src={`https://maps.google.com/maps?q=${selectedPlot.lat || 15.9625},${selectedPlot.lng || 108.2045}&hl=vi&z=15&output=embed`}
                 allowFullScreen
               />
 
@@ -199,7 +212,7 @@ export const FieldMapView: React.FC<FieldMapViewProps> = ({
                 <MapPin size={24} color="#10b981" />
                 <div>
                   <div style={{ fontWeight: 800, color: '#00d2d3' }}>{selectedPlot.field_name} - {selectedPlot.plot_no}</div>
-                  <div style={{ fontSize: 10, color: '#cbd5e1' }}>GPS: {selectedPlot.lat}, {selectedPlot.lng}</div>
+                  <div style={{ fontSize: 10, color: '#cbd5e1' }}>GPS: {selectedPlot.lat || 15.9625}, {selectedPlot.lng || 108.2045}</div>
                 </div>
               </div>
             </div>
