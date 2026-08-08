@@ -673,7 +673,7 @@ Cảm ơn quý hộ dân đã đồng hành cùng RiceOS!`;
             borderRadius: 12,
             padding: 16,
             display: 'flex',
-            flexdirection: 'column',
+            flexDirection: 'column',
             gap: 12
           }}>
             <div style={{ fontSize: 13, fontWeight: 800, color: '#00d2d3', display: 'flex', alignItems: 'center', gap: 6 }}>
