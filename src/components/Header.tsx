@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { UserProfile, AppNotification } from '../types';
-import { Sparkles, Video, Bell, Settings, Building2, ChevronDown, X } from 'lucide-react';
+import { Sparkles, Video, Bell, Building2, ChevronDown, X } from 'lucide-react';
 
 interface HeaderProps {
   currentUser: UserProfile;
