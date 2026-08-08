@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   UserProfile, 
   Farmer, 
@@ -18,7 +18,11 @@ import {
   Copy, 
   Check, 
   X, 
-  FileText 
+  FileText,
+  Camera,
+  Image,
+  Calculator,
+  CornerDownLeft
 } from 'lucide-react';
 
 interface WeighingViewProps {
@@ -76,49 +80,97 @@ export const WeighingView: React.FC<WeighingViewProps> = ({
   settings,
   onSaveSession
 }) => {
+  // Session Form State
   const [selectedFarmerId, setSelectedFarmerId] = useState<string>(MOCK_FARMERS[0].id);
   const [selectedVehicleId, setSelectedVehicleId] = useState<string>(MOCK_VEHICLES[0].id);
   const [selectedVarietyCode, setSelectedVarietyCode] = useState<string>('HT1');
+  
+  // Tare Deduction Mode (% vs kg/bag)
+  const [tareFormula, setTareFormula] = useState<'percent' | 'kg_fixed'>(settings.tare_formula || 'percent');
   const [tarePercent, setTarePercent] = useState<number>(settings.default_tare_percent || 5.0);
+  const [tareFixedKg, setTareFixedKg] = useState<number>(settings.default_tare_fixed_kg || 1.2);
+  const [advancePayment, setAdvancePayment] = useState<number>(0);
 
+  // Weigh Rows State
   const [rows, setRows] = useState<WeighingRow[]>([
     { id: 'r-1', time: '11:05', bag_count: 10, fresh_kg: 500, tare_kg: 25, dry_kg: 475, price_per_kg: 8000, subtotal: 3800000 },
     { id: 'r-2', time: '11:10', bag_count: 12, fresh_kg: 600, tare_kg: 30, dry_kg: 570, price_per_kg: 8000, subtotal: 4560000 },
     { id: 'r-3', time: '11:15', bag_count: 10, fresh_kg: 500, tare_kg: 25, dry_kg: 475, price_per_kg: 8000, subtotal: 3800000 }
   ]);
 
+  // Fast Input State
+  const [inputBags, setInputBags] = useState<string>('10');
+  const [inputFreshKg, setInputFreshKg] = useState<string>('500');
+  const freshKgInputRef = useRef<HTMLInputElement>(null);
+
+  // Inline Row Edit State
   const [editingRowId, setEditingRowId] = useState<string | null>(null);
   const [editBagCount, setEditBagCount] = useState<number>(0);
   const [editFreshKg, setEditFreshKg] = useState<number>(0);
 
+  // Modals & Drawers
   const [showZaloModal, setShowZaloModal] = useState(false);
   const [showTicketModal, setShowTicketModal] = useState(false);
+  const [showAiWidget, setShowAiWidget] = useState(false);
   const [copiedZalo, setCopiedZalo] = useState(false);
 
   const currentFarmer = MOCK_FARMERS.find(f => f.id === selectedFarmerId) || MOCK_FARMERS[0];
   const currentVehicle = MOCK_VEHICLES.find(v => v.id === selectedVehicleId) || MOCK_VEHICLES[0];
   const unitPrice = settings.variety_prices[selectedVarietyCode] || 8000;
 
+  // Real-time Calculations for Rows
+  const calculateRowTareAndDry = (bags: number, fresh: number) => {
+    const tareKg = tareFormula === 'percent'
+      ? (fresh * tarePercent) / 100
+      : bags * tareFixedKg;
+    const dryKg = Math.max(0, fresh - tareKg);
+    const subtotal = dryKg * unitPrice;
+    return { tareKg, dryKg, subtotal };
+  };
+
+  // Recalculate all rows whenever tare formula/percent or variety price changes
+  useEffect(() => {
+    setRows(prevRows => prevRows.map(r => {
+      const { tareKg, dryKg, subtotal } = calculateRowTareAndDry(r.bag_count, r.fresh_kg);
+      return {
+        ...r,
+        tare_kg: tareKg,
+        dry_kg: dryKg,
+        price_per_kg: unitPrice,
+        subtotal: subtotal
+      };
+    }));
+  }, [tareFormula, tarePercent, tareFixedKg, selectedVarietyCode]);
+
+  // Session Totals
   const totalBags = rows.reduce((sum, r) => sum + r.bag_count, 0);
   const totalFreshKg = rows.reduce((sum, r) => sum + r.fresh_kg, 0);
-  const totalTareKg = (totalFreshKg * tarePercent) / 100;
-  const totalDryKg = Math.max(0, totalFreshKg - totalTareKg);
-  const totalAmount = totalDryKg * unitPrice;
+  const totalTareKg = rows.reduce((sum, r) => sum + r.tare_kg, 0);
+  const totalDryKg = rows.reduce((sum, r) => sum + r.dry_kg, 0);
+  const totalAmount = rows.reduce((sum, r) => sum + r.subtotal, 0);
+  const remainingPayment = Math.max(0, totalAmount - advancePayment);
 
-  const handleAddRow = () => {
+  // Fast Weight Entry Handler
+  const handleFastAddRow = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+
+    const bags = parseInt(inputBags) || 0;
+    const fresh = parseFloat(inputFreshKg) || 0;
+
+    if (bags <= 0 || fresh <= 0) {
+      alert('Vui lòng nhập số bao (>0) và số kg tươi (>0)!');
+      return;
+    }
+
     const now = new Date();
     const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-    const newBags = 10;
-    const newFresh = 500;
-    const tareKg = (newFresh * tarePercent) / 100;
-    const dryKg = Math.max(0, newFresh - tareKg);
-    const subtotal = dryKg * unitPrice;
+    const { tareKg, dryKg, subtotal } = calculateRowTareAndDry(bags, fresh);
 
     const newRow: WeighingRow = {
       id: 'r-' + Date.now(),
       time: timeStr,
-      bag_count: newBags,
-      fresh_kg: newFresh,
+      bag_count: bags,
+      fresh_kg: fresh,
       tare_kg: tareKg,
       dry_kg: dryKg,
       price_per_kg: unitPrice,
@@ -126,8 +178,13 @@ export const WeighingView: React.FC<WeighingViewProps> = ({
     };
 
     setRows([...rows, newRow]);
+    setInputFreshKg('');
+    if (freshKgInputRef.current) {
+      freshKgInputRef.current.focus();
+    }
   };
 
+  // Inline Row Edit Handlers
   const handleStartEditRow = (row: WeighingRow) => {
     setEditingRowId(row.id);
     setEditBagCount(row.bag_count);
@@ -135,11 +192,10 @@ export const WeighingView: React.FC<WeighingViewProps> = ({
   };
 
   const handleSaveEditRow = (rowId: string) => {
+    const { tareKg, dryKg, subtotal } = calculateRowTareAndDry(editBagCount, editFreshKg);
+
     setRows(rows.map(r => {
       if (r.id === rowId) {
-        const tareKg = (editFreshKg * tarePercent) / 100;
-        const dryKg = Math.max(0, editFreshKg - tareKg);
-        const subtotal = dryKg * unitPrice;
         return {
           ...r,
           bag_count: editBagCount,
@@ -160,6 +216,11 @@ export const WeighingView: React.FC<WeighingViewProps> = ({
   };
 
   const handleSaveSession = () => {
+    if (rows.length === 0) {
+      alert('Chưa có mã cân nào trong phiên! Vui lòng nhập mã cân.');
+      return;
+    }
+
     const session: WeighingSession = {
       id: 'sess-' + Date.now(),
       code: 'PC-' + Math.floor(100000 + Math.random() * 900000),
@@ -178,34 +239,37 @@ export const WeighingView: React.FC<WeighingViewProps> = ({
       rows: rows,
       total_bags: totalBags,
       total_fresh_kg: totalFreshKg,
-      tare_formula: 'percent',
-      tare_value: tarePercent,
+      tare_formula: tareFormula,
+      tare_value: tareFormula === 'percent' ? tarePercent : tareFixedKg,
       total_tare_kg: totalTareKg,
       total_dry_kg: totalDryKg,
       price_per_kg: unitPrice,
       total_amount: totalAmount,
-      advance_payment: 0,
-      remaining_payment: totalAmount,
+      advance_payment: advancePayment,
+      remaining_payment: remainingPayment,
       status: 'completed'
     };
 
     onSaveSession(session);
-    alert('✅ Đã ghi nhập thành công Phiên Cân Lúa!');
+    alert(`✅ Ghi nhập thành công Phiên Cân ${session.code}!`);
   };
 
   const getZaloText = () => {
     return `🌾 RiceOS - THÔNG BÁO PHIÊN CÂN LÚA TƯƠI
 ----------------------------------------
 Chủ ruộng: ${currentFarmer.name} (SĐT: ${currentFarmer.phone})
-Xứ đồng: ${currentFarmer.field_name} - ${currentFarmer.plot_no}
+Xứ đồng: ${currentFarmer.field_name} - ${currentFarmer.plot_no} (${currentFarmer.area_sao} sào)
 Giống lúa: ${selectedVarietyCode}
+----------------------------------------
+Tổng mã cân: ${rows.length} mã
 Tổng số bao cân: ${totalBags.toLocaleString()} bao
 Tổng khối lượng tươi: ${totalFreshKg.toLocaleString()} kg
-Trừ bì độ ẩm (${tarePercent}%): ${totalTareKg.toFixed(1)} kg
-Sản lượng khô thực tính: ${totalDryKg.toFixed(1)} kg
-Đơn giá thu mua: ${unitPrice.toLocaleString()} đ/kg
+Trừ bì ${tareFormula === 'percent' ? `${tarePercent}%` : `${tareFixedKg}kg/bao`}: ${totalTareKg.toFixed(1)} kg
 ----------------------------------------
+KG KHÔ THỰC TÍNH: ${totalDryKg.toFixed(1)} KG
+Đơn giá thu mua: ${unitPrice.toLocaleString()} đ/kg
 THÀNH TIỀN: ${totalAmount.toLocaleString()} VNĐ
+${advancePayment > 0 ? `Đã tạm ứng: ${advancePayment.toLocaleString()} VNĐ\nCòn lại thanh toán: ${remainingPayment.toLocaleString()} VNĐ` : ''}
 ----------------------------------------
 Cán bộ cân phụ trách: ${currentUser.full_name}
 Xe nhận lúa: ${currentVehicle.plate_number} (${currentVehicle.driver_name})
@@ -218,299 +282,442 @@ Cảm ơn quý hộ dân đã đồng hành cùng RiceOS!`;
     setTimeout(() => setCopiedZalo(false), 2000);
   };
 
+  const handleExportPNG = () => {
+    alert(`🖼️ Đã kết xuất thành công tệp hình ảnh Phiếu Cân Lúa_${currentFarmer.name}.png!`);
+  };
+
   return (
     <div className="panel-grid-container">
+      {/* Top Header Toolbar */}
       <div className="panel-header">
         <div className="panel-title">
           <Scale size={20} color="#10b981" />
-          <span>TẠO PHIÊN CÂN LÚA MỚI (CÂN TƯƠI TRỰC TIẾP TẠI CẦU CÂN)</span>
+          <span>TẠO PHIÊN CÂN LÚA TƯƠI THỰC ĐỊA (CÂN BÀN / BĂNG CHUYỀN)</span>
         </div>
+
         <div className="misa-command-group">
           <button className="misa-btn-cmd primary" onClick={handleSaveSession}>
             <Save size={14} /> Ghi nhập phiên cân
           </button>
           <button className="misa-btn-cmd success" onClick={() => setShowZaloModal(true)}>
-            <Share2 size={14} /> Copy tin nhắn Zalo
+            <Share2 size={14} /> Copy Zalo gửi hộ dân
+          </button>
+          <button className="misa-btn-cmd" onClick={handleExportPNG}>
+            <Image size={14} /> Xuất ảnh PNG
           </button>
           <button className="misa-btn-cmd" onClick={() => setShowTicketModal(true)}>
-            <Printer size={14} /> In phiếu cân nhiệt
+            <Printer size={14} /> In phiếu nhiệt 80mm
+          </button>
+          <button 
+            className={`misa-btn-cmd ${showAiWidget ? 'primary' : ''}`} 
+            onClick={() => setShowAiWidget(!showAiWidget)}
+          >
+            <Camera size={14} /> {showAiWidget ? 'Ẩn AI Camera' : 'Bật AI đếm bao'}
           </button>
         </div>
       </div>
 
-      <div className="form-grid">
-        <div className="form-group">
-          <label className="form-label">Chọn Chủ Ruộng (Hộ Dân) *</label>
-          <select
-            className="form-control"
-            value={selectedFarmerId}
-            onChange={(e) => setSelectedFarmerId(e.target.value)}
-          >
-            {MOCK_FARMERS.map(f => (
-              <option key={f.id} value={f.id}>
-                {f.name} - SĐT: {f.phone} ({f.field_name})
-              </option>
-            ))}
-          </select>
-        </div>
+      {/* Main Grid: Form Left + Fast Input Center + AI Widget Right */}
+      <div style={{ display: 'grid', gridTemplateColumns: showAiWidget ? '1fr 300px' : '1fr', gap: 16 }}>
+        <div>
+          {/* Header Metadata Inputs */}
+          <div className="form-grid">
+            <div className="form-group">
+              <label className="form-label">Chủ Ruộng (Hộ Dân) *</label>
+              <select
+                className="form-control"
+                value={selectedFarmerId}
+                onChange={(e) => setSelectedFarmerId(e.target.value)}
+              >
+                {MOCK_FARMERS.map(f => (
+                  <option key={f.id} value={f.id}>
+                    {f.name} - SĐT: {f.phone} ({f.field_name})
+                  </option>
+                ))}
+              </select>
+            </div>
 
-        <div className="form-group">
-          <label className="form-label">Số CCCD / Nơi cấp / Hạn dùng</label>
-          <input
-            type="text"
-            className="form-control"
-            value={`${currentFarmer.cccd} - ${currentFarmer.cccd_issue_place} (Hạn: ${currentFarmer.cccd_expiry_date})`}
-            readOnly
-            style={{ backgroundColor: '#f8fafc' }}
-          />
-        </div>
+            <div className="form-group">
+              <label className="form-label">Thông tin CCCD / Nơi cấp</label>
+              <input
+                type="text"
+                className="form-control"
+                value={`${currentFarmer.cccd} - ${currentFarmer.cccd_issue_place}`}
+                readOnly
+                style={{ backgroundColor: '#f8fafc' }}
+              />
+            </div>
 
-        <div className="form-group">
-          <label className="form-label">Xứ đồng / Lô / Diện tích</label>
-          <input
-            type="text"
-            className="form-control"
-            value={`${currentFarmer.field_name} - ${currentFarmer.plot_no} (${currentFarmer.area_sao} sào)`}
-            readOnly
-            style={{ backgroundColor: '#f8fafc' }}
-          />
-        </div>
+            <div className="form-group">
+              <label className="form-label">Xứ đồng / Lô / Diện tích</label>
+              <input
+                type="text"
+                className="form-control"
+                value={`${currentFarmer.field_name} - ${currentFarmer.plot_no} (${currentFarmer.area_sao} sào)`}
+                readOnly
+                style={{ backgroundColor: '#f8fafc' }}
+              />
+            </div>
 
-        <div className="form-group">
-          <label className="form-label">Cán bộ phụ trách cân</label>
-          <input
-            type="text"
-            className="form-control"
-            value={`${currentUser.full_name} (${currentUser.role.toUpperCase()})`}
-            readOnly
-            style={{ backgroundColor: '#f8fafc' }}
-          />
-        </div>
+            <div className="form-group">
+              <label className="form-label">Cán bộ trực cân</label>
+              <input
+                type="text"
+                className="form-control"
+                value={`${currentUser.full_name} (${currentUser.role.toUpperCase()})`}
+                readOnly
+                style={{ backgroundColor: '#f8fafc' }}
+              />
+            </div>
 
-        <div className="form-group">
-          <label className="form-label">Chọn Xe Nhận Lúa *</label>
-          <select
-            className="form-control"
-            value={selectedVehicleId}
-            onChange={(e) => setSelectedVehicleId(e.target.value)}
-          >
-            {MOCK_VEHICLES.map(v => (
-              <option key={v.id} value={v.id}>
-                {v.plate_number} - Tài xế: {v.driver_name} (SĐT: {v.driver_phone})
-              </option>
-            ))}
-          </select>
-        </div>
+            <div className="form-group">
+              <label className="form-label">Xe Nhận Lúa *</label>
+              <select
+                className="form-control"
+                value={selectedVehicleId}
+                onChange={(e) => setSelectedVehicleId(e.target.value)}
+              >
+                {MOCK_VEHICLES.map(v => (
+                  <option key={v.id} value={v.id}>
+                    {v.plate_number} - Tài xế: {v.driver_name} ({v.driver_phone})
+                  </option>
+                ))}
+              </select>
+            </div>
 
-        <div className="form-group">
-          <label className="form-label">Loại Giống Lúa Thu Mua *</label>
-          <select
-            className="form-control"
-            value={selectedVarietyCode}
-            onChange={(e) => setSelectedVarietyCode(e.target.value)}
-          >
-            {Object.entries(settings.variety_prices).map(([code, price]) => (
-              <option key={code} value={code}>
-                Giống lúa {code} (Đơn giá: {price.toLocaleString()} đ/kg)
-              </option>
-            ))}
-          </select>
-        </div>
+            <div className="form-group">
+              <label className="form-label">Giống Lúa Thu Mua *</label>
+              <select
+                className="form-control"
+                value={selectedVarietyCode}
+                onChange={(e) => setSelectedVarietyCode(e.target.value)}
+              >
+                {Object.entries(settings.variety_prices).map(([code, price]) => (
+                  <option key={code} value={code}>
+                    Giống lúa {code} ({price.toLocaleString()} đ/kg)
+                  </option>
+                ))}
+              </select>
+            </div>
 
-        <div className="form-group">
-          <label className="form-label">Mức Trừ Bì (%) Mặc định *</label>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <input
-              type="number"
-              step="0.1"
-              className="form-control"
-              value={tarePercent}
-              onChange={(e) => setTarePercent(parseFloat(e.target.value) || 0)}
-              style={{ width: 100 }}
-            />
-            <span style={{ fontSize: 12, fontWeight: 700, color: '#64748b' }}>% Độ ẩm/Tạp chất</span>
+            <div className="form-group">
+              <label className="form-label">Công thức Trừ Bì *</label>
+              <div style={{ display: 'flex', gap: 6 }}>
+                <select
+                  className="form-control"
+                  value={tareFormula}
+                  onChange={(e) => setTareFormula(e.target.value as any)}
+                  style={{ width: 130 }}
+                >
+                  <option value="percent">Trừ % độ ẩm</option>
+                  <option value="kg_fixed">Trừ kg/bao</option>
+                </select>
+                {tareFormula === 'percent' ? (
+                  <input
+                    type="number"
+                    step="0.1"
+                    className="form-control"
+                    value={tarePercent}
+                    onChange={(e) => setTarePercent(parseFloat(e.target.value) || 0)}
+                    placeholder="% Bì"
+                    style={{ width: 90 }}
+                  />
+                ) : (
+                  <input
+                    type="number"
+                    step="0.1"
+                    className="form-control"
+                    value={tareFixedKg}
+                    onChange={(e) => setTareFixedKg(parseFloat(e.target.value) || 0)}
+                    placeholder="kg/bao"
+                    style={{ width: 90 }}
+                  />
+                )}
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Tiền Đã Tạm Ứng (VNĐ)</label>
+              <input
+                type="number"
+                step="100000"
+                className="form-control"
+                value={advancePayment}
+                onChange={(e) => setAdvancePayment(parseFloat(e.target.value) || 0)}
+                placeholder="0 đ"
+              />
+            </div>
           </div>
-        </div>
-      </div>
 
-      <div style={{ padding: '0 16px 16px 16px' }}>
-        <div style={{ marginBottom: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span style={{ fontWeight: 700, color: '#0f172a', display: 'flex', alignItems: 'center', gap: 6 }}>
-            <FileText size={16} color="#0b6bbf" /> BẢNG NHẬP MÃ CÂN LÚA CHI TIẾT (CHO PHÉP SỬA MÃ CÂN NHẬP NHẦM)
-          </span>
-          <button className="misa-btn-cmd primary" onClick={handleAddRow}>
-            <Plus size={14} /> Thêm mã cân mới
-          </button>
-        </div>
+          {/* Fast Entry Numeric Bar */}
+          <div style={{
+            margin: '0 16px 16px 16px',
+            padding: 12,
+            backgroundColor: '#f0f9ff',
+            border: '2px dashed #0284c7',
+            borderRadius: 8
+          }}>
+            <form onSubmit={handleFastAddRow} style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+              <div style={{ fontSize: 13, fontWeight: 800, color: '#0369a1', display: 'flex', alignItems: 'center', gap: 4 }}>
+                <Calculator size={16} /> NHẬP NHANH MÃ CÂN:
+              </div>
 
-        <table className="datagrid">
-          <thead>
-            <tr>
-              <th style={{ width: 50, textAlign: 'center' }}>STT</th>
-              <th>Thời gian</th>
-              <th style={{ width: 120 }}>Số bao cân</th>
-              <th>Kg Tươi (Tổng mã)</th>
-              <th>Trừ bì {tarePercent}% (kg)</th>
-              <th>Kg Khô (Thực tính)</th>
-              <th>Đơn giá (đ/kg)</th>
-              <th>Thành tiền (VNĐ)</th>
-              <th style={{ width: 120, textAlign: 'center' }}>Thao tác</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((row, index) => {
-              const isEditing = editingRowId === row.id;
+              <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                <label style={{ fontSize: 12, fontWeight: 700 }}>Số bao:</label>
+                <input
+                  type="number"
+                  className="form-control"
+                  value={inputBags}
+                  onChange={(e) => setInputBags(e.target.value)}
+                  style={{ width: 80, textAlign: 'center', fontWeight: 800 }}
+                  required
+                />
+              </div>
 
-              return (
-                <tr key={row.id}>
-                  <td style={{ textAlign: 'center', fontWeight: 700 }}>{index + 1}</td>
-                  <td>{row.time}</td>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                <label style={{ fontSize: 12, fontWeight: 700 }}>Tổng Kg Tươi:</label>
+                <input
+                  ref={freshKgInputRef}
+                  type="number"
+                  step="0.5"
+                  className="form-control"
+                  value={inputFreshKg}
+                  onChange={(e) => setInputFreshKg(e.target.value)}
+                  style={{ width: 120, textAlign: 'right', fontWeight: 800, color: '#0284c7', fontSize: 14 }}
+                  placeholder="e.g. 500"
+                  required
+                />
+                <span style={{ fontSize: 12, fontWeight: 700 }}>kg</span>
+              </div>
 
-                  <td>
-                    {isEditing ? (
-                      <input
-                        type="number"
-                        className="form-control"
-                        value={editBagCount}
-                        onChange={(e) => setEditBagCount(parseInt(e.target.value) || 0)}
-                        style={{ width: 80, textAlign: 'center', fontWeight: 700 }}
-                      />
-                    ) : (
-                      <strong>{row.bag_count} bao</strong>
-                    )}
-                  </td>
+              <button type="submit" className="misa-btn-cmd primary" style={{ height: 32 }}>
+                <Plus size={14} /> Thêm Mã Cân (Enter <CornerDownLeft size={12} />)
+              </button>
+            </form>
+          </div>
 
-                  <td>
-                    {isEditing ? (
-                      <input
-                        type="number"
-                        className="form-control"
-                        value={editFreshKg}
-                        onChange={(e) => setEditFreshKg(parseFloat(e.target.value) || 0)}
-                        style={{ width: 110, fontWeight: 700, color: '#0284c7' }}
-                      />
-                    ) : (
-                      <strong style={{ color: '#0284c7' }}>{row.fresh_kg.toLocaleString()} kg</strong>
-                    )}
-                  </td>
+          {/* Master Detail DataGrid (Inline Editable Rows) */}
+          <div style={{ padding: '0 16px 16px 16px' }}>
+            <div style={{ marginBottom: 8, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ fontWeight: 700, color: '#0f172a', display: 'flex', alignItems: 'center', gap: 6 }}>
+                <FileText size={16} color="#0b6bbf" /> DANH SÁCH MÃ CÂN TRONG PHIÊN (BẤM SỬA NẾU NHẬP NHẦM MÃ)
+              </span>
+              <span style={{ fontSize: 12, color: '#64748b' }}>Đơn giá áp dụng: <strong>{unitPrice.toLocaleString()} đ/kg</strong></span>
+            </div>
 
-                  <td style={{ color: '#64748b' }}>
-                    {isEditing
-                      ? ((editFreshKg * tarePercent) / 100).toFixed(1)
-                      : row.tare_kg.toFixed(1)} kg
-                  </td>
-
-                  <td>
-                    <strong style={{ color: '#059669' }}>
-                      {isEditing
-                        ? Math.max(0, editFreshKg - (editFreshKg * tarePercent) / 100).toFixed(1)
-                        : row.dry_kg.toFixed(1)} kg
-                    </strong>
-                  </td>
-
-                  <td>{unitPrice.toLocaleString()} đ</td>
-
-                  <td>
-                    <strong style={{ color: '#d97706' }}>
-                      {isEditing
-                        ? (Math.max(0, editFreshKg - (editFreshKg * tarePercent) / 100) * unitPrice).toLocaleString()
-                        : row.subtotal.toLocaleString()} đ
-                    </strong>
-                  </td>
-
-                  <td style={{ textAlign: 'center' }}>
-                    {isEditing ? (
-                      <div style={{ display: 'flex', gap: 4, justifyContent: 'center' }}>
-                        <button
-                          className="misa-btn-cmd success"
-                          style={{ padding: '2px 6px', fontSize: 11 }}
-                          onClick={() => handleSaveEditRow(row.id)}
-                          title="Lưu chỉnh sửa"
-                        >
-                          <Check size={12} /> Lưu
-                        </button>
-                        <button
-                          className="misa-btn-cmd"
-                          style={{ padding: '2px 6px', fontSize: 11 }}
-                          onClick={() => setEditingRowId(null)}
-                          title="Hủy"
-                        >
-                          <X size={12} />
-                        </button>
-                      </div>
-                    ) : (
-                      <div style={{ display: 'flex', gap: 6, justifyContent: 'center' }}>
-                        <button
-                          style={{ background: 'none', border: 'none', color: '#0b6bbf', cursor: 'pointer' }}
-                          onClick={() => handleStartEditRow(row)}
-                          title="Chỉnh sửa mã cân nhập nhầm"
-                        >
-                          <Edit3 size={15} />
-                        </button>
-                        <button
-                          style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer' }}
-                          onClick={() => handleDeleteRow(row.id)}
-                          title="Xóa mã cân"
-                        >
-                          <Trash2 size={15} />
-                        </button>
-                      </div>
-                    )}
-                  </td>
+            <table className="datagrid">
+              <thead>
+                <tr>
+                  <th style={{ width: 40, textAlign: 'center' }}>STT</th>
+                  <th>Thời gian</th>
+                  <th style={{ width: 110 }}>Số bao cân</th>
+                  <th>Kg Tươi (Tổng mã)</th>
+                  <th>Trừ bì ({tareFormula === 'percent' ? `${tarePercent}%` : `${tareFixedKg}kg/bao`})</th>
+                  <th>Kg Khô (Thực tính)</th>
+                  <th>Thành tiền (VNĐ)</th>
+                  <th style={{ width: 100, textAlign: 'center' }}>Tác vụ</th>
                 </tr>
-              );
-            })}
-          </tbody>
-        </table>
+              </thead>
+              <tbody>
+                {rows.map((row, index) => {
+                  const isEditing = editingRowId === row.id;
+
+                  return (
+                    <tr key={row.id}>
+                      <td style={{ textAlign: 'center', fontWeight: 700 }}>{index + 1}</td>
+                      <td>{row.time}</td>
+
+                      <td>
+                        {isEditing ? (
+                          <input
+                            type="number"
+                            className="form-control"
+                            value={editBagCount}
+                            onChange={(e) => setEditBagCount(parseInt(e.target.value) || 0)}
+                            style={{ width: 80, textAlign: 'center', fontWeight: 700 }}
+                          />
+                        ) : (
+                          <strong>{row.bag_count} bao</strong>
+                        )}
+                      </td>
+
+                      <td>
+                        {isEditing ? (
+                          <input
+                            type="number"
+                            step="0.5"
+                            className="form-control"
+                            value={editFreshKg}
+                            onChange={(e) => setEditFreshKg(parseFloat(e.target.value) || 0)}
+                            style={{ width: 100, fontWeight: 700, color: '#0284c7' }}
+                          />
+                        ) : (
+                          <strong style={{ color: '#0284c7' }}>{row.fresh_kg.toLocaleString()} kg</strong>
+                        )}
+                      </td>
+
+                      <td style={{ color: '#64748b' }}>
+                        {isEditing
+                          ? calculateRowTareAndDry(editBagCount, editFreshKg).tareKg.toFixed(1)
+                          : row.tare_kg.toFixed(1)} kg
+                      </td>
+
+                      <td>
+                        <strong style={{ color: '#059669' }}>
+                          {isEditing
+                            ? calculateRowTareAndDry(editBagCount, editFreshKg).dryKg.toFixed(1)
+                            : row.dry_kg.toFixed(1)} kg
+                        </strong>
+                      </td>
+
+                      <td>
+                        <strong style={{ color: '#d97706' }}>
+                          {isEditing
+                            ? calculateRowTareAndDry(editBagCount, editFreshKg).subtotal.toLocaleString()
+                            : row.subtotal.toLocaleString()} đ
+                        </strong>
+                      </td>
+
+                      <td style={{ textAlign: 'center' }}>
+                        {isEditing ? (
+                          <div style={{ display: 'flex', gap: 4, justifyContent: 'center' }}>
+                            <button
+                              className="misa-btn-cmd success"
+                              style={{ padding: '2px 6px', fontSize: 11 }}
+                              onClick={() => handleSaveEditRow(row.id)}
+                            >
+                              <Check size={12} /> Lưu
+                            </button>
+                            <button
+                              className="misa-btn-cmd"
+                              style={{ padding: '2px 6px', fontSize: 11 }}
+                              onClick={() => setEditingRowId(null)}
+                            >
+                              <X size={12} />
+                            </button>
+                          </div>
+                        ) : (
+                          <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
+                            <button
+                              style={{ background: 'none', border: 'none', color: '#0b6bbf', cursor: 'pointer' }}
+                              onClick={() => handleStartEditRow(row)}
+                              title="Sửa mã cân nhập nhầm"
+                            >
+                              <Edit3 size={15} />
+                            </button>
+                            <button
+                              style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer' }}
+                              onClick={() => handleDeleteRow(row.id)}
+                              title="Xóa mã cân"
+                            >
+                              <Trash2 size={15} />
+                            </button>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Session Summary Bar */}
+          <div style={{
+            backgroundColor: '#ecfdf5',
+            borderTop: '2px solid #10b981',
+            padding: 16,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: 16
+          }}>
+            <div>
+              <span style={{ fontSize: 11, color: '#047857', fontWeight: 600 }}>TỔNG SỐ BAO & KG TƯƠI:</span>
+              <div style={{ fontSize: 18, fontWeight: 800, color: '#065f46' }}>
+                {totalBags.toLocaleString()} bao | {totalFreshKg.toLocaleString()} kg Tươi
+              </div>
+            </div>
+
+            <div>
+              <span style={{ fontSize: 11, color: '#047857', fontWeight: 600 }}>TỔNG KG KHÔ THỰC TÍNH:</span>
+              <div style={{ fontSize: 20, fontWeight: 800, color: '#0284c7' }}>
+                {totalDryKg.toFixed(1)} kg Khô
+              </div>
+            </div>
+
+            <div>
+              <span style={{ fontSize: 11, color: '#047857', fontWeight: 600 }}>TỔNG THÀNH TIỀN PHẢI TRẢ:</span>
+              <div style={{ fontSize: 22, fontWeight: 800, color: '#d97706' }}>
+                {totalAmount.toLocaleString()} VNĐ
+              </div>
+            </div>
+
+            {advancePayment > 0 && (
+              <div>
+                <span style={{ fontSize: 11, color: '#047857', fontWeight: 600 }}>CÒN LẠI SAU TẠM ỨNG:</span>
+                <div style={{ fontSize: 20, fontWeight: 800, color: '#ef4444' }}>
+                  {remainingPayment.toLocaleString()} VNĐ
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* AI Camera Assistant Drawer Widget */}
+        {showAiWidget && (
+          <div style={{
+            backgroundColor: '#0f172a',
+            color: 'white',
+            borderRadius: 12,
+            padding: 16,
+            display: 'flex',
+            flexdirection: 'column',
+            gap: 12
+          }}>
+            <div style={{ fontSize: 13, fontWeight: 800, color: '#00d2d3', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <Camera size={16} /> AI CAMERA ĐẾM BAO
+            </div>
+            <div style={{
+              backgroundColor: '#1e293b',
+              borderRadius: 8,
+              height: 180,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              textAlign: 'center',
+              color: '#94a3b8',
+              fontSize: 12,
+              position: 'relative'
+            }}>
+              <div>
+                <div>📷 Camera AI Live Stream</div>
+                <div style={{ color: '#10b981', fontWeight: 700, marginTop: 4 }}>Đang đếm tự động bao lúa...</div>
+              </div>
+            </div>
+            <div style={{ fontSize: 12, lineHeight: 1.5 }}>
+              • Số bao phát hiện: <strong style={{ color: '#10b981', fontSize: 16 }}>{totalBags} bao</strong><br />
+              • Độ chính xác AI: <strong>99.4%</strong><br />
+              • Tốc độ băng chuyền: <strong>1.5 bao/giây</strong>
+            </div>
+          </div>
+        )}
       </div>
 
-      <div style={{
-        backgroundColor: '#ecfdf5',
-        borderTop: '2px solid #10b981',
-        padding: 16,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        flexWrap: 'wrap',
-        gap: 16
-      }}>
-        <div>
-          <span style={{ fontSize: 12, color: '#047857' }}>TỔNG CỘNG PHIÊN CÂN:</span>
-          <div style={{ fontSize: 20, fontWeight: 800, color: '#065f46' }}>
-            {totalBags.toLocaleString()} bao | {totalFreshKg.toLocaleString()} kg Tươi | Trừ bì ({tarePercent}%): {totalTareKg.toFixed(1)} kg
-          </div>
-        </div>
-
-        <div>
-          <span style={{ fontSize: 12, color: '#047857' }}>SẢN LƯỢNG KHÔ THỰC TÍNH:</span>
-          <div style={{ fontSize: 22, fontWeight: 800, color: '#0284c7' }}>
-            {totalDryKg.toFixed(1)} kg Khô
-          </div>
-        </div>
-
-        <div>
-          <span style={{ fontSize: 12, color: '#047857' }}>TỔNG THÀNH TIỀN PHẢI THANH TOÁN:</span>
-          <div style={{ fontSize: 24, fontWeight: 800, color: '#d97706' }}>
-            {totalAmount.toLocaleString()} VNĐ
-          </div>
-        </div>
-      </div>
-
+      {/* Modals: Zalo Message & Ticket Thermal Preview */}
       {showZaloModal && (
         <div className="modal-overlay active">
           <div className="modal-box" style={{ maxWidth: 540 }}>
             <div className="modal-header">
-              <span className="modal-title">📱 KẾT XUẤT NỘI DUNG GỬI QUA ZALO</span>
+              <span className="modal-title">📱 KẾT XUẤT PHIẾU CÂN GỬI QUA ZALO</span>
               <button style={{ background: 'none', border: 'none', cursor: 'pointer' }} onClick={() => setShowZaloModal(false)}>✕</button>
             </div>
             <div className="modal-body">
-              <p style={{ fontSize: 12, color: '#64748b', marginBottom: 8 }}>
-                Nội dung tin nhắn đã được định dạng chuẩn sẵn sàng copy gửi qua Zalo Web/App:
-              </p>
               <textarea
                 style={{
                   width: '100%',
-                  height: 220,
+                  height: 240,
                   padding: 12,
                   fontFamily: 'monospace',
                   fontSize: 12,
@@ -536,7 +743,7 @@ Cảm ơn quý hộ dân đã đồng hành cùng RiceOS!`;
         <div className="modal-overlay active">
           <div className="modal-box" style={{ maxWidth: 420 }}>
             <div className="modal-header">
-              <span className="modal-title">🖨️ XEM TRƯỚC PHIẾU CÂN NHIỆT (TICKET)</span>
+              <span className="modal-title">🖨️ IN PHIẾU CÂN NHIỆT (TICKET 80MM)</span>
               <button style={{ background: 'none', border: 'none', cursor: 'pointer' }} onClick={() => setShowTicketModal(false)}>✕</button>
             </div>
             <div className="modal-body">
@@ -552,13 +759,15 @@ Cảm ơn quý hộ dân đã đồng hành cùng RiceOS!`;
                 <div>Xứ đồng: {currentFarmer.field_name} - {currentFarmer.plot_no}</div>
                 <div>Giống lúa: {selectedVarietyCode}</div>
                 <hr style={{ borderTop: '1px dashed black', margin: '6px 0' }} />
+                <div>Tổng số mã: {rows.length} mã cân</div>
                 <div>Tổng số bao: {totalBags} bao</div>
                 <div>Kg Tươi: {totalFreshKg.toLocaleString()} kg</div>
-                <div>Kg Trừ bì ({tarePercent}%): {totalTareKg.toFixed(1)} kg</div>
+                <div>Kg Trừ bì ({tareFormula === 'percent' ? `${tarePercent}%` : `${tareFixedKg}kg/bao`}): {totalTareKg.toFixed(1)} kg</div>
                 <div><strong>KG KHÔ THỰC TÍNH: {totalDryKg.toFixed(1)} KG</strong></div>
                 <div>Đơn giá: {unitPrice.toLocaleString()} đ/kg</div>
                 <hr style={{ borderTop: '1px dashed black', margin: '6px 0' }} />
                 <div><strong style={{ fontSize: 14 }}>THÀNH TIỀN: {totalAmount.toLocaleString()} Đ</strong></div>
+                {advancePayment > 0 && <div>Đã tạm ứng: {advancePayment.toLocaleString()} đ</div>}
                 <div style={{ marginTop: 12, textAlign: 'center' }}>Cán bộ cân ký: {currentUser.full_name}</div>
               </div>
             </div>
