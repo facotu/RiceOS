@@ -45,6 +45,7 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -60,6 +61,7 @@ body {
   display: flex;
   flex-direction: column;
   height: 100vh;
+  height: 100dvh; /* Dynamic Mobile Viewport */
   width: 100vw;
   overflow: hidden;
 }
@@ -80,7 +82,7 @@ body {
 .misa-header-left {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
 }
 
 .misa-logo {
@@ -112,7 +114,7 @@ body {
   background-color: #f1f5f9;
   padding: 4px 10px;
   border-radius: 16px;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   color: var(--text-main);
   cursor: pointer;
@@ -122,7 +124,7 @@ body {
 .misa-header-center {
   flex: 1;
   max-width: 460px;
-  margin: 0 24px;
+  margin: 0 16px;
 }
 
 .misa-search-wrapper {
@@ -164,7 +166,7 @@ body {
 .misa-header-right {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
 .misa-icon-btn {
@@ -224,6 +226,7 @@ body {
   display: flex;
   flex: 1;
   overflow: hidden;
+  position: relative;
 }
 
 /* Modern Dark Slate & Cyan Accent Sidebar */
@@ -430,6 +433,47 @@ body {
   background-color: var(--sidebar-hover);
 }
 
+/* Mobile Bottom Navigation Bar (Hidden on Desktop) */
+.mobile-bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  background-color: #0e1e25;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  z-index: 999;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0 4px;
+  box-shadow: 0 -4px 16px rgba(0,0,0,0.3);
+}
+
+.mobile-nav-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  flex: 1;
+  height: 100%;
+}
+
+.mobile-nav-btn.active {
+  color: #10b981;
+}
+
+.mobile-nav-btn.active svg {
+  color: #10b981;
+}
+
 /* Main Body View */
 .misa-content-view {
   flex: 1;
@@ -450,6 +494,8 @@ body {
   border-radius: var(--radius-md);
   border: 1px solid var(--card-border);
   box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .misa-breadcrumb {
@@ -458,17 +504,14 @@ body {
   gap: 6px;
   font-size: 12px;
   color: var(--text-muted);
-}
-
-.misa-breadcrumb strong {
-  color: var(--text-main);
-  font-weight: 600;
+  flex-wrap: wrap;
 }
 
 .misa-command-group {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 .misa-btn-cmd {
@@ -484,6 +527,7 @@ body {
   background-color: #ffffff;
   color: var(--text-main);
   transition: all 0.15s;
+  touch-action: manipulation;
 }
 
 .misa-btn-cmd:hover {
@@ -513,6 +557,8 @@ body {
   align-items: center;
   justify-content: space-between;
   box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .banner-title {
@@ -530,7 +576,7 @@ body {
 /* AI Cards Grid */
 .ai-cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 16px;
 }
 
@@ -592,15 +638,15 @@ body {
 /* KPI Row */
 .kpi-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
 }
 
 .kpi-box {
   background-color: white;
   border: 1px solid var(--card-border);
   border-radius: var(--radius-md);
-  padding: 14px 16px;
+  padding: 12px 14px;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -608,8 +654,8 @@ body {
 }
 
 .kpi-icon {
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   border-radius: 10px;
   display: flex;
   align-items: center;
@@ -622,7 +668,7 @@ body {
 .kpi-icon.purple { background-color: #f3e8ff; color: #9333ea; }
 
 .kpi-num {
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 800;
   color: #0f172a;
 }
@@ -650,6 +696,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .panel-title {
@@ -664,8 +712,8 @@ body {
 /* Form Grid & Controls */
 .form-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
   padding: 16px;
   background-color: #ffffff;
 }
@@ -683,11 +731,11 @@ body {
 }
 
 .form-control {
-  height: 32px;
+  height: 36px; /* Optimized touch height */
   padding: 0 10px;
   border: 1px solid #cbd5e1;
   border-radius: 6px;
-  font-size: 12px;
+  font-size: 13px;
   outline: none;
   background-color: #ffffff;
 }
@@ -733,7 +781,7 @@ body {
 
 .datagrid tr.filter-row input {
   width: 100%;
-  height: 24px;
+  height: 26px;
   padding: 0 6px;
   border: 1px solid #cbd5e1;
   border-radius: 4px;
@@ -749,6 +797,8 @@ body {
   justify-content: space-between;
   font-size: 11px;
   color: #475569;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 /* Modals */
@@ -764,6 +814,7 @@ body {
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  padding: 12px;
 }
 
 .modal-box {
@@ -771,7 +822,8 @@ body {
   border-radius: var(--radius-lg);
   box-shadow: 0 20px 25px -5px rgba(0,0,0,0.25);
   width: 100%;
-  overflow: hidden;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 .modal-header {
@@ -819,4 +871,81 @@ body {
   text-align: center;
   margin-bottom: 12px;
   font-weight: bold;
+}
+
+/* ==========================================================================
+   MOBILE SMARTPHONE OPTIMIZATION (< 768px)
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  .misa-sidebar {
+    display: none; /* Hide sidebar, use mobile bottom nav */
+  }
+
+  .mobile-bottom-nav {
+    display: flex; /* Show touch bottom tab bar */
+  }
+
+  .misa-content-view {
+    padding: 8px;
+    padding-bottom: 64px; /* Space for bottom nav */
+    gap: 10px;
+  }
+
+  .misa-header-center {
+    display: none; /* Hide search input in header on mobile */
+  }
+
+  .misa-header-left {
+    gap: 8px;
+  }
+
+  .misa-logo span {
+    font-size: 13px;
+  }
+
+  .misa-branch-picker span {
+    display: none; /* Icon only branch picker */
+  }
+
+  .misa-toolbar {
+    padding: 8px 10px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .misa-command-group {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .misa-btn-cmd {
+    flex: 1;
+    justify-content: center;
+    padding: 8px;
+    font-size: 11px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr; /* Single column forms on mobile */
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .kpi-row {
+    grid-template-columns: 1fr 1fr; /* 2 KPI boxes per row on mobile */
+  }
+
+  /* Table Horizontal Scroll Wrapper */
+  .panel-grid-container {
+    overflow-x: auto;
+  }
+
+  /* Sticky Summary Bar on Scale Page Mobile */
+  .mobile-sticky-summary {
+    position: sticky;
+    bottom: 56px;
+    z-index: 80;
+    box-shadow: 0 -4px 16px rgba(0,0,0,0.15);
+  }
 }

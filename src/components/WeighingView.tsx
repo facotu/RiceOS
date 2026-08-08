@@ -292,7 +292,7 @@ Cảm ơn quý hộ dân đã đồng hành cùng RiceOS!`;
       <div className="panel-header">
         <div className="panel-title">
           <Scale size={20} color="#10b981" />
-          <span>TẠO PHIÊN CÂN LÚA TƯƠI THỰC ĐỊA (CÂN BÀN / BĂNG CHUYỀN)</span>
+          <span>TẠO PHIÊN CÂN LÚA TƯƠI THỰC ĐỊA</span>
         </div>
 
         <div className="misa-command-group">
@@ -300,19 +300,19 @@ Cảm ơn quý hộ dân đã đồng hành cùng RiceOS!`;
             <Save size={14} /> Ghi nhập phiên cân
           </button>
           <button className="misa-btn-cmd success" onClick={() => setShowZaloModal(true)}>
-            <Share2 size={14} /> Copy Zalo gửi hộ dân
+            <Share2 size={14} /> Copy Zalo
           </button>
           <button className="misa-btn-cmd" onClick={handleExportPNG}>
             <Image size={14} /> Xuất ảnh PNG
           </button>
           <button className="misa-btn-cmd" onClick={() => setShowTicketModal(true)}>
-            <Printer size={14} /> In phiếu nhiệt 80mm
+            <Printer size={14} /> In phiếu nhiệt
           </button>
           <button 
             className={`misa-btn-cmd ${showAiWidget ? 'primary' : ''}`} 
             onClick={() => setShowAiWidget(!showAiWidget)}
           >
-            <Camera size={14} /> {showAiWidget ? 'Ẩn AI Camera' : 'Bật AI đếm bao'}
+            <Camera size={14} /> {showAiWidget ? 'Ẩn AI' : 'Bật AI'}
           </button>
         </div>
       </div>
@@ -449,215 +449,226 @@ Cảm ơn quý hộ dân đã đồng hành cùng RiceOS!`;
             </div>
           </div>
 
-          {/* Fast Entry Numeric Bar */}
+          {/* Fast Entry Numeric Bar (Optimized for Mobile Smartphone Touch Numpad) */}
           <div style={{
-            margin: '0 16px 16px 16px',
-            padding: 12,
+            margin: '0 12px 12px 12px',
+            padding: 14,
             backgroundColor: '#f0f9ff',
             border: '2px dashed #0284c7',
-            borderRadius: 8
+            borderRadius: 10
           }}>
-            <form onSubmit={handleFastAddRow} style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-              <div style={{ fontSize: 13, fontWeight: 800, color: '#0369a1', display: 'flex', alignItems: 'center', gap: 4 }}>
-                <Calculator size={16} /> NHẬP NHANH MÃ CÂN:
+            <form onSubmit={handleFastAddRow} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <div style={{ fontSize: 13, fontWeight: 800, color: '#0369a1', display: 'flex', alignItems: 'center', gap: 6 }}>
+                <Calculator size={18} color="#0284c7" /> NHẬP NHANH MÃ CÂN ĐIỆN THOẠI:
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <label style={{ fontSize: 12, fontWeight: 700 }}>Số bao:</label>
-                <input
-                  type="number"
-                  className="form-control"
-                  value={inputBags}
-                  onChange={(e) => setInputBags(e.target.value)}
-                  style={{ width: 80, textAlign: 'center', fontWeight: 800 }}
-                  required
-                />
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.5fr', gap: 10 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  <label style={{ fontSize: 11, fontWeight: 700, color: '#475569' }}>Số bao:</label>
+                  <input
+                    type="number"
+                    inputMode="decimal"
+                    className="form-control"
+                    value={inputBags}
+                    onChange={(e) => setInputBags(e.target.value)}
+                    style={{ height: 42, fontSize: 18, fontWeight: 800, textAlign: 'center', color: '#0e1e25' }}
+                    required
+                  />
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  <label style={{ fontSize: 11, fontWeight: 700, color: '#475569' }}>Tổng Kg Tươi (kg):</label>
+                  <input
+                    ref={freshKgInputRef}
+                    type="number"
+                    step="0.5"
+                    inputMode="decimal"
+                    className="form-control"
+                    value={inputFreshKg}
+                    onChange={(e) => setInputFreshKg(e.target.value)}
+                    style={{ height: 42, fontSize: 20, fontWeight: 800, textAlign: 'right', color: '#0284c7', paddingRight: 10 }}
+                    placeholder="e.g. 500"
+                    required
+                  />
+                </div>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <label style={{ fontSize: 12, fontWeight: 700 }}>Tổng Kg Tươi:</label>
-                <input
-                  ref={freshKgInputRef}
-                  type="number"
-                  step="0.5"
-                  className="form-control"
-                  value={inputFreshKg}
-                  onChange={(e) => setInputFreshKg(e.target.value)}
-                  style={{ width: 120, textAlign: 'right', fontWeight: 800, color: '#0284c7', fontSize: 14 }}
-                  placeholder="e.g. 500"
-                  required
-                />
-                <span style={{ fontSize: 12, fontWeight: 700 }}>kg</span>
-              </div>
-
-              <button type="submit" className="misa-btn-cmd primary" style={{ height: 32 }}>
-                <Plus size={14} /> Thêm Mã Cân (Enter <CornerDownLeft size={12} />)
+              <button
+                type="submit"
+                className="misa-btn-cmd primary"
+                style={{ height: 44, fontSize: 14, fontWeight: 800, justifyContent: 'center', borderRadius: 8, marginTop: 2 }}
+              >
+                <Plus size={18} /> THÊM MÃ CÂN (ENTER <CornerDownLeft size={14} />)
               </button>
             </form>
           </div>
 
           {/* Master Detail DataGrid (Inline Editable Rows) */}
-          <div style={{ padding: '0 16px 16px 16px' }}>
-            <div style={{ marginBottom: 8, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ fontWeight: 700, color: '#0f172a', display: 'flex', alignItems: 'center', gap: 6 }}>
-                <FileText size={16} color="#0b6bbf" /> DANH SÁCH MÃ CÂN TRONG PHIÊN (BẤM SỬA NẾU NHẬP NHẦM MÃ)
+          <div style={{ padding: '0 12px 12px 12px' }}>
+            <div style={{ marginBottom: 8, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 6 }}>
+              <span style={{ fontWeight: 700, color: '#0f172a', display: 'flex', alignItems: 'center', gap: 6, fontSize: 12 }}>
+                <FileText size={16} color="#0b6bbf" /> BẢNG MÃ CÂN ({rows.length} MÃ)
               </span>
-              <span style={{ fontSize: 12, color: '#64748b' }}>Đơn giá áp dụng: <strong>{unitPrice.toLocaleString()} đ/kg</strong></span>
+              <span style={{ fontSize: 11, color: '#64748b' }}>Đơn giá: <strong>{unitPrice.toLocaleString()} đ/kg</strong></span>
             </div>
 
-            <table className="datagrid">
-              <thead>
-                <tr>
-                  <th style={{ width: 40, textAlign: 'center' }}>STT</th>
-                  <th>Thời gian</th>
-                  <th style={{ width: 110 }}>Số bao cân</th>
-                  <th>Kg Tươi (Tổng mã)</th>
-                  <th>Trừ bì ({tareFormula === 'percent' ? `${tarePercent}%` : `${tareFixedKg}kg/bao`})</th>
-                  <th>Kg Khô (Thực tính)</th>
-                  <th>Thành tiền (VNĐ)</th>
-                  <th style={{ width: 100, textAlign: 'center' }}>Tác vụ</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((row, index) => {
-                  const isEditing = editingRowId === row.id;
+            <div style={{ overflowX: 'auto' }}>
+              <table className="datagrid">
+                <thead>
+                  <tr>
+                    <th style={{ width: 40, textAlign: 'center' }}>STT</th>
+                    <th>Thời gian</th>
+                    <th style={{ width: 90 }}>Số bao</th>
+                    <th>Kg Tươi</th>
+                    <th>Trừ bì ({tareFormula === 'percent' ? `${tarePercent}%` : `${tareFixedKg}kg/bao`})</th>
+                    <th>Kg Khô</th>
+                    <th>Thành tiền (VNĐ)</th>
+                    <th style={{ width: 80, textAlign: 'center' }}>Sửa</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.map((row, index) => {
+                    const isEditing = editingRowId === row.id;
 
-                  return (
-                    <tr key={row.id}>
-                      <td style={{ textAlign: 'center', fontWeight: 700 }}>{index + 1}</td>
-                      <td>{row.time}</td>
+                    return (
+                      <tr key={row.id}>
+                        <td style={{ textAlign: 'center', fontWeight: 700 }}>{index + 1}</td>
+                        <td>{row.time}</td>
 
-                      <td>
-                        {isEditing ? (
-                          <input
-                            type="number"
-                            className="form-control"
-                            value={editBagCount}
-                            onChange={(e) => setEditBagCount(parseInt(e.target.value) || 0)}
-                            style={{ width: 80, textAlign: 'center', fontWeight: 700 }}
-                          />
-                        ) : (
-                          <strong>{row.bag_count} bao</strong>
-                        )}
-                      </td>
+                        <td>
+                          {isEditing ? (
+                            <input
+                              type="number"
+                              inputMode="decimal"
+                              className="form-control"
+                              value={editBagCount}
+                              onChange={(e) => setEditBagCount(parseInt(e.target.value) || 0)}
+                              style={{ width: 70, textAlign: 'center', fontWeight: 700, height: 32 }}
+                            />
+                          ) : (
+                            <strong>{row.bag_count} bao</strong>
+                          )}
+                        </td>
 
-                      <td>
-                        {isEditing ? (
-                          <input
-                            type="number"
-                            step="0.5"
-                            className="form-control"
-                            value={editFreshKg}
-                            onChange={(e) => setEditFreshKg(parseFloat(e.target.value) || 0)}
-                            style={{ width: 100, fontWeight: 700, color: '#0284c7' }}
-                          />
-                        ) : (
-                          <strong style={{ color: '#0284c7' }}>{row.fresh_kg.toLocaleString()} kg</strong>
-                        )}
-                      </td>
+                        <td>
+                          {isEditing ? (
+                            <input
+                              type="number"
+                              step="0.5"
+                              inputMode="decimal"
+                              className="form-control"
+                              value={editFreshKg}
+                              onChange={(e) => setEditFreshKg(parseFloat(e.target.value) || 0)}
+                              style={{ width: 90, fontWeight: 700, color: '#0284c7', height: 32 }}
+                            />
+                          ) : (
+                            <strong style={{ color: '#0284c7' }}>{row.fresh_kg.toLocaleString()} kg</strong>
+                          )}
+                        </td>
 
-                      <td style={{ color: '#64748b' }}>
-                        {isEditing
-                          ? calculateRowTareAndDry(editBagCount, editFreshKg).tareKg.toFixed(1)
-                          : row.tare_kg.toFixed(1)} kg
-                      </td>
-
-                      <td>
-                        <strong style={{ color: '#059669' }}>
+                        <td style={{ color: '#64748b' }}>
                           {isEditing
-                            ? calculateRowTareAndDry(editBagCount, editFreshKg).dryKg.toFixed(1)
-                            : row.dry_kg.toFixed(1)} kg
-                        </strong>
-                      </td>
+                            ? calculateRowTareAndDry(editBagCount, editFreshKg).tareKg.toFixed(1)
+                            : row.tare_kg.toFixed(1)} kg
+                        </td>
 
-                      <td>
-                        <strong style={{ color: '#d97706' }}>
-                          {isEditing
-                            ? calculateRowTareAndDry(editBagCount, editFreshKg).subtotal.toLocaleString()
-                            : row.subtotal.toLocaleString()} đ
-                        </strong>
-                      </td>
+                        <td>
+                          <strong style={{ color: '#059669' }}>
+                            {isEditing
+                              ? calculateRowTareAndDry(editBagCount, editFreshKg).dryKg.toFixed(1)
+                              : row.dry_kg.toFixed(1)} kg
+                          </strong>
+                        </td>
 
-                      <td style={{ textAlign: 'center' }}>
-                        {isEditing ? (
-                          <div style={{ display: 'flex', gap: 4, justifyContent: 'center' }}>
-                            <button
-                              className="misa-btn-cmd success"
-                              style={{ padding: '2px 6px', fontSize: 11 }}
-                              onClick={() => handleSaveEditRow(row.id)}
-                            >
-                              <Check size={12} /> Lưu
-                            </button>
-                            <button
-                              className="misa-btn-cmd"
-                              style={{ padding: '2px 6px', fontSize: 11 }}
-                              onClick={() => setEditingRowId(null)}
-                            >
-                              <X size={12} />
-                            </button>
-                          </div>
-                        ) : (
-                          <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
-                            <button
-                              style={{ background: 'none', border: 'none', color: '#0b6bbf', cursor: 'pointer' }}
-                              onClick={() => handleStartEditRow(row)}
-                              title="Sửa mã cân nhập nhầm"
-                            >
-                              <Edit3 size={15} />
-                            </button>
-                            <button
-                              style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer' }}
-                              onClick={() => handleDeleteRow(row.id)}
-                              title="Xóa mã cân"
-                            >
-                              <Trash2 size={15} />
-                            </button>
-                          </div>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                        <td>
+                          <strong style={{ color: '#d97706' }}>
+                            {isEditing
+                              ? calculateRowTareAndDry(editBagCount, editFreshKg).subtotal.toLocaleString()
+                              : row.subtotal.toLocaleString()} đ
+                          </strong>
+                        </td>
+
+                        <td style={{ textAlign: 'center' }}>
+                          {isEditing ? (
+                            <div style={{ display: 'flex', gap: 4, justifyContent: 'center' }}>
+                              <button
+                                className="misa-btn-cmd success"
+                                style={{ padding: '2px 6px', fontSize: 11 }}
+                                onClick={() => handleSaveEditRow(row.id)}
+                              >
+                                <Check size={12} /> Lưu
+                              </button>
+                              <button
+                                className="misa-btn-cmd"
+                                style={{ padding: '2px 6px', fontSize: 11 }}
+                                onClick={() => setEditingRowId(null)}
+                              >
+                                <X size={12} />
+                              </button>
+                            </div>
+                          ) : (
+                            <div style={{ display: 'flex', gap: 6, justifyContent: 'center' }}>
+                              <button
+                                style={{ background: 'none', border: 'none', color: '#0b6bbf', cursor: 'pointer' }}
+                                onClick={() => handleStartEditRow(row)}
+                                title="Sửa mã cân"
+                              >
+                                <Edit3 size={16} />
+                              </button>
+                              <button
+                                style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer' }}
+                                onClick={() => handleDeleteRow(row.id)}
+                                title="Xóa mã cân"
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            </div>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
 
-          {/* Session Summary Bar */}
-          <div style={{
+          {/* Session Summary Bar (Mobile Sticky Bottom) */}
+          <div className="mobile-sticky-summary" style={{
             backgroundColor: '#ecfdf5',
             borderTop: '2px solid #10b981',
-            padding: 16,
+            padding: 14,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             flexWrap: 'wrap',
-            gap: 16
+            gap: 12
           }}>
             <div>
-              <span style={{ fontSize: 11, color: '#047857', fontWeight: 600 }}>TỔNG SỐ BAO & KG TƯƠI:</span>
-              <div style={{ fontSize: 18, fontWeight: 800, color: '#065f46' }}>
+              <span style={{ fontSize: 11, color: '#047857', fontWeight: 600 }}>TỔNG CỘNG PHIÊN CÂN:</span>
+              <div style={{ fontSize: 16, fontWeight: 800, color: '#065f46' }}>
                 {totalBags.toLocaleString()} bao | {totalFreshKg.toLocaleString()} kg Tươi
               </div>
             </div>
 
             <div>
-              <span style={{ fontSize: 11, color: '#047857', fontWeight: 600 }}>TỔNG KG KHÔ THỰC TÍNH:</span>
-              <div style={{ fontSize: 20, fontWeight: 800, color: '#0284c7' }}>
+              <span style={{ fontSize: 11, color: '#047857', fontWeight: 600 }}>KG KHÔ THỰC TÍNH:</span>
+              <div style={{ fontSize: 18, fontWeight: 800, color: '#0284c7' }}>
                 {totalDryKg.toFixed(1)} kg Khô
               </div>
             </div>
 
             <div>
-              <span style={{ fontSize: 11, color: '#047857', fontWeight: 600 }}>TỔNG THÀNH TIỀN PHẢI TRẢ:</span>
-              <div style={{ fontSize: 22, fontWeight: 800, color: '#d97706' }}>
+              <span style={{ fontSize: 11, color: '#047857', fontWeight: 600 }}>TỔNG THÀNH TIỀN:</span>
+              <div style={{ fontSize: 20, fontWeight: 800, color: '#d97706' }}>
                 {totalAmount.toLocaleString()} VNĐ
               </div>
             </div>
 
             {advancePayment > 0 && (
               <div>
-                <span style={{ fontSize: 11, color: '#047857', fontWeight: 600 }}>CÒN LẠI SAU TẠM ỨNG:</span>
-                <div style={{ fontSize: 20, fontWeight: 800, color: '#ef4444' }}>
+                <span style={{ fontSize: 11, color: '#047857', fontWeight: 600 }}>CÒN LẠI THANH TOÁN:</span>
+                <div style={{ fontSize: 18, fontWeight: 800, color: '#ef4444' }}>
                   {remainingPayment.toLocaleString()} VNĐ
                 </div>
               </div>

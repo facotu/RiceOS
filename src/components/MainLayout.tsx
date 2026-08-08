@@ -3,6 +3,7 @@ import { UserProfile, AppNotification } from '../types';
 import { Header } from './Header';
 import { Sidebar, NavTabId } from './Sidebar';
 import { Toolbar } from './Toolbar';
+import { MobileBottomNav } from './MobileBottomNav';
 import '../styles/misa-theme.css';
 
 interface MainLayoutProps {
@@ -18,7 +19,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({
   onMarkNotificationRead,
   children
 }) => {
-  const [activeTab, setActiveTab] = useState<NavTabId>('dashboard');
+  const [activeTab, setActiveTab] = useState<NavTabId>('weighing'); // Default to weighing for scale officers
   const [collapsed, setCollapsed] = useState(false);
   const [activeBranch, setActiveBranch] = useState('Cầu Cân An Trạch (Hòa Tiến)');
   const [searchQuery, setSearchQuery] = useState('');
@@ -72,6 +73,12 @@ export const MainLayout: React.FC<MainLayoutProps> = ({
           {children({ activeTab, onTabChange: setActiveTab })}
         </main>
       </div>
+
+      {/* Mobile Smartphone Bottom Tab Bar */}
+      <MobileBottomNav
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+      />
     </div>
   );
 };
