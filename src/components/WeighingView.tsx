@@ -8,7 +8,7 @@ import {
   SystemSettings 
 } from '../types';
 import { 
-  Scales, 
+  Scale, 
   Plus, 
   Trash2, 
   Edit3, 
@@ -222,7 +222,7 @@ Cảm ơn quý hộ dân đã đồng hành cùng RiceOS!`;
     <div className="panel-grid-container">
       <div className="panel-header">
         <div className="panel-title">
-          <Scales size={20} color="#10b981" />
+          <Scale size={20} color="#10b981" />
           <span>TẠO PHIÊN CÂN LÚA MỚI (CÂN TƯƠI TRỰC TIẾP TẠI CẦU CÂN)</span>
         </div>
         <div className="misa-command-group">

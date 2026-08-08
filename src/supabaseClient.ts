@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import { UserProfile, WeighingSession, SystemSettings } from './types';
+import { UserProfile, SystemSettings } from './types';
 
 // Read Supabase environment variables
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://demo-riceos.supabase.co';
