@@ -1,4 +1,4 @@
-// User Role Types
+// User Role & Account Types
 export type UserRole = 'admin' | 'editor' | 'view';
 export type AccountStatus = 'active' | 'pending' | 'disabled';
 
@@ -42,6 +42,7 @@ export interface Vehicle {
   status: 'active' | 'full' | 'loading';
   current_fresh_kg?: number;
   current_bags?: number;
+  officer_name?: string;
   start_time?: string;
   end_time?: string;
 }
@@ -51,6 +52,23 @@ export interface RiceVariety {
   code: string; // HG12, HG244, HT1, ĐT100, J02
   name: string;
   default_price: number;
+}
+
+export interface FieldPlot {
+  id: string;
+  field_name: string; // Xứ đồng
+  plot_no: string;    // Lô
+  description?: string;
+}
+
+// Push Notification Type
+export interface AppNotification {
+  id: string;
+  title: string;
+  message: string;
+  timestamp: string;
+  read: boolean;
+  type: 'weighing' | 'user' | 'vehicle' | 'system';
 }
 
 // Weighing Code Entry Row (Individual scale code within a session)
@@ -102,4 +120,5 @@ export interface SystemSettings {
   default_tare_percent: number; // e.g. 5.0%
   default_tare_fixed_kg: number; // e.g. 1.2 kg/bag
   variety_prices: Record<string, number>;
+  fields_plots: FieldPlot[];
 }

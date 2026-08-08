@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { UserProfile, WeighingSession, SystemSettings } from './types';
-import { DEMO_USERS, DEFAULT_SETTINGS } from './supabaseClient';
+import { UserProfile, WeighingSession, SystemSettings, AppNotification } from './types';
+import { DEMO_USERS, DEFAULT_SETTINGS, INITIAL_NOTIFICATIONS } from './supabaseClient';
 import { AuthView } from './components/AuthView';
 import { MainLayout } from './components/MainLayout';
 import { DashboardView } from './components/DashboardView';
@@ -11,8 +11,8 @@ import { HistoryView } from './components/HistoryView';
 import { ReportsView } from './components/ReportsView';
 import { AICameraView } from './components/AICameraView';
 import { SettingsView } from './components/SettingsView';
+import { UserManagementView } from './components/UserManagementView';
 
-// Initial Mock Master Sessions
 const INITIAL_SESSIONS: WeighingSession[] = [
   {
     id: 's-1',
@@ -101,17 +101,30 @@ const INITIAL_SESSIONS: WeighingSession[] = [
 ];
 
 export const App: React.FC = () => {
-  // Current Logged-in User State (Null if logged out)
   const [currentUser, setCurrentUser] = useState<UserProfile | null>(DEMO_USERS[0]);
   const [sessions, setSessions] = useState<WeighingSession[]>(INITIAL_SESSIONS);
   const [settings, setSettings] = useState<SystemSettings>(DEFAULT_SETTINGS);
+  const [notifications, setNotifications] = useState<AppNotification[]>(INITIAL_NOTIFICATIONS);
 
-  // Handle Save New Session
   const handleSaveSession = (newSession: WeighingSession) => {
     setSessions([newSession, ...sessions]);
+
+    // Push new real-time notification
+    const newNotif: AppNotification = {
+      id: 'n-' + Date.now(),
+      title: 'Phiên cân mới ghi nhập',
+      message: `Cán bộ ${newSession.officer_name} vừa tạo phiên cân ${newSession.code} cho chủ hộ ${newSession.farmer_name} (${newSession.total_bags} bao - ${newSession.total_fresh_kg.toLocaleString()}kg).`,
+      timestamp: 'Vừa xong',
+      read: false,
+      type: 'weighing'
+    };
+    setNotifications([newNotif, ...notifications]);
   };
 
-  // If not logged in, show Auth View
+  const handleMarkNotificationRead = (id: string) => {
+    setNotifications(notifications.map(n => n.id === id ? { ...n, read: true } : n));
+  };
+
   if (!currentUser) {
     return <AuthView onLoginSuccess={setCurrentUser} />;
   }
@@ -119,8 +132,6 @@ export const App: React.FC = () => {
   return (
     <MainLayout currentUser={currentUser}>
       {({ activeTab, onTabChange }) => {
-        // Filter Sessions based on User Role (RBAC):
-        // Admin sees all sessions; Editor/Cán bộ cân sees sessions belonging to logged in officer
         const visibleSessions = currentUser.role === 'admin'
           ? sessions
           : sessions.filter(s => s.officer_id === currentUser.id || s.officer_name === currentUser.full_name);
@@ -151,7 +162,7 @@ export const App: React.FC = () => {
             return <SettlementView sessions={visibleSessions} />;
 
           case 'vehicles':
-            return <VehicleView />;
+            return <VehicleView currentUser={currentUser} />;
 
           case 'history':
             return <HistoryView sessions={visibleSessions} />;
@@ -164,10 +175,15 @@ export const App: React.FC = () => {
 
           case 'settings':
             return (
-              <SettingsView
-                settings={settings}
-                onSaveSettings={setSettings}
-              />
+              <div>
+                <SettingsView
+                  settings={settings}
+                  onSaveSettings={setSettings}
+                />
+                <div style={{ marginTop: 16 }}>
+                  <UserManagementView currentUser={currentUser} />
+                </div>
+              </div>
             );
 
           default:
