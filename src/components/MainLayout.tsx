@@ -33,7 +33,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ currentUser, children })
   };
 
   return (
-    <div class="riceos-app">
+    <div className="riceos-app">
       <Header
         currentUser={currentUser}
         activeBranch={activeBranch}
@@ -42,7 +42,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ currentUser, children })
         onSearchChange={setSearchQuery}
       />
 
-      <div class="misa-workspace">
+      <div className="misa-workspace">
         <Sidebar
           activeTab={activeTab}
           onTabChange={setActiveTab}
@@ -51,7 +51,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ currentUser, children })
           onQuickAddWeighing={handleQuickAdd}
         />
 
-        <main class="misa-content-view">
+        <main className="misa-content-view">
           <Toolbar
             activeTab={activeTab}
             onQuickAdd={handleQuickAdd}

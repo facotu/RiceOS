@@ -1,21 +1,21 @@
 import React from 'react';
-import { Truck, Share2, Image, CheckCircle, Clock } from 'lucide-react';
+import { Truck, Share2, CheckCircle, Clock } from 'lucide-react';
 
 export const VehicleView: React.FC = () => {
   return (
-    <div class="panel-grid-container">
-      <div class="panel-header">
-        <div class="panel-title">
+    <div className="panel-grid-container">
+      <div className="panel-header">
+        <div className="panel-title">
           <Truck size={20} color="#0284c7" />
           <span>QUẢN LÝ XE NHẬN & TẢI TRỌNG LÚA TẠI CẦU CÂN</span>
         </div>
-        <button class="misa-btn-cmd success" onClick={() => alert('📱 Đã copy tin nhắn báo cáo tải trọng xe gửi cho nhà xe!')}>
+        <button className="misa-btn-cmd success" onClick={() => alert('📱 Đã copy tin nhắn báo cáo tải trọng xe gửi cho nhà xe!')}>
           <Share2 size={14} /> Gửi Zalo Cho Nhà Xe
         </button>
       </div>
 
       <div style={{ padding: 16 }}>
-        <table class="datagrid">
+        <table className="datagrid">
           <thead>
             <tr>
               <th>Biển số xe</th>

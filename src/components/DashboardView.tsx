@@ -1,6 +1,6 @@
 import React from 'react';
 import { UserProfile, WeighingSession } from '../types';
-import { Sparkles, Users, Package, Truck, UserCheck, ArrowRight, Table } from 'lucide-react';
+import { Users, Package, Truck, UserCheck, ArrowRight, Table } from 'lucide-react';
 
 interface DashboardViewProps {
   currentUser: UserProfile;
@@ -13,7 +13,6 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   sessions,
   onNavigateTab
 }) => {
-  // Aggregate KPIs
   const totalFarmersCount = 42;
   const totalBagsSum = sessions.reduce((sum, s) => sum + s.total_bags, 0);
   const totalFreshSum = sessions.reduce((sum, s) => sum + s.total_fresh_kg, 0);
@@ -22,119 +21,115 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
   return (
     <>
-      {/* Onboarding Welcome Banner */}
-      <div class="banner-welcome">
+      <div className="banner-welcome">
         <div>
-          <div class="banner-title">👋 Chào {currentUser.full_name} ({currentUser.role.toUpperCase()})</div>
-          <div class="banner-desc">
+          <div className="banner-title">👋 Chào {currentUser.full_name} ({currentUser.role.toUpperCase()})</div>
+          <div className="banner-desc">
             Tiến độ đợt thu mua lúa Hè Thu 2026 tại Cầu cân An Trạch đã hoàn thành <b>68.4%</b> kế hoạch đợt 1.
           </div>
         </div>
-        <button class="misa-btn-cmd primary" onClick={() => onNavigateTab('weighing')}>
+        <button className="misa-btn-cmd primary" onClick={() => onNavigateTab('weighing')}>
           Vào Cân Lúa Ngay
         </button>
       </div>
 
-      {/* AVA AI Assistant Executive Cards */}
-      <div class="ai-cards-grid" style={{ marginTop: 16 }}>
-        <div class="ai-card">
-          <div class="card-header-meta">
-            <span class="card-label">✨ AVA AI Assistant Insight</span>
-            <span class="card-time">Tính đến 11:45 hôm nay</span>
+      <div className="ai-cards-grid" style={{ marginTop: 16 }}>
+        <div className="ai-card">
+          <div className="card-header-meta">
+            <span className="card-label">✨ AVA AI Assistant Insight</span>
+            <span className="card-time">Tính đến 11:45 hôm nay</span>
           </div>
-          <div class="card-value" style={{ color: '#059669' }}>
+          <div className="card-value" style={{ color: '#059669' }}>
             {totalFreshSum.toLocaleString()} kg tươi
           </div>
-          <div class="card-comment">
+          <div className="card-comment">
             <b>Nhận xét AI:</b> Sản lượng lúa tươi thu mua tăng <b>+18.5%</b>. Giống lúa <b>HT1</b> & <b>J02</b> chiếm 62% tổng lượng nhập.
           </div>
-          <a href="#" class="card-link" onClick={(e) => { e.preventDefault(); onNavigateTab('reports'); }}>
+          <a href="#" className="card-link" onClick={(e) => { e.preventDefault(); onNavigateTab('reports'); }}>
             Xem phân tích chuyên sâu giống lúa <ArrowRight size={12} />
           </a>
         </div>
 
-        <div class="ai-card">
-          <div class="card-header-meta">
-            <span class="card-label">📦 Lúa Khô & Trừ Bì %</span>
-            <span class="card-time">Quy đổi chuẩn</span>
+        <div className="ai-card">
+          <div className="card-header-meta">
+            <span className="card-label">📦 Lúa Khô & Trừ Bì %</span>
+            <span className="card-time">Quy đổi chuẩn</span>
           </div>
-          <div class="card-value" style={{ color: '#0284c7' }}>
+          <div className="card-value" style={{ color: '#0284c7' }}>
             {totalDrySum.toLocaleString(undefined, { maximumFractionDigits: 1 })} kg khô
           </div>
-          <div class="card-comment">
+          <div className="card-comment">
             Đã trừ <b>{(totalFreshSum - totalDrySum).toFixed(1)} kg bì & tạp chất</b> (Độ ẩm bình quân 5.0%). Tỷ lệ đạt tiêu chuẩn thu mua.
           </div>
-          <a href="#" class="card-link" onClick={(e) => { e.preventDefault(); onNavigateTab('settings'); }}>
+          <a href="#" className="card-link" onClick={(e) => { e.preventDefault(); onNavigateTab('settings'); }}>
             Cấu hình lại định mức trừ bì % <ArrowRight size={12} />
           </a>
         </div>
 
-        <div class="ai-card">
-          <div class="card-header-meta">
-            <span class="card-label">💰 Tổng Giá Trị & Tạm Ứng</span>
-            <span class="card-time">Tài chính đợt</span>
+        <div className="ai-card">
+          <div className="card-header-meta">
+            <span className="card-label">💰 Tổng Giá Trị & Tạm Ứng</span>
+            <span className="card-time">Tài chính đợt</span>
           </div>
-          <div class="card-value" style={{ color: '#d97706' }}>
+          <div className="card-value" style={{ color: '#d97706' }}>
             {totalAmountSum.toLocaleString()} VNĐ
           </div>
-          <div class="card-comment">
+          <div className="card-comment">
             Đã thanh toán tạm ứng: <b>420.000.000 đ</b> cho 28 hộ dân. Dòng tiền quyết toán hoạt động ổn định.
           </div>
-          <a href="#" class="card-link" onClick={(e) => { e.preventDefault(); onNavigateTab('settlement'); }}>
+          <a href="#" className="card-link" onClick={(e) => { e.preventDefault(); onNavigateTab('settlement'); }}>
             Quyết toán với hộ dân ngay <ArrowRight size={12} />
           </a>
         </div>
       </div>
 
-      {/* Real-time KPIs Summary Row */}
-      <div class="kpi-row" style={{ marginTop: 16 }}>
-        <div class="kpi-box">
-          <div class="kpi-icon green"><Users size={22} /></div>
+      <div className="kpi-row" style={{ marginTop: 16 }}>
+        <div className="kpi-box">
+          <div className="kpi-icon green"><Users size={22} /></div>
           <div>
-            <div class="kpi-num">{totalFarmersCount} hộ</div>
-            <div class="kpi-text">Tổng số hộ dân đã cân</div>
+            <div className="kpi-num">{totalFarmersCount} hộ</div>
+            <div className="kpi-text">Tổng số hộ dân đã cân</div>
           </div>
         </div>
 
-        <div class="kpi-box">
-          <div class="kpi-icon blue"><Package size={22} /></div>
+        <div className="kpi-box">
+          <div className="kpi-icon blue"><Package size={22} /></div>
           <div>
-            <div class="kpi-num">{totalBagsSum.toLocaleString()} bao</div>
-            <div class="kpi-text">Tổng số bao lúa tươi</div>
+            <div className="kpi-num">{totalBagsSum.toLocaleString()} bao</div>
+            <div className="kpi-text">Tổng số bao lúa tươi</div>
           </div>
         </div>
 
-        <div class="kpi-box">
-          <div class="kpi-icon amber"><Truck size={22} /></div>
+        <div className="kpi-box">
+          <div className="kpi-icon amber"><Truck size={22} /></div>
           <div>
-            <div class="kpi-num">6 xe nhận</div>
-            <div class="kpi-text">Xe vận chuyển đang tải</div>
+            <div className="kpi-num">6 xe nhận</div>
+            <div className="kpi-text">Xe vận chuyển đang tải</div>
           </div>
         </div>
 
-        <div class="kpi-box">
-          <div class="kpi-icon purple"><UserCheck size={22} /></div>
+        <div className="kpi-box">
+          <div className="kpi-icon purple"><UserCheck size={22} /></div>
           <div>
-            <div class="kpi-num">3 cán bộ</div>
-            <div class="kpi-text">Cán bộ cân đang trực</div>
+            <div className="kpi-num">3 cán bộ</div>
+            <div className="kpi-text">Cán bộ cân đang trực</div>
           </div>
         </div>
       </div>
 
-      {/* Master DataGrid Table View */}
-      <div class="panel-grid-container" style={{ marginTop: 16 }}>
-        <div class="panel-header">
-          <div class="panel-title">
+      <div className="panel-grid-container" style={{ marginTop: 16 }}>
+        <div className="panel-header">
+          <div className="panel-title">
             <Table size={18} color="#0b6bbf" />
             <span>Danh sách Các Phiên Cân Lúa Gần Đây (Master DataGrid View)</span>
           </div>
-          <button class="misa-btn-cmd primary" onClick={() => onNavigateTab('weighing')}>
+          <button className="misa-btn-cmd primary" onClick={() => onNavigateTab('weighing')}>
             + Phiên Cân Mới
           </button>
         </div>
 
         <div style={{ overflowX: 'auto' }}>
-          <table class="datagrid">
+          <table className="datagrid">
             <thead>
               <tr>
                 <th>Mã phiên</th>
@@ -150,7 +145,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 <th>Xe nhận</th>
                 <th>Trạng thái</th>
               </tr>
-              <tr class="filter-row">
+              <tr className="filter-row">
                 <td><input type="text" placeholder="Filter mã..." /></td>
                 <td><input type="text" placeholder="Filter ngày..." /></td>
                 <td><input type="text" placeholder="Filter tên chủ..." /></td>
@@ -194,7 +189,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </table>
         </div>
 
-        <div class="grid-footer-status">
+        <div className="grid-footer-status">
           <span>Hiển thị: {sessions.length} phiên cân gần nhất | Tổng cộng đợt: 42 phiên</span>
           <span>
             Tổng sản lượng tươi: <strong>{totalFreshSum.toLocaleString()} kg</strong> | Thành tiền: <strong style={{ color: '#059669' }}>{totalAmountSum.toLocaleString()} VNĐ</strong>

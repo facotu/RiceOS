@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { UserProfile, UserRole } from '../types';
 import { DEMO_USERS } from '../supabaseClient';
-import { Users, UserCheck, Shield, Mail, CheckCircle, XCircle } from 'lucide-react';
+import { Users, UserCheck, CheckCircle, XCircle } from 'lucide-react';
 
 interface UserManagementViewProps {
   currentUser: UserProfile;
@@ -49,21 +49,21 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({ currentU
   };
 
   return (
-    <div class="panel-grid-container">
-      <div class="panel-header">
-        <div class="panel-title">
+    <div className="panel-grid-container">
+      <div className="panel-header">
+        <div className="panel-title">
           <Users size={18} color="#0b6bbf" />
           <span>QUẢN LÝ THÀNH VIÊN & CẤP QUYỀN TRUY CẬP (RBAC MANAGEMENT)</span>
         </div>
         {currentUser.role === 'admin' && (
-          <button class="misa-btn-cmd primary" onClick={() => setShowAddModal(true)}>
+          <button className="misa-btn-cmd primary" onClick={() => setShowAddModal(true)}>
             + Thêm thành viên mới
           </button>
         )}
       </div>
 
       <div style={{ padding: 16 }}>
-        <table class="datagrid">
+        <table className="datagrid">
           <thead>
             <tr>
               <th>Họ và tên</th>
@@ -82,7 +82,7 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({ currentU
                 <td>
                   {currentUser.role === 'admin' ? (
                     <select
-                      class="form-control"
+                      className="form-control"
                       value={u.role}
                       onChange={(e) => handleRoleChange(u.id, e.target.value as UserRole)}
                       style={{ fontSize: 11, height: 26, padding: '2px 6px' }}
@@ -112,7 +112,7 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({ currentU
                 <td style={{ textAlign: 'center' }}>
                   {currentUser.role === 'admin' ? (
                     <button
-                      class={`misa-btn-cmd ${u.status === 'active' ? '' : 'success'}`}
+                      className={`misa-btn-cmd ${u.status === 'active' ? '' : 'success'}`}
                       style={{ fontSize: 11, padding: '2px 8px' }}
                       onClick={() => handleToggleStatus(u.id)}
                     >
@@ -128,36 +128,35 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({ currentU
         </table>
       </div>
 
-      {/* Add Member Modal */}
       {showAddModal && (
-        <div class="modal-overlay active">
-          <div class="modal-box" style={{ maxWidth: 440 }}>
-            <div class="modal-header">
-              <span class="modal-title">THÊM THÀNH VIÊN MỚI VÀO DỰ ÁN</span>
+        <div className="modal-overlay active">
+          <div className="modal-box" style={{ maxWidth: 440 }}>
+            <div className="modal-header">
+              <span className="modal-title">THÊM THÀNH VIÊN MỚI VÀO DỰ ÁN</span>
               <button style={{ background: 'none', border: 'none', cursor: 'pointer' }} onClick={() => setShowAddModal(false)}>✕</button>
             </div>
             <form onSubmit={handleAddMember}>
-              <div class="modal-body">
-                <div class="form-group" style={{ marginBottom: 12 }}>
-                  <label class="form-label">Họ và tên thành viên *</label>
-                  <input type="text" class="form-control" value={newName} onChange={(e) => setNewName(e.target.value)} required />
+              <div className="modal-body">
+                <div className="form-group" style={{ marginBottom: 12 }}>
+                  <label className="form-label">Họ và tên thành viên *</label>
+                  <input type="text" className="form-control" value={newName} onChange={(e) => setNewName(e.target.value)} required />
                 </div>
-                <div class="form-group" style={{ marginBottom: 12 }}>
-                  <label class="form-label">Địa chỉ Email *</label>
-                  <input type="email" class="form-control" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} required />
+                <div className="form-group" style={{ marginBottom: 12 }}>
+                  <label className="form-label">Địa chỉ Email *</label>
+                  <input type="email" className="form-control" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} required />
                 </div>
-                <div class="form-group">
-                  <label class="form-label">Cấp quyền truy cập *</label>
-                  <select class="form-control" value={newRole} onChange={(e) => setNewRole(e.target.value as UserRole)}>
+                <div className="form-group">
+                  <label className="form-label">Cấp quyền truy cập *</label>
+                  <select className="form-control" value={newRole} onChange={(e) => setNewRole(e.target.value as UserRole)}>
                     <option value="editor">Editor - Cán bộ cân lúa thực địa</option>
                     <option value="admin">Admin - Quản trị viên hệ thống</option>
                     <option value="view">View - Quyền giám sát báo cáo</option>
                   </select>
                 </div>
               </div>
-              <div class="modal-footer">
-                <button type="button" class="misa-btn-cmd" onClick={() => setShowAddModal(false)}>Hủy bỏ</button>
-                <button type="submit" class="misa-btn-cmd primary">Thêm & Gửi Email kích hoạt</button>
+              <div className="modal-footer">
+                <button type="button" className="misa-btn-cmd" onClick={() => setShowAddModal(false)}>Hủy bỏ</button>
+                <button type="submit" className="misa-btn-cmd primary">Thêm & Gửi Email kích hoạt</button>
               </div>
             </form>
           </div>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { WeighingSession } from '../types';
-import { History, Search, Filter } from 'lucide-react';
+import { History } from 'lucide-react';
 
 interface HistoryViewProps {
   sessions: WeighingSession[];
@@ -20,30 +20,30 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ sessions }) => {
   const totalAmount = filteredSessions.reduce((sum, s) => sum + s.total_amount, 0);
 
   return (
-    <div class="panel-grid-container">
-      <div class="panel-header">
-        <div class="panel-title">
+    <div className="panel-grid-container">
+      <div className="panel-header">
+        <div className="panel-title">
           <History size={20} color="#0b6bbf" />
           <span>LỊCH SỬ CÂN LÚA & TRA CỨU ĐA TIÊU CHÍ</span>
         </div>
       </div>
 
-      <div class="form-grid">
-        <div class="form-group">
-          <label class="form-label">Tìm tên Chủ Lúa / Hộ dân</label>
+      <div className="form-grid">
+        <div className="form-group">
+          <label className="form-label">Tìm tên Chủ Lúa / Hộ dân</label>
           <input
             type="text"
-            class="form-control"
+            className="form-control"
             placeholder="Nhập tên chủ lúa..."
             value={farmerFilter}
             onChange={(e) => setFarmerFilter(e.target.value)}
           />
         </div>
 
-        <div class="form-group">
-          <label class="form-label">Lọc theo Giống Lúa</label>
+        <div className="form-group">
+          <label className="form-label">Lọc theo Giống Lúa</label>
           <select
-            class="form-control"
+            className="form-control"
             value={varietyFilter}
             onChange={(e) => setVarietyFilter(e.target.value)}
           >
@@ -58,7 +58,7 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ sessions }) => {
       </div>
 
       <div style={{ padding: 16 }}>
-        <table class="datagrid">
+        <table className="datagrid">
           <thead>
             <tr>
               <th>Mã phiên</th>
@@ -92,7 +92,7 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ sessions }) => {
         </table>
       </div>
 
-      <div class="grid-footer-status">
+      <div className="grid-footer-status">
         <span>Kết quả lọc: {filteredSessions.length} phiên cân</span>
         <span>Tổng Kg Tươi: <strong>{totalFresh.toLocaleString()} kg</strong> | Doanh thu: <strong style={{ color: '#059669' }}>{totalAmount.toLocaleString()} VNĐ</strong></span>
       </div>

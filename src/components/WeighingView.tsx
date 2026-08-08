@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
   UserProfile, 
   Farmer, 
   Vehicle, 
-  RiceVariety, 
   WeighingRow, 
   WeighingSession, 
   SystemSettings 
@@ -19,8 +18,7 @@ import {
   Copy, 
   Check, 
   X, 
-  FileText, 
-  AlertCircle 
+  FileText 
 } from 'lucide-react';
 
 interface WeighingViewProps {
@@ -29,7 +27,6 @@ interface WeighingViewProps {
   onSaveSession: (session: WeighingSession) => void;
 }
 
-// Initial Mock Master Data
 const MOCK_FARMERS: Farmer[] = [
   {
     id: 'f-01',
@@ -79,42 +76,35 @@ export const WeighingView: React.FC<WeighingViewProps> = ({
   settings,
   onSaveSession
 }) => {
-  // Master Selection State
   const [selectedFarmerId, setSelectedFarmerId] = useState<string>(MOCK_FARMERS[0].id);
   const [selectedVehicleId, setSelectedVehicleId] = useState<string>(MOCK_VEHICLES[0].id);
   const [selectedVarietyCode, setSelectedVarietyCode] = useState<string>('HT1');
   const [tarePercent, setTarePercent] = useState<number>(settings.default_tare_percent || 5.0);
 
-  // Weighing Code Rows State
   const [rows, setRows] = useState<WeighingRow[]>([
     { id: 'r-1', time: '11:05', bag_count: 10, fresh_kg: 500, tare_kg: 25, dry_kg: 475, price_per_kg: 8000, subtotal: 3800000 },
     { id: 'r-2', time: '11:10', bag_count: 12, fresh_kg: 600, tare_kg: 30, dry_kg: 570, price_per_kg: 8000, subtotal: 4560000 },
     { id: 'r-3', time: '11:15', bag_count: 10, fresh_kg: 500, tare_kg: 25, dry_kg: 475, price_per_kg: 8000, subtotal: 3800000 }
   ]);
 
-  // Inline Editing State (Allows fixing code entry mistakes)
   const [editingRowId, setEditingRowId] = useState<string | null>(null);
   const [editBagCount, setEditBagCount] = useState<number>(0);
   const [editFreshKg, setEditFreshKg] = useState<number>(0);
 
-  // Modals State
   const [showZaloModal, setShowZaloModal] = useState(false);
   const [showTicketModal, setShowTicketModal] = useState(false);
   const [copiedZalo, setCopiedZalo] = useState(false);
 
-  // Selected Entities
   const currentFarmer = MOCK_FARMERS.find(f => f.id === selectedFarmerId) || MOCK_FARMERS[0];
   const currentVehicle = MOCK_VEHICLES.find(v => v.id === selectedVehicleId) || MOCK_VEHICLES[0];
   const unitPrice = settings.variety_prices[selectedVarietyCode] || 8000;
 
-  // Total Calculations
   const totalBags = rows.reduce((sum, r) => sum + r.bag_count, 0);
   const totalFreshKg = rows.reduce((sum, r) => sum + r.fresh_kg, 0);
   const totalTareKg = (totalFreshKg * tarePercent) / 100;
   const totalDryKg = Math.max(0, totalFreshKg - totalTareKg);
   const totalAmount = totalDryKg * unitPrice;
 
-  // Add New Weigh Row
   const handleAddRow = () => {
     const now = new Date();
     const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
@@ -138,14 +128,12 @@ export const WeighingView: React.FC<WeighingViewProps> = ({
     setRows([...rows, newRow]);
   };
 
-  // Start Editing Row (Edit Mistake)
   const handleStartEditRow = (row: WeighingRow) => {
     setEditingRowId(row.id);
     setEditBagCount(row.bag_count);
     setEditFreshKg(row.fresh_kg);
   };
 
-  // Save Edit Row
   const handleSaveEditRow = (rowId: string) => {
     setRows(rows.map(r => {
       if (r.id === rowId) {
@@ -167,12 +155,10 @@ export const WeighingView: React.FC<WeighingViewProps> = ({
     setEditingRowId(null);
   };
 
-  // Delete Row
   const handleDeleteRow = (rowId: string) => {
     setRows(rows.filter(r => r.id !== rowId));
   };
 
-  // Save Session
   const handleSaveSession = () => {
     const session: WeighingSession = {
       id: 'sess-' + Date.now(),
@@ -207,7 +193,6 @@ export const WeighingView: React.FC<WeighingViewProps> = ({
     alert('✅ Đã ghi nhập thành công Phiên Cân Lúa!');
   };
 
-  // Format Zalo Text
   const getZaloText = () => {
     return `🌾 RiceOS - THÔNG BÁO PHIÊN CÂN LÚA TƯƠI
 ----------------------------------------
@@ -227,7 +212,6 @@ Xe nhận lúa: ${currentVehicle.plate_number} (${currentVehicle.driver_name})
 Cảm ơn quý hộ dân đã đồng hành cùng RiceOS!`;
   };
 
-  // Copy Zalo Text Action
   const handleCopyZalo = () => {
     navigator.clipboard.writeText(getZaloText());
     setCopiedZalo(true);
@@ -235,32 +219,30 @@ Cảm ơn quý hộ dân đã đồng hành cùng RiceOS!`;
   };
 
   return (
-    <div class="panel-grid-container">
-      {/* Action Command Bar */}
-      <div class="panel-header">
-        <div class="panel-title">
+    <div className="panel-grid-container">
+      <div className="panel-header">
+        <div className="panel-title">
           <Scales size={20} color="#10b981" />
           <span>TẠO PHIÊN CÂN LÚA MỚI (CÂN TƯƠI TRỰC TIẾP TẠI CẦU CÂN)</span>
         </div>
-        <div class="misa-command-group">
-          <button class="misa-btn-cmd primary" onClick={handleSaveSession}>
+        <div className="misa-command-group">
+          <button className="misa-btn-cmd primary" onClick={handleSaveSession}>
             <Save size={14} /> Ghi nhập phiên cân
           </button>
-          <button class="misa-btn-cmd success" onClick={() => setShowZaloModal(true)}>
+          <button className="misa-btn-cmd success" onClick={() => setShowZaloModal(true)}>
             <Share2 size={14} /> Copy tin nhắn Zalo
           </button>
-          <button class="misa-btn-cmd" onClick={() => setShowTicketModal(true)}>
+          <button className="misa-btn-cmd" onClick={() => setShowTicketModal(true)}>
             <Printer size={14} /> In phiếu cân nhiệt
           </button>
         </div>
       </div>
 
-      {/* Header Selection Controls */}
-      <div class="form-grid">
-        <div class="form-group">
-          <label class="form-label">Chọn Chủ Ruộng (Hộ Dân) *</label>
+      <div className="form-grid">
+        <div className="form-group">
+          <label className="form-label">Chọn Chủ Ruộng (Hộ Dân) *</label>
           <select
-            class="form-control"
+            className="form-control"
             value={selectedFarmerId}
             onChange={(e) => setSelectedFarmerId(e.target.value)}
           >
@@ -272,43 +254,43 @@ Cảm ơn quý hộ dân đã đồng hành cùng RiceOS!`;
           </select>
         </div>
 
-        <div class="form-group">
-          <label class="form-label">Số CCCD / Nơi cấp / Hạn dùng</label>
+        <div className="form-group">
+          <label className="form-label">Số CCCD / Nơi cấp / Hạn dùng</label>
           <input
             type="text"
-            class="form-control"
+            className="form-control"
             value={`${currentFarmer.cccd} - ${currentFarmer.cccd_issue_place} (Hạn: ${currentFarmer.cccd_expiry_date})`}
             readOnly
             style={{ backgroundColor: '#f8fafc' }}
           />
         </div>
 
-        <div class="form-group">
-          <label class="form-label">Xứ đồng / Lô / Diện tích</label>
+        <div className="form-group">
+          <label className="form-label">Xứ đồng / Lô / Diện tích</label>
           <input
             type="text"
-            class="form-control"
+            className="form-control"
             value={`${currentFarmer.field_name} - ${currentFarmer.plot_no} (${currentFarmer.area_sao} sào)`}
             readOnly
             style={{ backgroundColor: '#f8fafc' }}
           />
         </div>
 
-        <div class="form-group">
-          <label class="form-label">Cán bộ phụ trách cân</label>
+        <div className="form-group">
+          <label className="form-label">Cán bộ phụ trách cân</label>
           <input
             type="text"
-            class="form-control"
+            className="form-control"
             value={`${currentUser.full_name} (${currentUser.role.toUpperCase()})`}
             readOnly
             style={{ backgroundColor: '#f8fafc' }}
           />
         </div>
 
-        <div class="form-group">
-          <label class="form-label">Chọn Xe Nhận Lúa *</label>
+        <div className="form-group">
+          <label className="form-label">Chọn Xe Nhận Lúa *</label>
           <select
-            class="form-control"
+            className="form-control"
             value={selectedVehicleId}
             onChange={(e) => setSelectedVehicleId(e.target.value)}
           >
@@ -320,10 +302,10 @@ Cảm ơn quý hộ dân đã đồng hành cùng RiceOS!`;
           </select>
         </div>
 
-        <div class="form-group">
-          <label class="form-label">Loại Giống Lúa Thu Mua *</label>
+        <div className="form-group">
+          <label className="form-label">Loại Giống Lúa Thu Mua *</label>
           <select
-            class="form-control"
+            className="form-control"
             value={selectedVarietyCode}
             onChange={(e) => setSelectedVarietyCode(e.target.value)}
           >
@@ -335,13 +317,13 @@ Cảm ơn quý hộ dân đã đồng hành cùng RiceOS!`;
           </select>
         </div>
 
-        <div class="form-group">
-          <label class="form-label">Mức Trừ Bì (%) Mặc định *</label>
+        <div className="form-group">
+          <label className="form-label">Mức Trừ Bì (%) Mặc định *</label>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <input
               type="number"
               step="0.1"
-              class="form-control"
+              className="form-control"
               value={tarePercent}
               onChange={(e) => setTarePercent(parseFloat(e.target.value) || 0)}
               style={{ width: 100 }}
@@ -351,18 +333,17 @@ Cảm ơn quý hộ dân đã đồng hành cùng RiceOS!`;
         </div>
       </div>
 
-      {/* Editable Weigh Code Rows Table */}
       <div style={{ padding: '0 16px 16px 16px' }}>
         <div style={{ marginBottom: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <span style={{ fontWeight: 700, color: '#0f172a', display: 'flex', alignItems: 'center', gap: 6 }}>
             <FileText size={16} color="#0b6bbf" /> BẢNG NHẬP MÃ CÂN LÚA CHI TIẾT (CHO PHÉP SỬA MÃ CÂN NHẬP NHẦM)
           </span>
-          <button class="misa-btn-cmd primary" onClick={handleAddRow}>
+          <button className="misa-btn-cmd primary" onClick={handleAddRow}>
             <Plus size={14} /> Thêm mã cân mới
           </button>
         </div>
 
-        <table class="datagrid">
+        <table className="datagrid">
           <thead>
             <tr>
               <th style={{ width: 50, textAlign: 'center' }}>STT</th>
@@ -385,12 +366,11 @@ Cảm ơn quý hộ dân đã đồng hành cùng RiceOS!`;
                   <td style={{ textAlign: 'center', fontWeight: 700 }}>{index + 1}</td>
                   <td>{row.time}</td>
 
-                  {/* Bags Cell */}
                   <td>
                     {isEditing ? (
                       <input
                         type="number"
-                        class="form-control"
+                        className="form-control"
                         value={editBagCount}
                         onChange={(e) => setEditBagCount(parseInt(e.target.value) || 0)}
                         style={{ width: 80, textAlign: 'center', fontWeight: 700 }}
@@ -400,12 +380,11 @@ Cảm ơn quý hộ dân đã đồng hành cùng RiceOS!`;
                     )}
                   </td>
 
-                  {/* Fresh Weight Cell */}
                   <td>
                     {isEditing ? (
                       <input
                         type="number"
-                        class="form-control"
+                        className="form-control"
                         value={editFreshKg}
                         onChange={(e) => setEditFreshKg(parseFloat(e.target.value) || 0)}
                         style={{ width: 110, fontWeight: 700, color: '#0284c7' }}
@@ -415,14 +394,12 @@ Cảm ơn quý hộ dân đã đồng hành cùng RiceOS!`;
                     )}
                   </td>
 
-                  {/* Tare Weight */}
                   <td style={{ color: '#64748b' }}>
                     {isEditing
                       ? ((editFreshKg * tarePercent) / 100).toFixed(1)
                       : row.tare_kg.toFixed(1)} kg
                   </td>
 
-                  {/* Dry Weight */}
                   <td>
                     <strong style={{ color: '#059669' }}>
                       {isEditing
@@ -431,10 +408,8 @@ Cảm ơn quý hộ dân đã đồng hành cùng RiceOS!`;
                     </strong>
                   </td>
 
-                  {/* Unit Price */}
                   <td>{unitPrice.toLocaleString()} đ</td>
 
-                  {/* Subtotal Amount */}
                   <td>
                     <strong style={{ color: '#d97706' }}>
                       {isEditing
@@ -443,12 +418,11 @@ Cảm ơn quý hộ dân đã đồng hành cùng RiceOS!`;
                     </strong>
                   </td>
 
-                  {/* Action Buttons (Edit / Delete / Save) */}
                   <td style={{ textAlign: 'center' }}>
                     {isEditing ? (
                       <div style={{ display: 'flex', gap: 4, justifyContent: 'center' }}>
                         <button
-                          class="misa-btn-cmd success"
+                          className="misa-btn-cmd success"
                           style={{ padding: '2px 6px', fontSize: 11 }}
                           onClick={() => handleSaveEditRow(row.id)}
                           title="Lưu chỉnh sửa"
@@ -456,7 +430,7 @@ Cảm ơn quý hộ dân đã đồng hành cùng RiceOS!`;
                           <Check size={12} /> Lưu
                         </button>
                         <button
-                          class="misa-btn-cmd"
+                          className="misa-btn-cmd"
                           style={{ padding: '2px 6px', fontSize: 11 }}
                           onClick={() => setEditingRowId(null)}
                           title="Hủy"
@@ -490,7 +464,6 @@ Cảm ơn quý hộ dân đã đồng hành cùng RiceOS!`;
         </table>
       </div>
 
-      {/* Live Total Calculation Status Banner */}
       <div style={{
         backgroundColor: '#ecfdf5',
         borderTop: '2px solid #10b981',
@@ -523,15 +496,14 @@ Cảm ơn quý hộ dân đã đồng hành cùng RiceOS!`;
         </div>
       </div>
 
-      {/* Modal 1: Copy Zalo Message Text */}
       {showZaloModal && (
-        <div class="modal-overlay active">
-          <div class="modal-box" style={{ maxWidth: 540 }}>
-            <div class="modal-header">
-              <span class="modal-title">📱 KẾT XUẤT NỘI DUNG GỬI QUA ZALO</span>
+        <div className="modal-overlay active">
+          <div className="modal-box" style={{ maxWidth: 540 }}>
+            <div className="modal-header">
+              <span className="modal-title">📱 KẾT XUẤT NỘI DUNG GỬI QUA ZALO</span>
               <button style={{ background: 'none', border: 'none', cursor: 'pointer' }} onClick={() => setShowZaloModal(false)}>✕</button>
             </div>
-            <div class="modal-body">
+            <div className="modal-body">
               <p style={{ fontSize: 12, color: '#64748b', marginBottom: 8 }}>
                 Nội dung tin nhắn đã được định dạng chuẩn sẵn sàng copy gửi qua Zalo Web/App:
               </p>
@@ -550,27 +522,26 @@ Cảm ơn quý hộ dân đã đồng hành cùng RiceOS!`;
                 value={getZaloText()}
               />
             </div>
-            <div class="modal-footer">
-              <button class="misa-btn-cmd primary" onClick={handleCopyZalo}>
+            <div className="modal-footer">
+              <button className="misa-btn-cmd primary" onClick={handleCopyZalo}>
                 {copiedZalo ? <><Check size={14} /> Đã sao chép!</> : <><Copy size={14} /> Sao chép tin nhắn Zalo</>}
               </button>
-              <button class="misa-btn-cmd" onClick={() => setShowZaloModal(false)}>Đóng</button>
+              <button className="misa-btn-cmd" onClick={() => setShowZaloModal(false)}>Đóng</button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Modal 2: Thermal Scale Ticket Preview */}
       {showTicketModal && (
-        <div class="modal-overlay active">
-          <div class="modal-box" style={{ maxWidth: 420 }}>
-            <div class="modal-header">
-              <span class="modal-title">🖨️ XEM TRƯỚC PHIẾU CÂN NHIỆT (TICKET)</span>
+        <div className="modal-overlay active">
+          <div className="modal-box" style={{ maxWidth: 420 }}>
+            <div className="modal-header">
+              <span className="modal-title">🖨️ XEM TRƯỚC PHIẾU CÂN NHIỆT (TICKET)</span>
               <button style={{ background: 'none', border: 'none', cursor: 'pointer' }} onClick={() => setShowTicketModal(false)}>✕</button>
             </div>
-            <div class="modal-body">
-              <div class="ticket-preview">
-                <div class="ticket-header">
+            <div className="modal-body">
+              <div className="ticket-preview">
+                <div className="ticket-header">
                   <strong>HTX NÔNG NGHIỆP RICEOS</strong><br />
                   CẦU CÂN AN TRẠCH - HÒA TIẾN<br />
                   Hotline: 1900 2812
@@ -591,11 +562,11 @@ Cảm ơn quý hộ dân đã đồng hành cùng RiceOS!`;
                 <div style={{ marginTop: 12, textAlign: 'center' }}>Cán bộ cân ký: {currentUser.full_name}</div>
               </div>
             </div>
-            <div class="modal-footer">
-              <button class="misa-btn-cmd primary" onClick={() => window.print()}>
+            <div className="modal-footer">
+              <button className="misa-btn-cmd primary" onClick={() => window.print()}>
                 <Printer size={14} /> In Hóa Đơn Ngay
               </button>
-              <button class="misa-btn-cmd" onClick={() => setShowTicketModal(false)}>Đóng</button>
+              <button className="misa-btn-cmd" onClick={() => setShowTicketModal(false)}>Đóng</button>
             </div>
           </div>
         </div>

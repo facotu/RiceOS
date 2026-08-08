@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { WeighingSession } from '../types';
-import { Receipt, Printer, CheckCircle, Wallet, ArrowDownRight } from 'lucide-react';
+import { Receipt, Printer } from 'lucide-react';
 
 interface SettlementViewProps {
   sessions: WeighingSession[];
@@ -9,7 +9,6 @@ interface SettlementViewProps {
 export const SettlementView: React.FC<SettlementViewProps> = ({ sessions }) => {
   const [selectedFarmerName, setSelectedFarmerName] = useState<string>('Nguyễn Văn Bình');
 
-  // Filter sessions for selected farmer
   const farmerSessions = sessions.filter(s => s.farmer_name === selectedFarmerName);
 
   const totalBags = farmerSessions.reduce((sum, s) => sum + s.total_bags, 0);
@@ -17,26 +16,26 @@ export const SettlementView: React.FC<SettlementViewProps> = ({ sessions }) => {
   const totalTareKg = farmerSessions.reduce((sum, s) => sum + s.total_tare_kg, 0);
   const totalDryKg = farmerSessions.reduce((sum, s) => sum + s.total_dry_kg, 0);
   const totalAmount = farmerSessions.reduce((sum, s) => sum + s.total_amount, 0);
-  const advancePayment = 20000000; // Tạm ứng 20 triệu
+  const advancePayment = 20000000;
   const remainingPayment = Math.max(0, totalAmount - advancePayment);
 
   return (
-    <div class="panel-grid-container">
-      <div class="panel-header">
-        <div class="panel-title">
+    <div className="panel-grid-container">
+      <div className="panel-header">
+        <div className="panel-title">
           <Receipt size={20} color="#d97706" />
           <span>QUYẾT TOÁN TIỀN LÚA CHO HỘ DÂN (SETTLEMENT PANEL)</span>
         </div>
-        <button class="misa-btn-cmd primary" onClick={() => window.print()}>
+        <button className="misa-btn-cmd primary" onClick={() => window.print()}>
           <Printer size={14} /> In Bảng Quyết Toán
         </button>
       </div>
 
-      <div class="form-grid">
-        <div class="form-group">
-          <label class="form-label">Chọn Hộ Dân Quyết Toán *</label>
+      <div className="form-grid">
+        <div className="form-group">
+          <label className="form-label">Chọn Hộ Dân Quyết Toán *</label>
           <select
-            class="form-control"
+            className="form-control"
             value={selectedFarmerName}
             onChange={(e) => setSelectedFarmerName(e.target.value)}
           >
@@ -76,12 +75,11 @@ export const SettlementView: React.FC<SettlementViewProps> = ({ sessions }) => {
           </div>
         </div>
 
-        {/* Detailed Sessions Breakdown Table */}
         <div style={{ marginBottom: 8, fontWeight: 700, color: '#0f172a' }}>
           📋 CHI TIẾT CÁC PHIÊN CÂN TRONG ĐỢT CỦA HỘ DÂN:
         </div>
 
-        <table class="datagrid">
+        <table className="datagrid">
           <thead>
             <tr>
               <th>Mã phiên</th>

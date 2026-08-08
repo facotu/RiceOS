@@ -29,24 +29,24 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   };
 
   return (
-    <div class="misa-toolbar">
-      <div class="misa-breadcrumb">
+    <div className="misa-toolbar">
+      <div className="misa-breadcrumb">
         <span>RiceOS Enterprise</span>
         <ChevronRight size={14} />
         <strong>{titles[activeTab]}</strong>
       </div>
 
-      <div class="misa-command-group">
-        <button class="misa-btn-cmd primary" onClick={onQuickAdd}>
+      <div className="misa-command-group">
+        <button className="misa-btn-cmd primary" onClick={onQuickAdd}>
           <Plus size={14} /> Thêm phiên cân
         </button>
-        <button class="misa-btn-cmd success" onClick={onExportZalo}>
+        <button className="misa-btn-cmd success" onClick={onExportZalo}>
           <Share2 size={14} /> Kết xuất Zalo
         </button>
-        <button class="misa-btn-cmd" onClick={onPrintReport}>
+        <button className="misa-btn-cmd" onClick={onPrintReport}>
           <Printer size={14} /> In báo cáo
         </button>
-        <button class="misa-btn-cmd" onClick={onRefreshData}>
+        <button className="misa-btn-cmd" onClick={onRefreshData}>
           <RefreshCw size={14} /> Nạp lại
         </button>
       </div>

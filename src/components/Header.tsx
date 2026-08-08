@@ -17,52 +17,52 @@ export const Header: React.FC<HeaderProps> = ({
   onSearchChange
 }) => {
   return (
-    <header class="misa-header">
-      <div class="misa-header-left">
-        <div class="misa-logo">
-          <div class="misa-logo-icon">🌾</div>
+    <header className="misa-header">
+      <div className="misa-header-left">
+        <div className="misa-logo">
+          <div className="misa-logo-icon">🌾</div>
           <span>RiceOS <span style={{ fontWeight: 400, fontSize: '13px', color: '#64748b' }}>| KẾ TOÁN & QUẢN LÝ CÂN</span></span>
         </div>
 
-        <div class="misa-branch-picker" title="Đổi chi nhánh / cầu cân">
+        <div className="misa-branch-picker" title="Đổi chi nhánh / cầu cân">
           <Building2 size={14} color="#0b6bbf" />
           <span>{activeBranch}</span>
           <ChevronDown size={10} />
         </div>
       </div>
 
-      <div class="misa-header-center">
-        <div class="misa-search-wrapper">
+      <div className="misa-header-center">
+        <div className="misa-search-wrapper">
           <input
             type="text"
-            class="misa-search-input"
+            className="misa-search-input"
             placeholder="Tìm kiếm thông minh chủ ruộng, giống lúa, xe nhận hoặc phiên cân..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
           />
-          <span class="misa-ai-tag">
+          <span className="misa-ai-tag">
             <Sparkles size={10} style={{ display: 'inline', marginRight: 2 }} /> AI
           </span>
         </div>
       </div>
 
-      <div class="misa-header-right">
-        <button class="misa-icon-btn" title="Hướng dẫn sử dụng">
+      <div className="misa-header-right">
+        <button className="misa-icon-btn" title="Hướng dẫn sử dụng">
           <Video size={18} color="#10b981" />
           <span style={{ fontSize: '12px', marginLeft: 4, fontWeight: 600, color: '#10b981' }}>Hướng dẫn</span>
         </button>
 
-        <button class="misa-icon-btn" title="Thông báo hệ thống">
+        <button className="misa-icon-btn" title="Thông báo hệ thống">
           <Bell size={18} />
-          <span class="misa-badge">15</span>
+          <span className="misa-badge">15</span>
         </button>
 
-        <button class="misa-icon-btn" title="Cài đặt">
+        <button className="misa-icon-btn" title="Cài đặt">
           <Settings size={18} />
         </button>
 
-        <div class="misa-user-profile">
-          <div class="misa-avatar">
+        <div className="misa-user-profile">
+          <div className="misa-avatar">
             {currentUser.full_name ? currentUser.full_name.charAt(0).toUpperCase() : 'U'}
           </div>
           <div style={{ display: 'flex', flexDirection: 'column' }}>

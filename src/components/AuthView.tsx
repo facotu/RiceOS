@@ -22,13 +22,11 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess }) => {
     setErrorMessage('');
 
     if (isRegisterMode) {
-      // Registration Flow
       if (!email || !password || !fullName) {
         setErrorMessage('Vui lòng điền đầy đủ tất cả các trường thông tin!');
         return;
       }
 
-      // Try Supabase Auth Registration
       try {
         const { data, error } = await supabase.auth.signUp({
           email,
@@ -39,15 +37,12 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess }) => {
         });
 
         if (error) throw error;
-
         console.log('Registration success:', data);
         setVerificationSent(true);
-      } catch (err: any) {
-        // Fallback Demo Registration handling
+      } catch (err) {
         setVerificationSent(true);
       }
     } else {
-      // Login Flow
       if (!email || !password) {
         setErrorMessage('Vui lòng nhập Email và Mật khẩu!');
         return;
@@ -69,12 +64,10 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess }) => {
           return;
         }
       } catch (err) {
-        // Demo Auth Quick Login matching
         const matched = DEMO_USERS.find(u => u.email.toLowerCase() === email.toLowerCase());
         if (matched) {
           onLoginSuccess(matched);
         } else {
-          // Default Demo Login as Admin
           onLoginSuccess({
             id: 'usr-' + Date.now(),
             email,
@@ -88,7 +81,6 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess }) => {
     }
   };
 
-  // Google OAuth Login Trigger
   const handleGoogleLogin = async () => {
     try {
       const { error } = await supabase.auth.signInWithOAuth({
@@ -97,7 +89,6 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess }) => {
       });
       if (error) throw error;
     } catch (err) {
-      // Fallback demo Google Login
       onLoginSuccess({
         id: 'usr-google-demo',
         email: 'phuong.doan@gmail.com',
@@ -109,7 +100,6 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess }) => {
     }
   };
 
-  // Quick Demo User Selector
   const handleQuickDemoLogin = (user: UserProfile) => {
     onLoginSuccess(user);
   };
@@ -132,7 +122,6 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess }) => {
         boxShadow: '0 20px 25px -5px rgba(0,0,0,0.3)',
         overflow: 'hidden'
       }}>
-        {/* Top Header Banner */}
         <div style={{
           backgroundColor: '#f8fafc',
           borderBottom: '1px solid #e2e8f0',
@@ -158,7 +147,6 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess }) => {
           </p>
         </div>
 
-        {/* Verification Success Notice */}
         {verificationSent ? (
           <div style={{ padding: 24, textAlign: 'center' }}>
             <CheckCircle2 size={48} color="#10b981" style={{ margin: '0 auto 12px auto' }} />
@@ -168,7 +156,7 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess }) => {
               Vui lòng kiểm tra hộp thư và bấm kích hoạt tài khoản để hoàn tất!
             </p>
             <button
-              class="misa-btn-cmd primary"
+              className="misa-btn-cmd primary"
               style={{ width: '100%', marginTop: 20, justifyContent: 'center', height: 38 }}
               onClick={() => { setVerificationSent(false); setIsRegisterMode(false); }}
             >
@@ -199,7 +187,7 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess }) => {
                     <User size={16} color="#94a3b8" style={{ position: 'absolute', left: 10, top: 9 }} />
                     <input
                       type="text"
-                      class="form-control"
+                      className="form-control"
                       style={{ paddingLeft: 34, width: '100%' }}
                       placeholder="Nhập họ và tên cán bộ..."
                       value={fullName}
@@ -215,7 +203,7 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess }) => {
                   <Mail size={16} color="#94a3b8" style={{ position: 'absolute', left: 10, top: 9 }} />
                   <input
                     type="email"
-                    class="form-control"
+                    className="form-control"
                     style={{ paddingLeft: 34, width: '100%' }}
                     placeholder="name@riceos.vn"
                     value={email}
@@ -230,7 +218,7 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess }) => {
                   <Lock size={16} color="#94a3b8" style={{ position: 'absolute', left: 10, top: 9 }} />
                   <input
                     type="password"
-                    class="form-control"
+                    className="form-control"
                     style={{ paddingLeft: 34, width: '100%' }}
                     placeholder="••••••••"
                     value={password}
@@ -243,7 +231,7 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess }) => {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                   <label style={{ fontSize: 11, fontWeight: 600, color: '#475569' }}>Quyền tài khoản yêu cầu</label>
                   <select
-                    class="form-control"
+                    className="form-control"
                     value={requestedRole}
                     onChange={(e) => setRequestedRole(e.target.value as UserRole)}
                   >
@@ -256,7 +244,7 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess }) => {
 
               <button
                 type="submit"
-                class="misa-btn-cmd primary"
+                className="misa-btn-cmd primary"
                 style={{ width: '100%', justifyContent: 'center', height: 38, marginTop: 4, fontWeight: 700 }}
               >
                 {isRegisterMode ? (
@@ -267,7 +255,6 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess }) => {
               </button>
             </form>
 
-            {/* Google OAuth Button */}
             <div style={{ margin: '16px 0', textAlign: 'center', position: 'relative' }}>
               <hr style={{ borderTop: '1px solid #e2e8f0' }} />
               <span style={{ position: 'absolute', top: -9, left: '50%', transform: 'translateX(-50%)', backgroundColor: 'white', padding: '0 8px', fontSize: 11, color: '#94a3b8' }}>
@@ -277,7 +264,7 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess }) => {
 
             <button
               type="button"
-              class="misa-btn-cmd"
+              className="misa-btn-cmd"
               style={{ width: '100%', justifyContent: 'center', height: 38, border: '1px solid #cbd5e1' }}
               onClick={handleGoogleLogin}
             >
@@ -290,7 +277,6 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess }) => {
               Đăng nhập bằng Google
             </button>
 
-            {/* Quick Demo Credentials Panel */}
             <div style={{ marginTop: 20, backgroundColor: '#f8fafc', padding: 12, borderRadius: 8, border: '1px solid #e2e8f0' }}>
               <div style={{ fontSize: 11, fontWeight: 700, color: '#475569', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 4 }}>
                 <ShieldCheck size={14} color="#0b6bbf" /> Chọn nhanh tài khoản Demo:
@@ -299,7 +285,7 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess }) => {
                 {DEMO_USERS.map(u => (
                   <button
                     key={u.id}
-                    class="misa-btn-cmd"
+                    className="misa-btn-cmd"
                     style={{ justifyContent: 'space-between', fontSize: 11, padding: '4px 8px' }}
                     onClick={() => handleQuickDemoLogin(u)}
                   >
@@ -310,7 +296,6 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLoginSuccess }) => {
               </div>
             </div>
 
-            {/* Toggle Login/Register */}
             <div style={{ marginTop: 16, textAlign: 'center', fontSize: 12, color: '#64748b' }}>
               {isRegisterMode ? (
                 <>Đã có tài khoản? <a href="#" style={{ color: '#0b6bbf', fontWeight: 600 }} onClick={() => setIsRegisterMode(false)}>Đăng nhập ngay</a></>

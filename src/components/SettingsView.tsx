@@ -35,13 +35,13 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   };
 
   return (
-    <div class="panel-grid-container">
-      <div class="panel-header">
-        <div class="panel-title">
+    <div className="panel-grid-container">
+      <div className="panel-header">
+        <div className="panel-title">
           <Sliders size={20} color="#64748b" />
           <span>CÀI ĐẶT HỆ THỐNG - ĐƠN GIÁ GIỐNG LÚA & ĐỊNH MỨC TRỪ BÌ</span>
         </div>
-        <button class="misa-btn-cmd primary" onClick={handleSave}>
+        <button className="misa-btn-cmd primary" onClick={handleSave}>
           <Save size={14} /> Lưu cài đặt hệ thống
         </button>
       </div>
@@ -52,11 +52,11 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
         </div>
       )}
 
-      <form onSubmit={handleSave} class="form-grid">
-        <div class="form-group">
-          <label class="form-label">Công thức Trừ Bì Mặc Định *</label>
+      <form onSubmit={handleSave} className="form-grid">
+        <div className="form-group">
+          <label className="form-label">Công thức Trừ Bì Mặc Định *</label>
           <select
-            class="form-control"
+            className="form-control"
             value={tareFormula}
             onChange={(e) => setTareFormula(e.target.value as any)}
           >
@@ -65,73 +65,73 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
           </select>
         </div>
 
-        <div class="form-group">
-          <label class="form-label">Mức % Trừ Bì mặc định (%)</label>
+        <div className="form-group">
+          <label className="form-label">Mức % Trừ Bì mặc định (%)</label>
           <input
             type="number"
             step="0.1"
-            class="form-control"
+            className="form-control"
             value={tarePercent}
             onChange={(e) => setTarePercent(parseFloat(e.target.value) || 0)}
           />
         </div>
 
-        <div class="form-group">
-          <label class="form-label">Mức Trừ Bì cố định/bao (kg/bao)</label>
+        <div className="form-group">
+          <label className="form-label">Mức Trừ Bì cố định/bao (kg/bao)</label>
           <input
             type="number"
             step="0.1"
-            class="form-control"
+            className="form-control"
             value={tareFixedKg}
             onChange={(e) => setTareFixedKg(parseFloat(e.target.value) || 0)}
           />
         </div>
 
-        <div class="form-group">
-          <label class="form-label">Đơn giá giống HT1 (đ/kg)</label>
+        <div className="form-group">
+          <label className="form-label">Đơn giá giống HT1 (đ/kg)</label>
           <input
             type="number"
-            class="form-control"
+            className="form-control"
             value={prices['HT1'] || 8000}
             onChange={(e) => handlePriceChange('HT1', parseInt(e.target.value) || 0)}
           />
         </div>
 
-        <div class="form-group">
-          <label class="form-label">Đơn giá giống HG12 (đ/kg)</label>
+        <div className="form-group">
+          <label className="form-label">Đơn giá giống HG12 (đ/kg)</label>
           <input
             type="number"
-            class="form-control"
+            className="form-control"
             value={prices['HG12'] || 7500}
             onChange={(e) => handlePriceChange('HG12', parseInt(e.target.value) || 0)}
           />
         </div>
 
-        <div class="form-group">
-          <label class="form-label">Đơn giá giống HG244 (đ/kg)</label>
+        <div className="form-group">
+          <label className="form-label">Đơn giá giống HG244 (đ/kg)</label>
           <input
             type="number"
-            class="form-control"
+            className="form-control"
             value={prices['HG244'] || 7800}
             onChange={(e) => handlePriceChange('HG244', parseInt(e.target.value) || 0)}
           />
         </div>
 
-        <div class="form-group">
-          <label class="form-label">Đơn giá giống ĐT100 (đ/kg)</label>
+        <div className="form-group">
+          <label className="form-label">Đơn giá giống ĐT100 (đ/kg)</label>
           <input
             type="number"
-            class="form-control"
+            className="form-control"
             value={prices['ĐT100'] || 8200}
             onChange={(e) => handlePriceChange('ĐT100', parseInt(e.target.value) || 0)}
           />
         </div>
 
-        <div class="form-group">
-          <label class="form-label">Đơn giá giống J02 (đ/kg)</label>
+        <div className="form-group">
+          <label className="form-label">Đơn giá giống J02 (đ/kg)</label>
           <input
             type="number"
-            class="form-control"
+            className="form-control"
             value={prices['J02'] || 8500}
             onChange={(e) => handlePriceChange('J02', parseInt(e.target.value) || 0)}
           />

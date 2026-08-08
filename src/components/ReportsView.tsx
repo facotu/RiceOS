@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { WeighingSession } from '../types';
-import { LineChart, Download, FileSpreadsheet, Printer } from 'lucide-react';
+import { LineChart, FileSpreadsheet, Printer } from 'lucide-react';
 
 interface ReportsViewProps {
   sessions: WeighingSession[];
@@ -11,32 +11,31 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ sessions }) => {
 
   const totalFarmers = 42;
   const totalBags = sessions.reduce((sum, s) => sum + s.total_bags, 0);
-  const totalFresh = sessions.reduce((sum, s) => sum + s.total_fresh_kg, 0);
   const totalDry = sessions.reduce((sum, s) => sum + s.total_dry_kg, 0);
   const totalRevenue = sessions.reduce((sum, s) => sum + s.total_amount, 0);
 
   return (
-    <div class="panel-grid-container">
-      <div class="panel-header">
-        <div class="panel-title">
+    <div className="panel-grid-container">
+      <div className="panel-header">
+        <div className="panel-title">
           <LineChart size={20} color="#059669" />
           <span>BÁO CÁO THỐNG KÊ ĐA CHIỀU THU MUA LÚA</span>
         </div>
-        <div class="misa-command-group">
-          <button class="misa-btn-cmd success" onClick={() => alert('📊 Đã xuất file Báo cáo Excel thành công!')}>
+        <div className="misa-command-group">
+          <button className="misa-btn-cmd success" onClick={() => alert('📊 Đã xuất file Báo cáo Excel thành công!')}>
             <FileSpreadsheet size={14} /> Xuất Excel (.XLSX)
           </button>
-          <button class="misa-btn-cmd" onClick={() => window.print()}>
+          <button className="misa-btn-cmd" onClick={() => window.print()}>
             <Printer size={14} /> In Báo Cáo
           </button>
         </div>
       </div>
 
-      <div class="form-grid">
-        <div class="form-group">
-          <label class="form-label">Tùy chọn hiển thị báo cáo</label>
+      <div className="form-grid">
+        <div className="form-group">
+          <label className="form-label">Tùy chọn hiển thị báo cáo</label>
           <select
-            class="form-control"
+            className="form-control"
             value={reportMode}
             onChange={(e) => setReportMode(e.target.value as any)}
           >
@@ -47,33 +46,32 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ sessions }) => {
         </div>
       </div>
 
-      {/* Report Summary KPIs */}
-      <div class="kpi-row" style={{ padding: '0 16px 16px 16px' }}>
-        <div class="kpi-box">
+      <div className="kpi-row" style={{ padding: '0 16px 16px 16px' }}>
+        <div className="kpi-box">
           <div>
-            <div class="kpi-num" style={{ color: '#0b6bbf' }}>{totalFarmers} hộ</div>
-            <div class="kpi-text">Tổng số hộ dân cân</div>
+            <div className="kpi-num" style={{ color: '#0b6bbf' }}>{totalFarmers} hộ</div>
+            <div className="kpi-text">Tổng số hộ dân cân</div>
           </div>
         </div>
 
-        <div class="kpi-box">
+        <div className="kpi-box">
           <div>
-            <div class="kpi-num" style={{ color: '#0284c7' }}>{totalBags.toLocaleString()} bao</div>
-            <div class="kpi-text">Tổng số bao lúa tươi</div>
+            <div className="kpi-num" style={{ color: '#0284c7' }}>{totalBags.toLocaleString()} bao</div>
+            <div className="kpi-text">Tổng số bao lúa tươi</div>
           </div>
         </div>
 
-        <div class="kpi-box">
+        <div className="kpi-box">
           <div>
-            <div class="kpi-num" style={{ color: '#059669' }}>{totalDry.toLocaleString(undefined, { maximumFractionDigits: 1 })} kg</div>
-            <div class="kpi-text">Tổng sản lượng lúa khô</div>
+            <div className="kpi-num" style={{ color: '#059669' }}>{totalDry.toLocaleString(undefined, { maximumFractionDigits: 1 })} kg</div>
+            <div className="kpi-text">Tổng sản lượng lúa khô</div>
           </div>
         </div>
 
-        <div class="kpi-box">
+        <div className="kpi-box">
           <div>
-            <div class="kpi-num" style={{ color: '#d97706' }}>{totalRevenue.toLocaleString()} VNĐ</div>
-            <div class="kpi-text">Doanh thu thu mua</div>
+            <div className="kpi-num" style={{ color: '#d97706' }}>{totalRevenue.toLocaleString()} VNĐ</div>
+            <div className="kpi-text">Doanh thu thu mua</div>
           </div>
         </div>
       </div>
@@ -83,7 +81,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ sessions }) => {
           📊 BẢNG THỐNG KÊ CHI TIẾT THEO CÁN BỘ CÂN & XE NHẬN:
         </h4>
 
-        <table class="datagrid">
+        <table className="datagrid">
           <thead>
             <tr>
               <th>Tên phân loại / Giống lúa</th>

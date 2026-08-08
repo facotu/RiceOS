@@ -1,22 +1,21 @@
 import React, { useState } from 'react';
-import { Camera, Play, Video, Scan, CheckCircle, RefreshCw } from 'lucide-react';
+import { Camera, Play, Video, Scan } from 'lucide-react';
 
 export const AICameraView: React.FC = () => {
   const [count, setCount] = useState(142);
-  const [isRunning, setIsRunning] = useState(true);
 
   const handleSimulateCount = () => {
     setCount(prev => prev + 2);
   };
 
   return (
-    <div class="panel-grid-container">
-      <div class="panel-header">
-        <div class="panel-title">
+    <div className="panel-grid-container">
+      <div className="panel-header">
+        <div className="panel-title">
           <Camera size={20} color="#8b5cf6" />
           <span>MODULE AI CAMERA - ĐẾM BAO LÚA TỰ ĐỘNG & OCR BIỂN SỐ XE</span>
         </div>
-        <button class="misa-btn-cmd primary" onClick={handleSimulateCount}>
+        <button className="misa-btn-cmd primary" onClick={handleSimulateCount}>
           <Play size={14} /> Thử nghiệm AI đếm bao (+2)
         </button>
       </div>
@@ -49,7 +48,6 @@ export const AICameraView: React.FC = () => {
             <Video size={14} color="#ef4444" /> LIVE STREAM: AI CAMERA CẦU CÂN #1 (ONLINE)
           </div>
 
-          {/* AI Bounding Box Overlay */}
           <div style={{
             position: 'absolute',
             border: '2px dashed #00d2d3',
