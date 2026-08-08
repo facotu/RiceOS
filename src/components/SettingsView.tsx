@@ -30,7 +30,13 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
     const newFP: FieldPlot = {
       id: 'fp-' + Date.now(),
       field_name: newFieldName,
-      plot_no: newPlotNo
+      plot_no: newPlotNo,
+      address: `${newFieldName}, Đà Nẵng`,
+      lat: 15.9625,
+      lng: 108.2045,
+      area_total_sao: 10.0,
+      main_variety: 'HT1',
+      status: 'harvesting'
     };
     setFieldsPlots([...fieldsPlots, newFP]);
     setNewFieldName('');
