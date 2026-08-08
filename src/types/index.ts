@@ -13,6 +13,12 @@ export interface UserProfile {
   created_at: string;
 }
 
+// GPS Polygon Point for Field Boundary Drawing
+export interface GPSLatLng {
+  lat: number;
+  lng: number;
+}
+
 // Master Data Types
 export interface Farmer {
   id: string;
@@ -58,16 +64,18 @@ export interface RiceVariety {
   default_price: number;
 }
 
-// Field & Plot GIS Type with Google Maps Coordinates
+// Field & Plot GIS Type with Google Maps Coordinates & Polygon Boundaries
 export interface FieldPlot {
   id: string;
   field_name: string;    // Xứ đồng (VD: Xứ đồng An Trạch 1)
   plot_no: string;       // Mã Lô (VD: Lô A2)
   address?: string;       // Địa chỉ cụ thể
-  lat?: number;           // Vĩ độ Google Maps (e.g. 15.9625)
-  lng?: number;           // Kinh độ Google Maps (e.g. 108.2045)
+  lat?: number;           // Vĩ độ tâm Google Maps
+  lng?: number;           // Kinh độ tâm Google Maps
+  polygon_coords?: GPSLatLng[]; // Các điểm tọa độ đỉnh khoanh vùng ranh giới thửa đất / lô ruộng
   zoom_level?: number;
   area_total_sao?: number; // Tổng diện tích Lô (sào)
+  area_total_ha?: number;  // Diện tích quy đổi (ha)
   main_variety?: string;   // Giống lúa chủ đạo (HT1, J02, v.v.)
   status?: 'harvesting' | 'waiting' | 'completed';
   description?: string;

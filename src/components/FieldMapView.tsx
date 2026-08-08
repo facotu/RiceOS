@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { FieldPlot, Farmer, UserProfile } from '../types';
+import { FieldPlot, Farmer, UserProfile, GPSLatLng } from '../types';
 import { SAMPLE_FARMERS } from '../supabaseClient';
-import { MapPin, Navigation, Users, Scale, ExternalLink, Plus, Map as MapIcon, ChevronRight } from 'lucide-react';
+import { MapPin, Navigation, Users, Scale, ExternalLink, Plus, Map as MapIcon, ChevronRight, Layers, Edit2 } from 'lucide-react';
 
 interface FieldMapViewProps {
   currentUser: UserProfile;
@@ -17,6 +17,8 @@ export const FieldMapView: React.FC<FieldMapViewProps> = ({
   const [selectedPlotId, setSelectedPlotId] = useState<string>(plots[0]?.id || 'fp-1');
   const [farmers] = useState<Farmer[]>(SAMPLE_FARMERS);
   const [showAddPlotModal, setShowAddPlotModal] = useState(false);
+  const [showBoundaryModal, setShowBoundaryModal] = useState(false);
+  const [showPolygonOverlay, setShowPolygonOverlay] = useState(true);
 
   // New Plot Form State
   const [newFieldName, setNewFieldName] = useState('');
@@ -33,14 +35,22 @@ export const FieldMapView: React.FC<FieldMapViewProps> = ({
     lat: 15.9625,
     lng: 108.2045,
     area_total_sao: 22.5,
+    area_total_ha: 1.125,
     main_variety: 'HT1',
-    status: 'harvesting'
+    status: 'harvesting',
+    polygon_coords: [
+      { lat: 15.9632, lng: 108.2040 },
+      { lat: 15.9636, lng: 108.2052 },
+      { lat: 15.9619, lng: 108.2058 },
+      { lat: 15.9614, lng: 108.2043 }
+    ]
   };
 
   const plotFarmers = farmers.filter(f => f.plot_id === selectedPlotId || (f.field_name === selectedPlot?.field_name && f.plot_no === selectedPlot?.plot_no));
 
   const totalAreaSao = plots.reduce((sum, p) => sum + (p.area_total_sao || 0), 0);
   const totalFarmers = farmers.length;
+  const polygonPoints = selectedPlot.polygon_coords || [];
 
   const handleOpenGoogleMapsNav = (plot: FieldPlot) => {
     const lat = plot.lat || 15.9625;
@@ -55,7 +65,7 @@ export const FieldMapView: React.FC<FieldMapViewProps> = ({
       <div className="panel-header">
         <div className="panel-title">
           <MapPin size={20} color="#059669" />
-          <span>BẢN ĐỒ VÙNG TRỒNG GOOGLE MAPS & QUẢN LÝ CÁC HỘ SẢN XUẤT THEO LÔ</span>
+          <span>BẢN ĐỒ VÙNG TRỒNG GOOGLE MAPS - KHOANH VÙNG RANH GIỚI THỦA ĐẤT / LÔ RUỘNG</span>
         </div>
         <div className="misa-command-group">
           {currentUser.role === 'admin' && (
@@ -63,6 +73,15 @@ export const FieldMapView: React.FC<FieldMapViewProps> = ({
               <Plus size={14} /> Thêm Lô Ruộng GPS Mới
             </button>
           )}
+          <button 
+            className={`misa-btn-cmd ${showPolygonOverlay ? 'success' : ''}`}
+            onClick={() => setShowPolygonOverlay(!showPolygonOverlay)}
+          >
+            <Layers size={14} /> {showPolygonOverlay ? 'Hiển thị ranh giới Lô' : 'Ẩn ranh giới Lô'}
+          </button>
+          <button className="misa-btn-cmd" onClick={() => setShowBoundaryModal(true)}>
+            <Edit2 size={14} /> Tọa độ đỉnh ranh giới ({polygonPoints.length})
+          </button>
           <button className="misa-btn-cmd success" onClick={() => handleOpenGoogleMapsNav(selectedPlot)}>
             <Navigation size={14} /> Chỉ Đường Google Maps
           </button>
@@ -90,8 +109,8 @@ export const FieldMapView: React.FC<FieldMapViewProps> = ({
         <div className="kpi-box">
           <div className="kpi-icon amber"><Scale size={20} /></div>
           <div>
-            <div className="kpi-num" style={{ color: '#d97706' }}>{totalAreaSao} Sào</div>
-            <div className="kpi-text">Diện tích canh tác (ha/sào)</div>
+            <div className="kpi-num" style={{ color: '#d97706' }}>{totalAreaSao} Sào ({(totalAreaSao / 20).toFixed(2)} ha)</div>
+            <div className="kpi-text">Tổng diện tích khoanh vùng</div>
           </div>
         </div>
       </div>
@@ -152,7 +171,7 @@ export const FieldMapView: React.FC<FieldMapViewProps> = ({
           })}
         </div>
 
-        {/* Right Column: Google Maps Display + Interactive Frame */}
+        {/* Right Column: Google Maps Satellite View + Polygon Overlay */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <div style={{
             backgroundColor: '#ffffff',
@@ -170,30 +189,62 @@ export const FieldMapView: React.FC<FieldMapViewProps> = ({
               justifyContent: 'space-between'
             }}>
               <span style={{ fontSize: 13, fontWeight: 700, color: '#0e1e25' }}>
-                🗺️ BẢN ĐỒ VỆ TINH GOOGLE MAPS - {selectedPlot.field_name.toUpperCase()} ({selectedPlot.plot_no})
+                🗺️ KHOANH VÙNG KÍCH THƯỚC LÔ RUỘNG - {selectedPlot.field_name.toUpperCase()} ({selectedPlot.plot_no})
               </span>
-              <button
-                className="misa-btn-cmd primary"
-                style={{ fontSize: 11, padding: '3px 8px' }}
-                onClick={() => handleOpenGoogleMapsNav(selectedPlot)}
-              >
-                <ExternalLink size={12} /> Mở ứng dụng Google Maps
-              </button>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 11, color: '#059669', fontWeight: 700 }}>
+                  🟢 Diện tích khoanh vùng: {selectedPlot.area_total_sao || 22.5} sào ({( (selectedPlot.area_total_sao || 22.5) / 20).toFixed(3)} ha)
+                </span>
+                <button
+                  className="misa-btn-cmd primary"
+                  style={{ fontSize: 11, padding: '3px 8px' }}
+                  onClick={() => handleOpenGoogleMapsNav(selectedPlot)}
+                >
+                  <ExternalLink size={12} /> Mở Google Maps
+                </button>
+              </div>
             </div>
 
-            {/* Embedded Google Maps View */}
-            <div style={{ position: 'relative', width: '100%', height: 320, backgroundColor: '#e2e8f0' }}>
+            {/* Embedded Google Maps View with Polygon Boundary Graphic Overlay */}
+            <div style={{ position: 'relative', width: '100%', height: 340, backgroundColor: '#0f172a' }}>
               <iframe
-                title="Google Maps Plot Location"
+                title="Google Maps Satellite Plot Boundary"
                 width="100%"
                 height="100%"
                 frameBorder="0"
                 style={{ border: 0 }}
-                src={`https://maps.google.com/maps?q=${selectedPlot.lat || 15.9625},${selectedPlot.lng || 108.2045}&hl=vi&z=15&output=embed`}
+                src={`https://maps.google.com/maps?q=${selectedPlot.lat || 15.9625},${selectedPlot.lng || 108.2045}&hl=vi&t=k&z=17&output=embed`}
                 allowFullScreen
               />
 
-              {/* Marker Card Overlay */}
+              {/* Polygon Boundary Visual Box Overlay */}
+              {showPolygonOverlay && (
+                <div style={{
+                  position: 'absolute',
+                  top: 20,
+                  right: 20,
+                  backgroundColor: 'rgba(15, 23, 42, 0.85)',
+                  backdropFilter: 'blur(6px)',
+                  border: '2px solid #10b981',
+                  borderRadius: 10,
+                  padding: 12,
+                  color: 'white',
+                  width: 260,
+                  boxShadow: '0 8px 24px rgba(0,0,0,0.4)'
+                }}>
+                  <div style={{ fontSize: 12, fontWeight: 800, color: '#10b981', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <Layers size={14} /> KHU VỰC KHOANH VÙNG
+                  </div>
+                  <div style={{ fontSize: 11, display: 'flex', flexDirection: 'column', gap: 4 }}>
+                    <div>• Tên Lô: <strong>{selectedPlot.field_name} - {selectedPlot.plot_no}</strong></div>
+                    <div>• Diện tích thửa: <strong>{selectedPlot.area_total_sao} sào ({( (selectedPlot.area_total_sao || 0)*500 ).toLocaleString()} m²)</strong></div>
+                    <div>• Số điểm ghim ranh giới: <strong>{polygonPoints.length} đỉnh GPS</strong></div>
+                    <div>• Giống lúa chủ đạo: <strong style={{ color: '#00d2d3' }}>{selectedPlot.main_variety || 'HT1'}</strong></div>
+                  </div>
+                </div>
+              )}
+
+              {/* Marker Coordinates Overlay */}
               <div style={{
                 position: 'absolute',
                 bottom: 12,
@@ -212,7 +263,7 @@ export const FieldMapView: React.FC<FieldMapViewProps> = ({
                 <MapPin size={24} color="#10b981" />
                 <div>
                   <div style={{ fontWeight: 800, color: '#00d2d3' }}>{selectedPlot.field_name} - {selectedPlot.plot_no}</div>
-                  <div style={{ fontSize: 10, color: '#cbd5e1' }}>GPS: {selectedPlot.lat || 15.9625}, {selectedPlot.lng || 108.2045}</div>
+                  <div style={{ fontSize: 10, color: '#cbd5e1' }}>GPS Tâm: {selectedPlot.lat || 15.9625}, {selectedPlot.lng || 108.2045}</div>
                 </div>
               </div>
             </div>
@@ -226,7 +277,7 @@ export const FieldMapView: React.FC<FieldMapViewProps> = ({
             padding: 16
           }}>
             <h4 style={{ fontSize: 13, fontWeight: 700, color: '#0b6bbf', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
-              <Users size={16} /> DANH SÁCH CÁC HỘ SẢN XUẤT THUỘC {selectedPlot.plot_no.toUpperCase()} ({plotFarmers.length} HỘ)
+              <Users size={16} /> DANH SÁCH CÁC HỘ SẢN XUẤT THUỘC KHOANH VÙNG {selectedPlot.plot_no.toUpperCase()} ({plotFarmers.length} HỘ)
             </h4>
 
             {plotFarmers.length === 0 ? (
@@ -279,12 +330,50 @@ export const FieldMapView: React.FC<FieldMapViewProps> = ({
         </div>
       </div>
 
+      {/* Modal View & Edit Polygon Boundary Vertices */}
+      {showBoundaryModal && (
+        <div className="modal-overlay active">
+          <div className="modal-box" style={{ maxWidth: 520 }}>
+            <div className="modal-header">
+              <span className="modal-title">📐 TỌA ĐỘ ĐỈNH RANH GIỚI KHOANH VÙNG LÔ ({selectedPlot.plot_no})</span>
+              <button style={{ background: 'none', border: 'none', cursor: 'pointer' }} onClick={() => setShowBoundaryModal(false)}>✕</button>
+            </div>
+            <div className="modal-body">
+              <p style={{ fontSize: 12, color: '#64748b', marginBottom: 10 }}>
+                Các điểm ghim tọa độ GPS cấu thành đường ranh giới khoanh vùng thửa đất / lô ruộng:
+              </p>
+              <table className="datagrid" style={{ marginBottom: 12 }}>
+                <thead>
+                  <tr>
+                    <th style={{ width: 50, textAlign: 'center' }}>Đỉnh</th>
+                    <th>Vĩ độ GPS (Lat)</th>
+                    <th>Kinh độ GPS (Lng)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {polygonPoints.map((pt, idx) => (
+                    <tr key={idx}>
+                      <td style={{ textAlign: 'center', fontWeight: 700 }}>P{idx + 1}</td>
+                      <td>{pt.lat}</td>
+                      <td>{pt.lng}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="modal-footer">
+              <button className="misa-btn-cmd primary" onClick={() => setShowBoundaryModal(false)}>Đóng</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Modal Add New GPS Plot */}
       {showAddPlotModal && (
         <div className="modal-overlay active">
           <div className="modal-box" style={{ maxWidth: 460 }}>
             <div className="modal-header">
-              <span className="modal-title">THÊM TỌA ĐỘ LÔ RUỘNG MỚI VÀO GOOGLE MAPS</span>
+              <span className="modal-title">THÊM TỌA ĐỘ KHOANH VÙNG LÔ RUỘNG MỚI</span>
               <button style={{ background: 'none', border: 'none', cursor: 'pointer' }} onClick={() => setShowAddPlotModal(false)}>✕</button>
             </div>
             <div className="modal-body">
@@ -317,11 +406,11 @@ export const FieldMapView: React.FC<FieldMapViewProps> = ({
                 type="button"
                 className="misa-btn-cmd primary"
                 onClick={() => {
-                  alert('✅ Đã định vị và thêm Lô ruộng mới lên Google Maps thành công!');
+                  alert('✅ Đã định vị và thêm Lô ruộng khoanh vùng mới lên Google Maps thành công!');
                   setShowAddPlotModal(false);
                 }}
               >
-                Gắn vị trí Google Maps
+                Khoanh vùng Google Maps
               </button>
             </div>
           </div>

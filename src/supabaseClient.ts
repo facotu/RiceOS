@@ -122,7 +122,7 @@ export const SAMPLE_FARMERS: Farmer[] = [
   }
 ];
 
-// Default System Settings with Google Maps Plot Coordinates
+// Default System Settings with Google Maps Plot Coordinates & Polygon Boundaries
 export const DEFAULT_SETTINGS: SystemSettings = {
   tare_formula: 'percent',
   default_tare_percent: 5.0,
@@ -142,7 +142,14 @@ export const DEFAULT_SETTINGS: SystemSettings = {
       address: 'Thôn An Trạch, Xã Hòa Tiến, Huyện Hòa Vang, Đà Nẵng',
       lat: 15.9625,
       lng: 108.2045,
+      polygon_coords: [
+        { lat: 15.9632, lng: 108.2040 },
+        { lat: 15.9636, lng: 108.2052 },
+        { lat: 15.9619, lng: 108.2058 },
+        { lat: 15.9614, lng: 108.2043 }
+      ],
       area_total_sao: 22.5,
+      area_total_ha: 1.125,
       main_variety: 'HT1',
       status: 'harvesting',
       description: 'Cánh đồng bãi bồi đất phù sa chuyên canh lúa chất lượng cao HT1',
@@ -155,7 +162,14 @@ export const DEFAULT_SETTINGS: SystemSettings = {
       address: 'Thôn La Bông, Xã Hòa Tiến, Huyện Hòa Vang, Đà Nẵng',
       lat: 15.9712,
       lng: 108.1988,
+      polygon_coords: [
+        { lat: 15.9722, lng: 108.1980 },
+        { lat: 15.9726, lng: 108.1996 },
+        { lat: 15.9704, lng: 108.2001 },
+        { lat: 15.9701, lng: 108.1983 }
+      ],
       area_total_sao: 32.5,
+      area_total_ha: 1.625,
       main_variety: 'J02',
       status: 'harvesting',
       description: 'Cánh đồng mẫu lớn liên kết sản xuất gạo Nhật J02 xuất khẩu',
@@ -168,7 +182,14 @@ export const DEFAULT_SETTINGS: SystemSettings = {
       address: 'Thôn Đa Phước, Xã Hòa Nhơn, Huyện Hòa Vang, Đà Nẵng',
       lat: 15.9550,
       lng: 108.2110,
+      polygon_coords: [
+        { lat: 15.9558, lng: 108.2102 },
+        { lat: 15.9562, lng: 108.2118 },
+        { lat: 15.9542, lng: 108.2122 },
+        { lat: 15.9538, lng: 108.2105 }
+      ],
       area_total_sao: 15.0,
+      area_total_ha: 0.75,
       main_variety: 'HG12',
       status: 'waiting',
       description: 'Vùng thu mua lúa thuần HG12 chuẩn bị thu hoạch đợt 2',
@@ -181,5 +202,5 @@ export const DEFAULT_SETTINGS: SystemSettings = {
 export const INITIAL_NOTIFICATIONS: AppNotification[] = [
   { id: 'n-1', title: 'Phiên cân mới', message: 'Cán bộ Đoàn Thị Ngọc Phương vừa hoàn thành phiên cân #PC-2026-088 cho hộ Nguyễn Văn Bình (140 bao - 7.000kg tươi).', timestamp: '11:15 Hôm nay', read: false, type: 'weighing' },
   { id: 'n-2', title: 'Xe đã đầy tải', message: 'Xe 43C-123.45 đã nhận đủ 490 bao lúa tươi (24.500kg). Chuẩn bị xuất phát.', timestamp: '10:45 Hôm nay', read: false, type: 'vehicle' },
-  { id: 'n-3', title: 'Vùng trồng Google Maps', message: 'Hệ thống vừa cập nhật tọa độ GPS Lô A2 (Xứ đồng An Trạch 1) trên bản đồ Google Maps.', timestamp: '09:00 Hôm nay', read: true, type: 'system' }
+  { id: 'n-3', title: 'Vùng trồng Google Maps', message: 'Hệ thống vừa cập nhật tọa độ khoanh vùng ranh giới Lô A2 (Xứ đồng An Trạch 1) trên bản đồ Google Maps.', timestamp: '09:00 Hôm nay', read: true, type: 'system' }
 ];
