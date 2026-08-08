@@ -1,204 +1,179 @@
-// RiceOS Main Application Entry Point
-// File: src/App.tsx
+import React, { useState } from 'react';
+import { UserProfile, WeighingSession, SystemSettings } from './types';
+import { DEMO_USERS, DEFAULT_SETTINGS } from './supabaseClient';
+import { AuthView } from './components/AuthView';
+import { MainLayout } from './components/MainLayout';
+import { DashboardView } from './components/DashboardView';
+import { WeighingView } from './components/WeighingView';
+import { SettlementView } from './components/SettlementView';
+import { VehicleView } from './components/VehicleView';
+import { HistoryView } from './components/HistoryView';
+import { ReportsView } from './components/ReportsView';
+import { AICameraView } from './components/AICameraView';
+import { SettingsView } from './components/SettingsView';
 
-import React, { useState, useEffect, useCallback } from "react";
-import { db, LocalFarmer, LocalOfficer, LocalTruck, LocalVariety, LocalReceipt, LocalSetting } from "./db/index.ts";
-import { seedDatabaseIfEmpty } from "./db/seeder.ts";
-import HeaderNavigation from "./app/portal/components/HeaderNavigation.tsx";
-import DashboardModule from "./features/modules/DashboardModule.tsx";
-import WeighingSessionModule from "./features/modules/WeighingSessionModule.tsx";
-import SettlementModule from "./features/modules/SettlementModule.tsx";
-import TrucksModule from "./features/modules/TrucksModule.tsx";
-import HistoryModule from "./features/modules/HistoryModule.tsx";
-import ReportsModule from "./features/modules/ReportsModule.tsx";
-import MasterDataModule from "./features/modules/MasterDataModule.tsx";
-import AICameraModule from "./features/modules/AICameraModule.tsx";
-import SettingsModule from "./features/modules/SettingsModule.tsx";
-import AuthModule from "./features/modules/AuthModule.tsx";
+// Initial Mock Master Sessions
+const INITIAL_SESSIONS: WeighingSession[] = [
+  {
+    id: 's-1',
+    code: 'PC-2026-088',
+    session_date: '2026-08-08T11:15:00Z',
+    farmer_id: 'f-01',
+    farmer_name: 'Nguyễn Văn Bình',
+    farmer_phone: '0914.123.456',
+    field_name: 'An Trạch 1',
+    plot_no: 'Lô A2',
+    officer_id: 'usr-admin-01',
+    officer_name: 'Đoàn Thị Ngọc Phương',
+    vehicle_id: 'v-01',
+    vehicle_plate: '43C-123.45',
+    variety_code: 'HT1',
+    variety_name: 'Giống lúa HT1',
+    rows: [],
+    total_bags: 140,
+    total_fresh_kg: 7000,
+    tare_formula: 'percent',
+    tare_value: 5.0,
+    total_tare_kg: 350,
+    total_dry_kg: 6650,
+    price_per_kg: 8000,
+    total_amount: 53200000,
+    advance_payment: 20000000,
+    remaining_payment: 33200000,
+    status: 'completed'
+  },
+  {
+    id: 's-2',
+    code: 'PC-2026-087',
+    session_date: '2026-08-08T10:40:00Z',
+    farmer_id: 'f-02',
+    farmer_name: 'Trần Văn Cường',
+    farmer_phone: '0988.765.432',
+    field_name: 'Hòa Tiến',
+    plot_no: 'Lô B',
+    officer_id: 'usr-admin-01',
+    officer_name: 'Đoàn Thị Ngọc Phương',
+    vehicle_id: 'v-02',
+    vehicle_plate: '92H-987.65',
+    variety_code: 'J02',
+    variety_name: 'Giống lúa J02',
+    rows: [],
+    total_bags: 210,
+    total_fresh_kg: 10500,
+    tare_formula: 'percent',
+    tare_value: 5.0,
+    total_tare_kg: 525,
+    total_dry_kg: 9975,
+    price_per_kg: 8500,
+    total_amount: 84787500,
+    advance_payment: 0,
+    remaining_payment: 84787500,
+    status: 'completed'
+  },
+  {
+    id: 's-3',
+    code: 'PC-2026-086',
+    session_date: '2026-08-08T09:50:00Z',
+    farmer_id: 'f-03',
+    farmer_name: 'Lê Thị Mai',
+    farmer_phone: '0905.888.999',
+    field_name: 'Đa Phước 3',
+    plot_no: 'Lô C',
+    officer_id: 'usr-editor-01',
+    officer_name: 'Trần Văn Nam',
+    vehicle_id: 'v-01',
+    vehicle_plate: '43C-123.45',
+    variety_code: 'HG12',
+    variety_name: 'Giống lúa HG12',
+    rows: [],
+    total_bags: 180,
+    total_fresh_kg: 9000,
+    tare_formula: 'percent',
+    tare_value: 5.0,
+    total_tare_kg: 450,
+    total_dry_kg: 8550,
+    price_per_kg: 7500,
+    total_amount: 64125000,
+    advance_payment: 0,
+    remaining_payment: 64125000,
+    status: 'completed'
+  }
+];
 
-export default function App() {
-  // 1. STATE QUẢN LÝ ĐĂNG NHẬP
-  const [currentUser, setCurrentUser] = useState<any | null>(() => {
-    const saved = localStorage.getItem("riceos_user_session");
-    return saved ? JSON.parse(saved) : {
-      id: "off-admin",
-      full_name: "Phạm Tuân (Quản trị viên)",
-      phone_number: "0905444444",
-      role: "admin"
-    };
-  });
+export const App: React.FC = () => {
+  // Current Logged-in User State (Null if logged out)
+  const [currentUser, setCurrentUser] = useState<UserProfile | null>(DEMO_USERS[0]);
+  const [sessions, setSessions] = useState<WeighingSession[]>(INITIAL_SESSIONS);
+  const [settings, setSettings] = useState<SystemSettings>(DEFAULT_SETTINGS);
 
-  // 2. STATE ĐIỀU HƯỚNG MÀN HÌNH TẠI MENU NGANG TOP BAR
-  const [activeTab, setActiveTab] = useState<string>("dashboard");
-
-  // 3. DỮ LIỆU TỪ INDEXEDDB
-  const [farmers, setFarmers] = useState<LocalFarmer[]>([]);
-  const [officers, setOfficers] = useState<LocalOfficer[]>([]);
-  const [trucks, setTrucks] = useState<LocalTruck[]>([]);
-  const [varieties, setVarieties] = useState<LocalVariety[]>([]);
-  const [receipts, setReceipts] = useState<LocalReceipt[]>([]);
-  
-  // Cài đặt trừ bì
-  const [tareType, setTareType] = useState<'kg' | 'percent'>('percent');
-  const [defaultTareValue, setDefaultTareValue] = useState<number>(1.0);
-
-  // NẠP DỮ LIỆU TỪ DB
-  const loadData = useCallback(async () => {
-    await seedDatabaseIfEmpty();
-    
-    const fList = await db.farmers.toArray();
-    const oList = await db.officers.toArray();
-    const tList = await db.trucks.toArray();
-    const vList = await db.rice_varieties.toArray();
-    const rList = await db.weighing_receipts.orderBy("created_at").reverse().toArray();
-
-    setFarmers(fList);
-    setOfficers(oList);
-    setTrucks(tList);
-    setVarieties(vList);
-    setReceipts(rList);
-
-    // Cài đặt
-    const setting = await db.settings.get("global-settings");
-    if (setting) {
-      setTareType(setting.tare_type || 'percent');
-      setDefaultTareValue(setting.default_tare_value || 1.0);
-    }
-  }, []);
-
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
-
-  // HÀNH ĐỘNG ĐĂNG NHẬP SANG TÀI KHOẢN MỚI
-  const handleLoginSuccess = (user: any) => {
-    setCurrentUser(user);
-    localStorage.setItem("riceos_user_session", JSON.stringify(user));
+  // Handle Save New Session
+  const handleSaveSession = (newSession: WeighingSession) => {
+    setSessions([newSession, ...sessions]);
   };
 
-  // ĐĂNG XUẤT
-  const handleLogout = () => {
-    setCurrentUser(null);
-    localStorage.removeItem("riceos_user_session");
-  };
-
-  // LƯU PHIẾU CÂN MỚI
-  const handleSaveReceipt = async (newReceipt: LocalReceipt) => {
-    await db.weighing_receipts.add(newReceipt);
-    await loadData();
-  };
-
-  // CHỐT QUYẾT TOÁN HỘ DÂN
-  const handleSettleFarmer = async (farmerId: string) => {
-    const list = receipts.filter(r => r.farmer_id === farmerId);
-    for (const r of list) {
-      await db.weighing_receipts.update(r.id, { status: "settled" });
-    }
-    await loadData();
-  };
-
-  // RENDER NẾU CHƯA ĐĂNG NHẬP
+  // If not logged in, show Auth View
   if (!currentUser) {
-    return <AuthModule onLoginSuccess={handleLoginSuccess} />;
+    return <AuthView onLoginSuccess={setCurrentUser} />;
   }
 
   return (
-    <div className="min-h-screen bg-slate-100 flex flex-col font-sans">
-      
-      {/* 1. TOP MENU NGANG HIỂN THỊ THÔNG TIN ĐĂNG NHẬP & CHUYỂN TAB */}
-      <HeaderNavigation 
-        user={currentUser}
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        onLogout={handleLogout}
-      />
+    <MainLayout currentUser={currentUser}>
+      {({ activeTab, onTabChange }) => {
+        // Filter Sessions based on User Role (RBAC):
+        // Admin sees all sessions; Editor/Cán bộ cân sees sessions belonging to logged in officer
+        const visibleSessions = currentUser.role === 'admin'
+          ? sessions
+          : sessions.filter(s => s.officer_id === currentUser.id || s.officer_name === currentUser.full_name);
 
-      {/* 2. NỘI DUNG HIỂN THỊ THEO TAB ĐƯỢC CHỌN */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 py-6">
-        {activeTab === "dashboard" && (
-          <DashboardModule 
-            receipts={receipts}
-            varieties={varieties}
-            officers={officers}
-            trucks={trucks}
-            currentUser={currentUser}
-          />
-        )}
+        switch (activeTab) {
+          case 'dashboard':
+            return (
+              <DashboardView
+                currentUser={currentUser}
+                sessions={visibleSessions}
+                onNavigateTab={onTabChange}
+              />
+            );
 
-        {activeTab === "weighing" && (
-          <WeighingSessionModule 
-            farmers={farmers}
-            officers={officers}
-            trucks={trucks}
-            varieties={varieties}
-            currentUser={currentUser}
-            onSaveReceipt={handleSaveReceipt}
-            tareType={tareType}
-            defaultTareValue={defaultTareValue}
-          />
-        )}
+          case 'weighing':
+            return (
+              <WeighingView
+                currentUser={currentUser}
+                settings={settings}
+                onSaveSession={(session) => {
+                  handleSaveSession(session);
+                  onTabChange('dashboard');
+                }}
+              />
+            );
 
-        {activeTab === "settlement" && (
-          <SettlementModule 
-            farmers={farmers}
-            receipts={receipts}
-            onSettleFarmer={handleSettleFarmer}
-          />
-        )}
+          case 'settlement':
+            return <SettlementView sessions={visibleSessions} />;
 
-        {activeTab === "trucks" && (
-          <TrucksModule 
-            trucks={trucks}
-            receipts={receipts}
-          />
-        )}
+          case 'vehicles':
+            return <VehicleView />;
 
-        {activeTab === "history" && (
-          <HistoryModule 
-            receipts={receipts}
-            farmers={farmers}
-          />
-        )}
+          case 'history':
+            return <HistoryView sessions={visibleSessions} />;
 
-        {activeTab === "reports" && (
-          <ReportsModule 
-            receipts={receipts}
-            farmers={farmers}
-            officers={officers}
-            trucks={trucks}
-          />
-        )}
+          case 'reports':
+            return <ReportsView sessions={visibleSessions} />;
 
-        {activeTab === "master" && (
-          <MasterDataModule 
-            farmers={farmers}
-            officers={officers}
-            trucks={trucks}
-            varieties={varieties}
-            refreshData={loadData}
-          />
-        )}
+          case 'aicamera':
+            return <AICameraView />;
 
-        {activeTab === "aicamera" && (
-          <AICameraModule />
-        )}
+          case 'settings':
+            return (
+              <SettingsView
+                settings={settings}
+                onSaveSettings={setSettings}
+              />
+            );
 
-        {activeTab === "settings" && (
-          <SettingsModule 
-            tareType={tareType}
-            setTareType={setTareType}
-            defaultTareValue={defaultTareValue}
-            setDefaultTareValue={setDefaultTareValue}
-            varieties={varieties}
-            refreshData={loadData}
-          />
-        )}
-      </main>
-
-      {/* FOOTER */}
-      <footer className="bg-white border-t border-slate-200 text-center py-4 text-xs text-slate-500">
-        <p>RiceOS ERP System © 2026 Phạm Tuân. HTX Nông Nghiệp Hòa Tiến 2 - Đà Nẵng.</p>
-      </footer>
-    </div>
+          default:
+            return <div>Chưa tìm thấy phân hệ này.</div>;
+        }
+      }}
+    </MainLayout>
   );
-}
+};

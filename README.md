@@ -1,83 +1,124 @@
-# RiceOS - Hệ thống Quản lý Thu mua Lúa gạo Thông minh
+# 🌾 RiceOS - Hệ Thống Quản Trị & Thu Mua Lúa Nông Nghiệp (MISA AMIS Enterprise ERP Style)
 
-[![Bản quyền](https://img.shields.io/badge/B%E1%BA%A3n%20quy%E1%BB%81n-%C2%A9%202026%20Ph%E1%BA%A1m%20Tu%C3%A2n-blue.svg)](LICENSE)
-[![Khách hàng](https://img.shields.io/badge/Kh%C3%A1ch%20h%C3%A0ng-HTX%20H%C3%B2a%20Ti%E1%BA%BFn%202-green.svg)](#khách-hàng-triển-khai-đầu-tiên)
-[![Trạng thái](https://img.shields.io/badge/Tr%E1%BA%A1ng%20th%C3%A1i-Kh%E1%BB%9Fi%20t%E1%BA%A1o-orange.svg)](#)
-
-RiceOS là nền tảng SaaS (Software as a Service) chuyên nghiệp được thiết kế đặc thù để quản trị quy trình thu mua lúa gạo, số hóa hoạt động cân đo, quản lý kho bãi, quyết toán tài chính, báo cáo và phân tích số liệu thời gian thực.
+> **RiceOS** là Hệ thống Quản trị & Điều hành Thu mua Lúa Nông nghiệp thông minh chuyên nghiệp dành cho doanh nghiệp thu mua lúa, thương lái và hợp tác xã nông nghiệp. Giao diện được thiết kế chuẩn theo phong cách kết hợp **MISA AMIS Classic ERP & Modern Suite** (Header Modern Light tích hợp AI Search, Sidebar Dark Slate `#0e1e25` sang trọng, Thẻ AVA AI Assistant Insights và Bảng DataGrid Master-Detail mật độ cao).
 
 ---
 
-## 📌 Tổng quan dự án
+## 🚀 Tính Năng Nổi Bật
 
-- **Tên dự án:** RiceOS (Smart Rice Procurement Platform)
-- **Chủ sở hữu & Thiết kế hệ thống:** Phạm Tuân
-- **Bản quyền sở hữu:** Copyright © 2026 Phạm Tuân. Bảo lưu mọi quyền (All Rights Reserved).
-
-### Khách hàng triển khai đầu tiên
-* **Đơn vị:** Hợp tác xã Nông nghiệp Hòa Tiến 2
-* **Mục tiêu:** Thực hiện chuyển đổi số toàn diện hoạt động thu mua lúa gạo tại địa phương, nâng cao tính minh bạch, giảm thiểu thất thoát và tối ưu hóa thời gian thanh quyết toán cho nông dân.
-
----
-
-## 🎯 Mục tiêu & Phạm vi hệ thống
-
-Hệ thống tập trung giải quyết các bài toán cốt lõi trong chuỗi cung ứng lúa gạo tại các Hợp tác xã:
-
-1. **Quản lý thu mua (Procurement Management):** Số hóa phiếu cân lúa, ghi nhận cân nặng bì, cân nặng tịnh, độ ẩm, tạp chất và phân loại cấp độ lúa (Lúa OM18, Đài Thơm 8, Khang Dân,...).
-2. **Quyết toán tài chính (Settlement):** Tính toán giá trị lô hàng dựa trên đơn giá thỏa thuận, tỷ lệ trừ ẩm/tạp chất, tự động lập bảng kê thanh toán và phê duyệt chi tiền.
-3. **Quản lý kho (Warehouse):** Theo dõi số lượng lúa nhập kho theo lô, định vị silo/kho chứa và quản lý hao hụt trong quá trình lưu kho.
-4. **Báo cáo & Phân tích (Reporting & Analytics):** Tổng hợp sản lượng thu mua theo ngày/tuần/vụ mùa, phân tích biểu đồ giá, thống kê hiệu suất thu mua và báo cáo tài chính tổng quan.
+- **🔑 Xác thực & Phân quyền (Supabase Auth & RBAC):** Đăng nhập tài khoản, Đăng ký xác minh Email, **Đăng nhập bằng Google**, Phân quyền **Admin** (toàn quyền & quản lý thành viên), **Editor** (Cán bộ cân thực địa) và **View** (Quyền giám sát).
+- **📊 Dashboard AVA AI Insights & KPIs:** Thống kê sản lượng tươi, lúa khô quy đổi %, giá trị thu mua & tạm ứng kèm câu nhận xét phân tích tự động từ AI.
+- **⚖️ Phân Hệ Phiên Cân Live (Core Scale Session):**
+  - Quản lý thông tin Chủ ruộng, Số CCCD, Ngày cấp, Nơi cấp, Hạn dùng, Xứ đồng, Lô, Diện tích.
+  - **Mặc định công thức Trừ Bì % độ ẩm/tạp chất** (cho phép đổi kg/bao).
+  - ✏️ **Chức năng Chỉnh Sửa Mã Cân Nhập Nhầm:** Cho phép Cán bộ cân click `[Sửa]` trực tiếp mã cân bị nhập nhầm trên dòng, tự động nhảy lại tức thì toàn bộ các chỉ số tổng (Kg tươi, Kg trừ bì %, Kg lúa khô & Thành tiền).
+  - 📱 **Kết xuất Copy Zalo 1-Click:** Tự động tạo tin nhắn định dạng chuẩn để copy gửi Zalo Web/App.
+  - 🖨️ **In Phiếu Cân Nhiệt 80mm & A5:** Mẫu in phiếu sắc nét cho cầu cân.
+- **💰 Quyết Toán Hộ Dân:** Nạp toàn bộ các phiên cân trong đợt của chủ hộ, tính tiền đã tạm ứng và số tiền còn lại phải trả.
+- **🚚 Quản Lý Xe Nhận & Logistics:** Theo dõi biển số xe, tài xế, sản lượng tươi bốc lên xe và trạng thái tải trọng.
+- **📷 Module AI Camera:** Mô phỏng đếm bao lúa tự động qua băng chuyền & OCR đọc biển số xe / CCCD.
+- **📈 Báo Cáo Đa Chiều & Cài Đặt:** Thống kê theo ngày, theo giống lúa (`HT1`, `HG12`, `HG244`, `ĐT100`, `J02`), cài đặt đơn giá thu mua và xuất file Excel (.XLSX).
 
 ---
 
-## 👥 Đối tượng người dùng mục tiêu
+## 🛠️ Công Nghệ Sử Dụng (Tech Stack)
 
-Hệ thống được thiết kế với phân quyền chặt chẽ cho 5 nhóm người dùng chính:
-
-* **Quản trị viên (Administrator):** Quản lý cấu hình hệ thống, danh mục lúa, bảng giá, phân quyền tài khoản và giám sát lịch sử hệ thống.
-* **Nhân viên cân (Weighing Officer):** Trực tiếp thao tác tại bàn cân, nhập khối lượng xe/bao lúa (hoặc tích hợp tự động với cân điện tử), ghi nhận độ ẩm và tạp chất.
-* **Thủ kho (Warehouse):** Xác nhận nhập kho thực tế từ các xe hàng, quản lý số lô, vị trí lưu kho và theo dõi xuất kho.
-* **Kế toán (Accountant):** Đối chiếu phiếu cân, áp đơn giá, tính khấu trừ, lập phiếu thanh toán và thực hiện chuyển khoản hoặc phát tiền mặt cho nông dân/thương lái.
-* **Giám đốc (Director):** Theo dõi báo cáo trực quan (Dashboard), phê duyệt các khoản chi lớn, giám sát tiến độ thu mua và đưa ra quyết định vận hành dựa trên số liệu thực tế.
+- **Frontend:** React 18 + TypeScript + Vite + Lucide React Icons
+- **Design System:** MISA AMIS Enterprise ERP CSS Tokens (Modern Light Header + Dark Slate Sidebar `#0e1e25` + Amber Highlight `#f39c12`)
+- **Backend & Database:** Supabase Auth (Google OAuth + Email Confirmation) & Supabase PostgreSQL
+- **Hosting & Deployment:** Vercel
 
 ---
 
-## 📂 Cấu trúc thư mục dự án
+## 📦 Hướng Dẫn Đưa Code Đã Đóng Gói Lên GitHub
 
-```text
-RiceOS/
-├── .github/                  # Các cấu hình và mẫu của GitHub (Issue, PR templates)
-├── docs/                     # Tài liệu thiết kế hệ thống và nghiệp vụ
-│   ├── adr/                  # Hồ sơ Quyết định Kiến trúc (Architecture Decision Records)
-│   ├── business/             # Tài liệu đặc tả nghiệp vụ chi tiết theo từng vai trò
-│   └── PROJECT_RULES.md      # Quy định vai trò thành viên (PO, AI, CTO Reviewer) và quy trình Phase
-├── src/                      # Mã nguồn ứng dụng (Phát triển ở giai đoạn sau)
-├── tests/                    # Mã nguồn kiểm thử tự động (Phát triển ở giai đoạn sau)
-├── README.md                 # Tài liệu giới thiệu tổng quan dự án (File này)
-├── LICENSE                   # Bản quyền tư nhân thuộc về Phạm Tuân
-├── CONTRIBUTING.md           # Hướng dẫn đóng góp code và quy trình làm việc nhóm
-├── DEVELOPMENT_GUIDE.md      # Hướng dẫn cài đặt môi trường và quy trình phát triển
-├── CODING_STANDARD.md        # Tiêu chuẩn lập trình và quy ước viết code
-├── PROJECT_RULES.md          # Quy tắc quản lý Git, Commit và Cổng chất lượng (CI/CD)
-└── CHANGELOG.md              # Nhật ký ghi nhận các thay đổi qua từng phiên bản
+Mở Terminal tại thư mục dự án `m:\GitHub\RiceOS` và chạy các lệnh sau:
+
+```bash
+# 1. Khởi tạo Git repository local (nếu chưa tạo)
+git init
+
+# 2. Thêm tất cả các tệp vào staging
+git add .
+
+# 3. Tạo commit đầu tiên
+git commit -m "feat: complete RiceOS Enterprise ERP MISA UI system"
+
+# 4. Đổi tên branch chính thành main
+git branch -M main
+
+# 5. Kết nối tới Repository trên GitHub của bạn (Thay URL bằng link GitHub của bạn)
+git remote add origin https://github.com/USERNAME/RiceOS.git
+
+# 6. Push code lên GitHub
+git push -u origin main
 ```
 
 ---
 
-## 🛠️ Hướng dẫn bắt đầu nhanh cho lập trình viên
+## ⚡ Hướng Dẫn Cấu Hình Supabase (Auth & Database)
 
-Vui lòng tham khảo các tài liệu hướng dẫn chuyên sâu sau để bắt đầu làm việc với dự án:
+### Bước 1: Tạo dự án Supabase mới
+1. Truy cập [https://supabase.com](https://supabase.com) và đăng nhập/tạo tài khoản.
+2. Bấm **New Project**, nhập tên dự án: `RiceOS-Production`, chọn Database Password và khu vực (Region: Singapore).
 
-1. Để thiết lập môi trường máy cá nhân: Xem [Hướng dẫn phát triển (DEVELOPMENT_GUIDE.md)](DEVELOPMENT_GUIDE.md).
-2. Để nắm được các chuẩn đặt tên, định dạng code: Xem [Tiêu chuẩn Code (CODING_STANDARD.md)](CODING_STANDARD.md).
-3. Để hiểu quy trình Git Branching và viết Commit: Xem [Quy tắc Git & Commit (PROJECT_RULES.md)](PROJECT_RULES.md).
-4. Quy định vai trò, quy trình phát triển và kiểm duyệt của CTO Reviewer: Xem [Quy tắc dự án (docs/PROJECT_RULES.md)](docs/PROJECT_RULES.md).
-5. Để đóng góp tính năng mới: Xem [Quy trình đóng góp (CONTRIBUTING.md)](CONTRIBUTING.md).
+### Bước 2: Chạy Script khởi tạo Cơ sở Dữ liệu (Migration)
+1. Trong giao diện điều khiển Supabase, chọn mục **SQL Editor** ở thanh menu bên trái.
+2. Bấm **New Query**, mở tệp [supabase_schema.sql](file:///m:/GitHub/RiceOS/supabase_schema.sql) trong dự án này, copy toàn bộ nội dung SQL và dán vào ô truy vấn.
+3. Bấm **Run** để khởi tạo các bảng: `profiles`, `farmers`, `vehicles`, `rice_varieties`, `weighing_sessions`, `weighing_rows`.
 
+### Bước 3: Cấu hình Google OAuth (Tùy chọn cho Đăng nhập Google)
+1. Trong Supabase Dashboard, chuyển tới **Authentication** > **Providers** > **Google**.
+2. Bật công tắc **Enable Google provider**, nhập **Client ID** và **Client Secret** từ Google Cloud Console.
+
+### Bước 4: Lấy API Key kết nối
+1. Vào **Project Settings** > **API**.
+2. Coppy hai giá trị:
+   - **Project URL** (Ví dụ: `https://xyz.supabase.co`)
+   - **anon / public key** (Ví dụ: `eyJhbG...`)
 
 ---
 
-## 📄 Bản quyền và Giấy phép
+## 🌐 Hướng Dẫn Triển Khai Lên Vercel (Deployment)
 
-Dự án này là tài sản trí tuệ riêng tư của **Phạm Tuân**. Mọi hành vi sao chép, phân phối hoặc sử dụng mã nguồn và tài liệu của dự án mà không có sự đồng ý bằng văn bản của chủ sở hữu đều là vi phạm pháp luật. Chi tiết xem tại tệp tin [LICENSE](LICENSE).
+### Bước 1: Kết nối Vercel với GitHub
+1. Truy cập [https://vercel.com](https://vercel.com) và đăng nhập bằng tài khoản GitHub.
+2. Bấm **Add New** > **Project**.
+3. Chọn Repository **`RiceOS`** từ danh sách GitHub của bạn và bấm **Import**.
+
+### Bước 2: Cấu hình Biến Môi Trường (Environment Variables)
+Trong mục **Environment Variables** trên Vercel, thêm 2 biến sau:
+
+| Name | Value (Lấy từ Supabase API) |
+| :--- | :--- |
+| `VITE_SUPABASE_URL` | `https://your-project.supabase.co` |
+| `VITE_SUPABASE_ANON_KEY` | `your-anon-key-here` |
+
+### Bước 3: Deploy
+1. Để nguyên cấu hình mặc định:
+   - **Framework Preset:** Vite
+   - **Build Command:** `npm run build`
+   - **Output Directory:** `dist`
+2. Bấm **Deploy**. Sau 1-2 phút, dự án của bạn sẽ xuất hiện đường link trang web trực tuyến (Ví dụ: `https://riceos.vercel.app`)!
+
+---
+
+## 💻 Hướng Dẫn Chạy Dự Án Ở Local (Development)
+
+```bash
+# 1. Cài đặt các gói phụ thuộc
+npm install
+
+# 2. Tạo tệp .env cấu hình Supabase API Key
+cp .env.example .env
+
+# 3. Chạy Server thử nghiệm local
+npm run dev
+```
+
+Mở trình duyệt truy cập `http://localhost:3000` để trải nghiệm ứng dụng.
+
+---
+
+## 📜 Giấy Phép (License)
+Dự án được bảo hộ bản quyền cho hệ thống **RiceOS Enterprise ERP**.
