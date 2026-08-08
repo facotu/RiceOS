@@ -229,7 +229,7 @@ body {
   position: relative;
 }
 
-/* Modern Dark Slate & Cyan Accent Sidebar */
+/* Modern Dark Slate Sidebar */
 .misa-sidebar {
   width: 230px;
   background: linear-gradient(180deg, #07131b 0%, #0e1e25 100%);
@@ -441,7 +441,8 @@ body {
   left: 0;
   right: 0;
   height: 56px;
-  background-color: #0e1e25;
+  background-color: rgba(14, 30, 37, 0.95);
+  backdrop-filter: blur(10px);
   border-top: 1px solid rgba(255,255,255,0.1);
   z-index: 999;
   justify-content: space-around;
@@ -874,78 +875,123 @@ body {
 }
 
 /* ==========================================================================
-   MOBILE SMARTPHONE OPTIMIZATION (< 768px)
+   SUPER CLEAN MOBILE SMARTPHONE RESPONSIVE MODE (< 768px)
    ========================================================================== */
 
 @media (max-width: 768px) {
   .misa-sidebar {
-    display: none; /* Hide sidebar, use mobile bottom nav */
+    display: none !important; /* Hide desktop sidebar */
   }
 
   .mobile-bottom-nav {
-    display: flex; /* Show touch bottom tab bar */
+    display: flex !important; /* Show touch bottom tab bar */
   }
 
   .misa-content-view {
     padding: 8px;
-    padding-bottom: 64px; /* Space for bottom nav */
-    gap: 10px;
-  }
-
-  .misa-header-center {
-    display: none; /* Hide search input in header on mobile */
-  }
-
-  .misa-header-left {
+    padding-bottom: 68px; /* Safe space for bottom nav */
     gap: 8px;
   }
 
-  .misa-logo span {
-    font-size: 13px;
+  /* Clean Compact Header */
+  .misa-header {
+    height: 44px;
+    padding: 0 10px;
+  }
+
+  .misa-header-center {
+    display: none !important;
+  }
+
+  .misa-branch-picker {
+    padding: 3px 6px;
+    font-size: 10px;
   }
 
   .misa-branch-picker span {
-    display: none; /* Icon only branch picker */
+    display: inline-block;
+    max-width: 110px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
+  .misa-user-profile span {
+    display: none; /* Hide user name string on phone top bar */
+  }
+
+  .misa-user-profile {
+    padding-left: 0;
+    border-left: none;
+  }
+
+  /* Clean Compact Toolbar & Breadcrumb */
   .misa-toolbar {
-    padding: 8px 10px;
+    padding: 8px;
     flex-direction: column;
     align-items: stretch;
+    gap: 8px;
+  }
+
+  .misa-breadcrumb {
+    overflow-x: auto;
+    white-space: nowrap;
+    padding-bottom: 4px;
+    flex-wrap: nowrap;
   }
 
   .misa-command-group {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
     width: 100%;
-    justify-content: space-between;
   }
 
   .misa-btn-cmd {
-    flex: 1;
     justify-content: center;
-    padding: 8px;
+    padding: 7px 8px;
     font-size: 11px;
+    height: 34px;
   }
 
+  /* Scale Session Forms & Fast Input */
   .form-grid {
-    grid-template-columns: 1fr; /* Single column forms on mobile */
+    grid-template-columns: 1fr;
     padding: 10px;
-    gap: 10px;
+    gap: 8px;
   }
 
   .kpi-row {
-    grid-template-columns: 1fr 1fr; /* 2 KPI boxes per row on mobile */
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
   }
 
-  /* Table Horizontal Scroll Wrapper */
+  .kpi-box {
+    padding: 10px;
+    gap: 8px;
+  }
+
+  .kpi-num {
+    font-size: 15px;
+  }
+
+  /* Horizontal DataGrid Scroll for Mobile */
   .panel-grid-container {
+    border-radius: 8px;
     overflow-x: auto;
   }
 
-  /* Sticky Summary Bar on Scale Page Mobile */
+  .datagrid th, .datagrid td {
+    padding: 6px 8px;
+    font-size: 11px;
+  }
+
+  /* Sticky Summary Bar on Mobile */
   .mobile-sticky-summary {
     position: sticky;
     bottom: 56px;
     z-index: 80;
-    box-shadow: 0 -4px 16px rgba(0,0,0,0.15);
+    box-shadow: 0 -4px 16px rgba(0,0,0,0.2);
+    border-radius: 8px 8px 0 0;
   }
 }

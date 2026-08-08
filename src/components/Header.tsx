@@ -28,11 +28,11 @@ export const Header: React.FC<HeaderProps> = ({
       <div className="misa-header-left">
         <div className="misa-logo">
           <div className="misa-logo-icon">🌾</div>
-          <span>RiceOS <span style={{ fontWeight: 400, fontSize: '13px', color: '#64748b' }}>| KẾ TOÁN & QUẢN LÝ CÂN</span></span>
+          <span>RiceOS</span>
         </div>
 
         <div className="misa-branch-picker" title="Đổi chi nhánh / cầu cân">
-          <Building2 size={14} color="#0b6bbf" />
+          <Building2 size={13} color="#0b6bbf" />
           <span>{activeBranch}</span>
           <ChevronDown size={10} />
         </div>
@@ -43,7 +43,7 @@ export const Header: React.FC<HeaderProps> = ({
           <input
             type="text"
             className="misa-search-input"
-            placeholder="Tìm kiếm thông minh chủ ruộng, giống lúa, xe nhận hoặc phiên cân..."
+            placeholder="Tìm kiếm thông minh chủ ruộng, giống lúa, xe nhận..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
           />
@@ -55,8 +55,7 @@ export const Header: React.FC<HeaderProps> = ({
 
       <div className="misa-header-right">
         <button className="misa-icon-btn" title="Hướng dẫn sử dụng" onClick={() => alert('🎬 Đã mở Video Hướng dẫn sử dụng Quy trình Cân Lúa RiceOS!')}>
-          <Video size={18} color="#10b981" />
-          <span style={{ fontSize: '12px', marginLeft: 4, fontWeight: 600, color: '#10b981' }}>Hướng dẫn</span>
+          <Video size={17} color="#10b981" />
         </button>
 
         {/* Notifications Dropdown Toggle */}
@@ -66,7 +65,7 @@ export const Header: React.FC<HeaderProps> = ({
             title="Thông báo hệ thống"
             onClick={() => setShowNotifications(!showNotifications)}
           >
-            <Bell size={18} />
+            <Bell size={17} />
             {unreadCount > 0 && <span className="misa-badge">{unreadCount}</span>}
           </button>
 
@@ -74,9 +73,9 @@ export const Header: React.FC<HeaderProps> = ({
           {showNotifications && (
             <div style={{
               position: 'absolute',
-              right: 0,
+              right: -10,
               top: 36,
-              width: 340,
+              width: 320,
               backgroundColor: '#ffffff',
               border: '1px solid #cbd5e1',
               borderRadius: 12,
@@ -101,7 +100,7 @@ export const Header: React.FC<HeaderProps> = ({
                 </button>
               </div>
 
-              <div style={{ maxHeight: 300, overflowY: 'auto' }}>
+              <div style={{ maxHeight: 280, overflowY: 'auto' }}>
                 {notifications && notifications.map(n => (
                   <div
                     key={n.id}
@@ -125,20 +124,11 @@ export const Header: React.FC<HeaderProps> = ({
           )}
         </div>
 
-        <button className="misa-icon-btn" title="Cài đặt">
-          <Settings size={18} />
-        </button>
-
         <div className="misa-user-profile">
           <div className="misa-avatar">
             {currentUser.full_name ? currentUser.full_name.charAt(0).toUpperCase() : 'U'}
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <span style={{ fontSize: '12px', fontWeight: 600, lineHeight: 1.2 }}>{currentUser.full_name}</span>
-            <span style={{ fontSize: '10px', color: '#64748b' }}>
-              {currentUser.role === 'admin' ? 'Quản trị viên (Admin)' : currentUser.role === 'editor' ? 'Cán bộ cân' : 'Quyền Giám sát (View)'}
-            </span>
-          </div>
+          <span style={{ fontSize: '11px', fontWeight: 600 }}>{currentUser.full_name}</span>
         </div>
       </div>
     </header>

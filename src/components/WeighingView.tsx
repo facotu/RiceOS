@@ -22,7 +22,10 @@ import {
   Camera,
   Image,
   Calculator,
-  CornerDownLeft
+  CornerDownLeft,
+  ChevronDown,
+  ChevronUp,
+  User
 } from 'lucide-react';
 
 interface WeighingViewProps {
@@ -84,6 +87,7 @@ export const WeighingView: React.FC<WeighingViewProps> = ({
   const [selectedFarmerId, setSelectedFarmerId] = useState<string>(MOCK_FARMERS[0].id);
   const [selectedVehicleId, setSelectedVehicleId] = useState<string>(MOCK_VEHICLES[0].id);
   const [selectedVarietyCode, setSelectedVarietyCode] = useState<string>('HT1');
+  const [showMetadataForm, setShowMetadataForm] = useState(false); // Collapsible on mobile for clean screen
   
   // Tare Deduction Mode (% vs kg/bag)
   const [tareFormula, setTareFormula] = useState<'percent' | 'kg_fixed'>(settings.tare_formula || 'percent');
@@ -297,16 +301,16 @@ Cảm ơn quý hộ dân đã đồng hành cùng RiceOS!`;
 
         <div className="misa-command-group">
           <button className="misa-btn-cmd primary" onClick={handleSaveSession}>
-            <Save size={14} /> Ghi nhập phiên cân
+            <Save size={14} /> Ghi nhập
           </button>
           <button className="misa-btn-cmd success" onClick={() => setShowZaloModal(true)}>
             <Share2 size={14} /> Copy Zalo
           </button>
           <button className="misa-btn-cmd" onClick={handleExportPNG}>
-            <Image size={14} /> Xuất ảnh PNG
+            <Image size={14} /> Xuất ảnh
           </button>
           <button className="misa-btn-cmd" onClick={() => setShowTicketModal(true)}>
-            <Printer size={14} /> In phiếu nhiệt
+            <Printer size={14} /> In phiếu
           </button>
           <button 
             className={`misa-btn-cmd ${showAiWidget ? 'primary' : ''}`} 
@@ -318,140 +322,175 @@ Cảm ơn quý hộ dân đã đồng hành cùng RiceOS!`;
       </div>
 
       {/* Main Grid: Form Left + Fast Input Center + AI Widget Right */}
-      <div style={{ display: 'grid', gridTemplateColumns: showAiWidget ? '1fr 300px' : '1fr', gap: 16 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: showAiWidget ? '1fr 300px' : '1fr', gap: 12 }}>
         <div>
-          {/* Header Metadata Inputs */}
-          <div className="form-grid">
-            <div className="form-group">
-              <label className="form-label">Chủ Ruộng (Hộ Dân) *</label>
-              <select
-                className="form-control"
-                value={selectedFarmerId}
-                onChange={(e) => setSelectedFarmerId(e.target.value)}
-              >
-                {MOCK_FARMERS.map(f => (
-                  <option key={f.id} value={f.id}>
-                    {f.name} - SĐT: {f.phone} ({f.field_name})
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Thông tin CCCD / Nơi cấp</label>
-              <input
-                type="text"
-                className="form-control"
-                value={`${currentFarmer.cccd} - ${currentFarmer.cccd_issue_place}`}
-                readOnly
-                style={{ backgroundColor: '#f8fafc' }}
-              />
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Xứ đồng / Lô / Diện tích</label>
-              <input
-                type="text"
-                className="form-control"
-                value={`${currentFarmer.field_name} - ${currentFarmer.plot_no} (${currentFarmer.area_sao} sào)`}
-                readOnly
-                style={{ backgroundColor: '#f8fafc' }}
-              />
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Cán bộ trực cân</label>
-              <input
-                type="text"
-                className="form-control"
-                value={`${currentUser.full_name} (${currentUser.role.toUpperCase()})`}
-                readOnly
-                style={{ backgroundColor: '#f8fafc' }}
-              />
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Xe Nhận Lúa *</label>
-              <select
-                className="form-control"
-                value={selectedVehicleId}
-                onChange={(e) => setSelectedVehicleId(e.target.value)}
-              >
-                {MOCK_VEHICLES.map(v => (
-                  <option key={v.id} value={v.id}>
-                    {v.plate_number} - Tài xế: {v.driver_name} ({v.driver_phone})
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Giống Lúa Thu Mua *</label>
-              <select
-                className="form-control"
-                value={selectedVarietyCode}
-                onChange={(e) => setSelectedVarietyCode(e.target.value)}
-              >
-                {Object.entries(settings.variety_prices).map(([code, price]) => (
-                  <option key={code} value={code}>
-                    Giống lúa {code} ({price.toLocaleString()} đ/kg)
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Công thức Trừ Bì *</label>
-              <div style={{ display: 'flex', gap: 6 }}>
-                <select
-                  className="form-control"
-                  value={tareFormula}
-                  onChange={(e) => setTareFormula(e.target.value as any)}
-                  style={{ width: 130 }}
-                >
-                  <option value="percent">Trừ % độ ẩm</option>
-                  <option value="kg_fixed">Trừ kg/bao</option>
-                </select>
-                {tareFormula === 'percent' ? (
-                  <input
-                    type="number"
-                    step="0.1"
-                    className="form-control"
-                    value={tarePercent}
-                    onChange={(e) => setTarePercent(parseFloat(e.target.value) || 0)}
-                    placeholder="% Bì"
-                    style={{ width: 90 }}
-                  />
-                ) : (
-                  <input
-                    type="number"
-                    step="0.1"
-                    className="form-control"
-                    value={tareFixedKg}
-                    onChange={(e) => setTareFixedKg(parseFloat(e.target.value) || 0)}
-                    placeholder="kg/bao"
-                    style={{ width: 90 }}
-                  />
-                )}
+          {/* Mobile Collapsible Header Information Card */}
+          <div style={{
+            margin: '12px 12px 0 12px',
+            backgroundColor: '#ffffff',
+            border: '1px solid #cbd5e1',
+            borderRadius: 10,
+            overflow: 'hidden'
+          }}>
+            <div
+              onClick={() => setShowMetadataForm(!showMetadataForm)}
+              style={{
+                padding: '10px 14px',
+                backgroundColor: '#f8fafc',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                fontSize: 12,
+                fontWeight: 700,
+                color: '#0b6bbf'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <User size={15} />
+                <span>Chủ lúa: <strong>{currentFarmer.name}</strong> ({currentFarmer.field_name} - {selectedVarietyCode})</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#64748b', fontSize: 11 }}>
+                <span>{showMetadataForm ? 'Ẩn chi tiết' : 'Đổi chủ lúa / Xe'}</span>
+                {showMetadataForm ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
               </div>
             </div>
 
-            <div className="form-group">
-              <label className="form-label">Tiền Đã Tạm Ứng (VNĐ)</label>
-              <input
-                type="number"
-                step="100000"
-                className="form-control"
-                value={advancePayment}
-                onChange={(e) => setAdvancePayment(parseFloat(e.target.value) || 0)}
-                placeholder="0 đ"
-              />
-            </div>
+            {/* Collapsible Form Controls */}
+            {showMetadataForm && (
+              <div className="form-grid">
+                <div className="form-group">
+                  <label className="form-label">Chủ Ruộng (Hộ Dân) *</label>
+                  <select
+                    className="form-control"
+                    value={selectedFarmerId}
+                    onChange={(e) => setSelectedFarmerId(e.target.value)}
+                  >
+                    {MOCK_FARMERS.map(f => (
+                      <option key={f.id} value={f.id}>
+                        {f.name} - SĐT: {f.phone} ({f.field_name})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Thông tin CCCD / Nơi cấp</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={`${currentFarmer.cccd} - ${currentFarmer.cccd_issue_place}`}
+                    readOnly
+                    style={{ backgroundColor: '#f8fafc' }}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Xứ đồng / Lô / Diện tích</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={`${currentFarmer.field_name} - ${currentFarmer.plot_no} (${currentFarmer.area_sao} sào)`}
+                    readOnly
+                    style={{ backgroundColor: '#f8fafc' }}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Cán bộ trực cân</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={`${currentUser.full_name} (${currentUser.role.toUpperCase()})`}
+                    readOnly
+                    style={{ backgroundColor: '#f8fafc' }}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Xe Nhận Lúa *</label>
+                  <select
+                    className="form-control"
+                    value={selectedVehicleId}
+                    onChange={(e) => setSelectedVehicleId(e.target.value)}
+                  >
+                    {MOCK_VEHICLES.map(v => (
+                      <option key={v.id} value={v.id}>
+                        {v.plate_number} - Tài xế: {v.driver_name} ({v.driver_phone})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Giống Lúa Thu Mua *</label>
+                  <select
+                    className="form-control"
+                    value={selectedVarietyCode}
+                    onChange={(e) => setSelectedVarietyCode(e.target.value)}
+                  >
+                    {Object.entries(settings.variety_prices).map(([code, price]) => (
+                      <option key={code} value={code}>
+                        Giống lúa {code} ({price.toLocaleString()} đ/kg)
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Công thức Trừ Bì *</label>
+                  <div style={{ display: 'flex', gap: 6 }}>
+                    <select
+                      className="form-control"
+                      value={tareFormula}
+                      onChange={(e) => setTareFormula(e.target.value as any)}
+                      style={{ width: 130 }}
+                    >
+                      <option value="percent">Trừ % độ ẩm</option>
+                      <option value="kg_fixed">Trừ kg/bao</option>
+                    </select>
+                    {tareFormula === 'percent' ? (
+                      <input
+                        type="number"
+                        step="0.1"
+                        className="form-control"
+                        value={tarePercent}
+                        onChange={(e) => setTarePercent(parseFloat(e.target.value) || 0)}
+                        placeholder="% Bì"
+                        style={{ width: 90 }}
+                      />
+                    ) : (
+                      <input
+                        type="number"
+                        step="0.1"
+                        className="form-control"
+                        value={tareFixedKg}
+                        onChange={(e) => setTareFixedKg(parseFloat(e.target.value) || 0)}
+                        placeholder="kg/bao"
+                        style={{ width: 90 }}
+                      />
+                    )}
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Tiền Đã Tạm Ứng (VNĐ)</label>
+                  <input
+                    type="number"
+                    step="100000"
+                    className="form-control"
+                    value={advancePayment}
+                    onChange={(e) => setAdvancePayment(parseFloat(e.target.value) || 0)}
+                    placeholder="0 đ"
+                  />
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* Fast Entry Numeric Bar (Optimized for Mobile Smartphone Touch Numpad) */}
+          {/* Fast Entry Numeric Bar (Clean Big Buttons for Smartphones) */}
           <div style={{
-            margin: '0 12px 12px 12px',
+            margin: '12px',
             padding: 14,
             backgroundColor: '#f0f9ff',
             border: '2px dashed #0284c7',
@@ -459,7 +498,7 @@ Cảm ơn quý hộ dân đã đồng hành cùng RiceOS!`;
           }}>
             <form onSubmit={handleFastAddRow} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               <div style={{ fontSize: 13, fontWeight: 800, color: '#0369a1', display: 'flex', alignItems: 'center', gap: 6 }}>
-                <Calculator size={18} color="#0284c7" /> NHẬP NHANH MÃ CÂN ĐIỆN THOẠI:
+                <Calculator size={18} color="#0284c7" /> NHẬP NHANH MÃ CÂN LÚA:
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.5fr', gap: 10 }}>
@@ -518,7 +557,7 @@ Cảm ơn quý hộ dân đã đồng hành cùng RiceOS!`;
                   <tr>
                     <th style={{ width: 40, textAlign: 'center' }}>STT</th>
                     <th>Thời gian</th>
-                    <th style={{ width: 90 }}>Số bao</th>
+                    <th style={{ width: 85 }}>Số bao</th>
                     <th>Kg Tươi</th>
                     <th>Trừ bì ({tareFormula === 'percent' ? `${tarePercent}%` : `${tareFixedKg}kg/bao`})</th>
                     <th>Kg Khô</th>
@@ -543,7 +582,7 @@ Cảm ơn quý hộ dân đã đồng hành cùng RiceOS!`;
                               className="form-control"
                               value={editBagCount}
                               onChange={(e) => setEditBagCount(parseInt(e.target.value) || 0)}
-                              style={{ width: 70, textAlign: 'center', fontWeight: 700, height: 32 }}
+                              style={{ width: 65, textAlign: 'center', fontWeight: 700, height: 30 }}
                             />
                           ) : (
                             <strong>{row.bag_count} bao</strong>
@@ -559,7 +598,7 @@ Cảm ơn quý hộ dân đã đồng hành cùng RiceOS!`;
                               className="form-control"
                               value={editFreshKg}
                               onChange={(e) => setEditFreshKg(parseFloat(e.target.value) || 0)}
-                              style={{ width: 90, fontWeight: 700, color: '#0284c7', height: 32 }}
+                              style={{ width: 85, fontWeight: 700, color: '#0284c7', height: 30 }}
                             />
                           ) : (
                             <strong style={{ color: '#0284c7' }}>{row.fresh_kg.toLocaleString()} kg</strong>
@@ -637,39 +676,39 @@ Cảm ơn quý hộ dân đã đồng hành cùng RiceOS!`;
           <div className="mobile-sticky-summary" style={{
             backgroundColor: '#ecfdf5',
             borderTop: '2px solid #10b981',
-            padding: 14,
+            padding: 12,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             flexWrap: 'wrap',
-            gap: 12
+            gap: 10
           }}>
             <div>
-              <span style={{ fontSize: 11, color: '#047857', fontWeight: 600 }}>TỔNG CỘNG PHIÊN CÂN:</span>
-              <div style={{ fontSize: 16, fontWeight: 800, color: '#065f46' }}>
-                {totalBags.toLocaleString()} bao | {totalFreshKg.toLocaleString()} kg Tươi
+              <span style={{ fontSize: 10, color: '#047857', fontWeight: 600 }}>TỔNG CỘNG:</span>
+              <div style={{ fontSize: 15, fontWeight: 800, color: '#065f46' }}>
+                {totalBags.toLocaleString()} bao | {totalFreshKg.toLocaleString()} kg
               </div>
             </div>
 
             <div>
-              <span style={{ fontSize: 11, color: '#047857', fontWeight: 600 }}>KG KHÔ THỰC TÍNH:</span>
-              <div style={{ fontSize: 18, fontWeight: 800, color: '#0284c7' }}>
-                {totalDryKg.toFixed(1)} kg Khô
+              <span style={{ fontSize: 10, color: '#047857', fontWeight: 600 }}>KG KHÔ:</span>
+              <div style={{ fontSize: 16, fontWeight: 800, color: '#0284c7' }}>
+                {totalDryKg.toFixed(1)} kg
               </div>
             </div>
 
             <div>
-              <span style={{ fontSize: 11, color: '#047857', fontWeight: 600 }}>TỔNG THÀNH TIỀN:</span>
-              <div style={{ fontSize: 20, fontWeight: 800, color: '#d97706' }}>
-                {totalAmount.toLocaleString()} VNĐ
+              <span style={{ fontSize: 10, color: '#047857', fontWeight: 600 }}>THÀNH TIỀN:</span>
+              <div style={{ fontSize: 18, fontWeight: 800, color: '#d97706' }}>
+                {totalAmount.toLocaleString()} đ
               </div>
             </div>
 
             {advancePayment > 0 && (
               <div>
-                <span style={{ fontSize: 11, color: '#047857', fontWeight: 600 }}>CÒN LẠI THANH TOÁN:</span>
-                <div style={{ fontSize: 18, fontWeight: 800, color: '#ef4444' }}>
-                  {remainingPayment.toLocaleString()} VNĐ
+                <span style={{ fontSize: 10, color: '#047857', fontWeight: 600 }}>CÒN LẠI:</span>
+                <div style={{ fontSize: 16, fontWeight: 800, color: '#ef4444' }}>
+                  {remainingPayment.toLocaleString()} đ
                 </div>
               </div>
             )}

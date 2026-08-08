@@ -22,19 +22,19 @@ export const Toolbar: React.FC<ToolbarProps> = ({
       case 'dashboard':
         return {
           module: 'Tổng Quan',
-          page: 'Dashboard Chỉ Số & AVA AI Insights',
+          page: 'Dashboard Insights',
           icon: <Home size={13} color="#0b6bbf" />
         };
       case 'fieldmap':
         return {
           module: 'Vùng Trồng GIS',
-          page: 'Bản Đồ Vệ Tinh Google Maps & Hộ Sản Xuất Theo Lô',
+          page: 'Bản Đồ Google Maps Lô Ruộng',
           icon: <MapPin size={13} color="#10b981" />
         };
       case 'weighing':
         return {
           module: 'Thu Mua Lúa',
-          page: 'Phiên Cân Lúa Tươi Thực Địa (Scale Session)',
+          page: 'Phiên Cân Lúa Tươi Thực Địa',
           icon: <Scale size={13} color="#10b981" />
         };
       case 'settlement':
@@ -46,7 +46,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
       case 'vehicles':
         return {
           module: 'Vận Tải & Logistics',
-          page: 'Quản Lý Xe Nhận & Tải Trọng Cầu Cân',
+          page: 'Quản Lý Xe Nhận & Tải Trọng',
           icon: <Truck size={13} color="#0284c7" />
         };
       case 'history':
@@ -58,19 +58,19 @@ export const Toolbar: React.FC<ToolbarProps> = ({
       case 'reports':
         return {
           module: 'Báo Cáo Thống Kê',
-          page: 'Phân Tích Sản Lượng & Doanh Thu Thu Mua',
+          page: 'Phân Tích Sản Lượng & Doanh Thu',
           icon: <LineChart size={13} color="#059669" />
         };
       case 'aicamera':
         return {
           module: 'Công Nghệ AI',
-          page: 'AI Camera Đếm Bao & OCR Biển Số Xe',
+          page: 'AI Camera Đếm Bao & OCR',
           icon: <Camera size={13} color="#8b5cf6" />
         };
       case 'settings':
         return {
           module: 'Hệ Thống',
-          page: 'Cài Đặt Đơn Giá, Trừ Bì & Danh Mục Xứ Đồng / Lô',
+          page: 'Cài Đặt Đơn Giá & Trừ Bì',
           icon: <Sliders size={13} color="#64748b" />
         };
       default:
@@ -87,7 +87,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   return (
     <div className="misa-toolbar">
       {/* Modern Capsule Breadcrumb Navigation */}
-      <div className="misa-breadcrumb" style={{ gap: 8 }}>
+      <div className="misa-breadcrumb" style={{ gap: 6 }}>
         <div style={{
           display: 'flex',
           alignItems: 'center',
@@ -95,15 +95,16 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           backgroundColor: '#f0f9ff',
           border: '1px solid #bae6fd',
           color: '#0369a1',
-          padding: '3px 10px',
+          padding: '3px 8px',
           borderRadius: 16,
           fontSize: 11,
-          fontWeight: 700
+          fontWeight: 700,
+          whiteSpace: 'nowrap'
         }}>
-          <span>🌾 RiceOS Enterprise</span>
+          <span>🌾 RiceOS</span>
         </div>
 
-        <ChevronRight size={14} color="#94a3b8" />
+        <ChevronRight size={12} color="#94a3b8" />
 
         <div style={{
           display: 'flex',
@@ -112,16 +113,17 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           backgroundColor: '#ecfdf5',
           border: '1px solid #a7f3d0',
           color: '#047857',
-          padding: '3px 10px',
+          padding: '3px 8px',
           borderRadius: 16,
           fontSize: 11,
-          fontWeight: 700
+          fontWeight: 700,
+          whiteSpace: 'nowrap'
         }}>
           {breadcrumb.icon}
           <span>{breadcrumb.module}</span>
         </div>
 
-        <ChevronRight size={14} color="#94a3b8" />
+        <ChevronRight size={12} color="#94a3b8" />
 
         <div style={{
           display: 'flex',
@@ -129,11 +131,11 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           gap: 6,
           backgroundColor: '#0e1e25',
           color: '#ffffff',
-          padding: '4px 12px',
+          padding: '4px 10px',
           borderRadius: 16,
           fontSize: 11,
           fontWeight: 700,
-          boxShadow: '0 2px 6px rgba(14, 30, 37, 0.25)'
+          whiteSpace: 'nowrap'
         }}>
           <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#f39c12', display: 'inline-block' }} />
           <span>{breadcrumb.page}</span>
@@ -143,13 +145,13 @@ export const Toolbar: React.FC<ToolbarProps> = ({
       {/* Action Command Group */}
       <div className="misa-command-group">
         <button className="misa-btn-cmd primary" onClick={onQuickAdd}>
-          <Plus size={14} /> Thêm phiên cân
+          <Plus size={14} /> Thêm cân
         </button>
         <button className="misa-btn-cmd success" onClick={onExportZalo}>
-          <Share2 size={14} /> Kết xuất Zalo
+          <Share2 size={14} /> Zalo
         </button>
         <button className="misa-btn-cmd" onClick={onPrintReport}>
-          <Printer size={14} /> In báo cáo
+          <Printer size={14} /> In phiếu
         </button>
         <button className="misa-btn-cmd" onClick={onRefreshData}>
           <RefreshCw size={14} /> Nạp lại
