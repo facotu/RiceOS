@@ -130,7 +130,11 @@ export const App: React.FC = () => {
   }
 
   return (
-    <MainLayout currentUser={currentUser}>
+    <MainLayout
+      currentUser={currentUser}
+      notifications={notifications}
+      onMarkNotificationRead={handleMarkNotificationRead}
+    >
       {({ activeTab, onTabChange }) => {
         const visibleSessions = currentUser.role === 'admin'
           ? sessions

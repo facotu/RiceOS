@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { UserProfile } from '../types';
+import { UserProfile, AppNotification } from '../types';
 import { Header } from './Header';
 import { Sidebar, NavTabId } from './Sidebar';
 import { Toolbar } from './Toolbar';
@@ -7,10 +7,17 @@ import '../styles/misa-theme.css';
 
 interface MainLayoutProps {
   currentUser: UserProfile;
+  notifications: AppNotification[];
+  onMarkNotificationRead: (id: string) => void;
   children: (props: { activeTab: NavTabId; onTabChange: (tab: NavTabId) => void }) => React.ReactNode;
 }
 
-export const MainLayout: React.FC<MainLayoutProps> = ({ currentUser, children }) => {
+export const MainLayout: React.FC<MainLayoutProps> = ({
+  currentUser,
+  notifications,
+  onMarkNotificationRead,
+  children
+}) => {
   const [activeTab, setActiveTab] = useState<NavTabId>('dashboard');
   const [collapsed, setCollapsed] = useState(false);
   const [activeBranch, setActiveBranch] = useState('Cầu Cân An Trạch (Hòa Tiến)');
@@ -40,6 +47,8 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ currentUser, children })
         onBranchChange={setActiveBranch}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
+        notifications={notifications}
+        onMarkNotificationRead={onMarkNotificationRead}
       />
 
       <div className="misa-workspace">

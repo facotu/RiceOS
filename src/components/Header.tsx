@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { UserProfile, AppNotification } from '../types';
-import { Sparkles, Video, Bell, Settings, Building2, ChevronDown, Check, X } from 'lucide-react';
+import { Sparkles, Video, Bell, Settings, Building2, ChevronDown, X } from 'lucide-react';
 
 interface HeaderProps {
   currentUser: UserProfile;
@@ -21,7 +21,7 @@ export const Header: React.FC<HeaderProps> = ({
   onMarkNotificationRead
 }) => {
   const [showNotifications, setShowNotifications] = useState(false);
-  const unreadCount = notifications.filter(n => !n.read).length;
+  const unreadCount = notifications ? notifications.filter(n => !n.read).length : 0;
 
   return (
     <header className="misa-header">
@@ -102,7 +102,7 @@ export const Header: React.FC<HeaderProps> = ({
               </div>
 
               <div style={{ maxHeight: 300, overflowY: 'auto' }}>
-                {notifications.map(n => (
+                {notifications && notifications.map(n => (
                   <div
                     key={n.id}
                     style={{

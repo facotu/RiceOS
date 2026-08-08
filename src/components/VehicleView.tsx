@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Vehicle, UserProfile } from '../types';
-import { Truck, Share2, CheckCircle, Clock, Image, Plus, Trash2, Edit3, X } from 'lucide-react';
+import { Truck, Share2, CheckCircle, Clock, Image, Plus } from 'lucide-react';
 
 interface VehicleViewProps {
   currentUser: UserProfile;
