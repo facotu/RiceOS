@@ -46,6 +46,9 @@ interface AppContextType {
   updateUserRole: (id: string, role: UserRole) => void;
   sendActivationEmail: (id: string) => void;
   registerNewUser: (fullName: string, email: string, phone: string) => void;
+  addUser: (userData: Omit<Profile, 'id' | 'created_at'>) => void;
+  updateUser: (id: string, userData: Partial<Profile>) => void;
+  deleteUser: (id: string) => void;
 
   // Master Data CRUD Actions
   addFarmer: (farmer: Omit<Farmer, 'id' | 'created_at'>) => void;
@@ -196,6 +199,36 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       },
       ...prev
     ]);
+  };
+
+  const addUser = (userData: Omit<Profile, 'id' | 'created_at'>) => {
+    const newUser: Profile = {
+      ...userData,
+      id: `usr-${Date.now()}`,
+      created_at: new Date().toISOString()
+    };
+    const updated = [newUser, ...profiles];
+    setProfiles(updated);
+    saveStorage('riceos_profiles', updated);
+    if (newUser.role === 'staff' || newUser.is_active) {
+      addStaff({
+        user_id: newUser.id,
+        full_name: newUser.full_name,
+        phone: newUser.phone || '0900000000'
+      });
+    }
+  };
+
+  const updateUser = (id: string, userData: Partial<Profile>) => {
+    const updated = profiles.map(p => p.id === id ? { ...p, ...userData } : p);
+    setProfiles(updated);
+    saveStorage('riceos_profiles', updated);
+  };
+
+  const deleteUser = (id: string) => {
+    const updated = profiles.filter(p => p.id !== id);
+    setProfiles(updated);
+    saveStorage('riceos_profiles', updated);
   };
 
   const approveUser = (id: string) => {
@@ -592,6 +625,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         updateUserRole,
         sendActivationEmail,
         registerNewUser,
+        addUser,
+        updateUser,
+        deleteUser,
         addFarmer,
         updateFarmer,
         deleteFarmer,

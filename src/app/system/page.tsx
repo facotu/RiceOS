@@ -15,31 +15,114 @@ import {
   AlertTriangle,
   Database,
   Download,
-  Upload,
   Percent,
-  Coins
+  Plus,
+  Edit2,
+  Trash2,
+  X,
+  UserPlus,
+  Save,
+  Phone
 } from 'lucide-react';
-import { UserRole } from '@/types/database.types';
+import { Profile, UserRole, UserStatus } from '@/types/database.types';
 
 export default function SystemPage() {
-  const { profiles, approveUser, updateUserRole, sendActivationEmail, isAdmin, farmers, sessions } = useApp();
+  const {
+    profiles,
+    approveUser,
+    updateUserRole,
+    sendActivationEmail,
+    addUser,
+    updateUser,
+    deleteUser,
+    isAdmin,
+    farmers,
+    sessions
+  } = useApp();
+
   const [activeTab, setActiveTab] = useState<'members' | 'config' | 'backup'>('members');
   const [searchQuery, setSearchQuery] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
 
-  // Config states
+  // User CRUD Modal State
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingProfile, setEditingProfile] = useState<Profile | null>(null);
+  const [userForm, setUserForm] = useState<{
+    full_name: string;
+    email: string;
+    phone: string;
+    role: UserRole;
+    status: UserStatus;
+    is_active: boolean;
+  }>({
+    full_name: '',
+    email: '',
+    phone: '',
+    role: 'staff',
+    status: 'active',
+    is_active: true
+  });
+
+  // System Config states
   const [defaultTare, setDefaultTare] = useState(12);
   const [currencyUnit, setCurrencyUnit] = useState('VNĐ');
+
+  const handleOpenAddModal = () => {
+    setEditingProfile(null);
+    setUserForm({
+      full_name: '',
+      email: '',
+      phone: '',
+      role: 'staff',
+      status: 'active',
+      is_active: true
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleOpenEditModal = (profile: Profile) => {
+    setEditingProfile(profile);
+    setUserForm({
+      full_name: profile.full_name,
+      email: profile.email || '',
+      phone: profile.phone || '',
+      role: profile.role,
+      status: profile.status || (profile.is_active ? 'active' : 'pending'),
+      is_active: profile.is_active
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleSaveUser = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (editingProfile) {
+      updateUser(editingProfile.id, {
+        ...userForm,
+        is_active: userForm.status === 'active'
+      });
+      setSuccessMsg(`Đã cập nhật thông tin thành viên ${userForm.full_name}!`);
+    } else {
+      addUser({
+        ...userForm,
+        is_active: userForm.status === 'active'
+      });
+      setSuccessMsg(`Đã thêm thành viên mới ${userForm.full_name}!`);
+    }
+    setIsModalOpen(false);
+    setTimeout(() => setSuccessMsg(''), 3500);
+  };
+
+  const handleDeleteUser = (id: string, name: string) => {
+    if (confirm(`Bạn có chắc chắn muốn XÓA vĩnh viễn tài khoản thành viên "${name}"?`)) {
+      deleteUser(id);
+      setSuccessMsg(`Đã xóa tài khoản thành viên ${name}!`);
+      setTimeout(() => setSuccessMsg(''), 3500);
+    }
+  };
 
   const handleApprove = (id: string, name: string) => {
     approveUser(id);
     setSuccessMsg(`Đã duyệt kích hoạt tài khoản và gửi email xác nhận cho ${name}!`);
-    setTimeout(() => setSuccessMsg(''), 3500);
-  };
-
-  const handleRoleChange = (id: string, role: UserRole, name: string) => {
-    updateUserRole(id, role);
-    setSuccessMsg(`Đã cấp quyền mới (${role.toUpperCase()}) cho ${name}!`);
     setTimeout(() => setSuccessMsg(''), 3500);
   };
 
@@ -89,22 +172,33 @@ export default function SystemPage() {
             Quản Trị Hệ Thống RiceOS
           </h1>
           <p className="text-xs text-slate-300">
-            Duyệt thành viên mới, phân quyền, cấu hình tham số cân lúa và sao lưu dữ liệu hệ thống
+            Thêm, Sửa, Xóa thành viên, duyệt kích hoạt, phân quyền, cấu hình tham số cân lúa và sao lưu dữ liệu
           </p>
         </div>
 
-        {successMsg && (
-          <div className="p-3 rounded-xl bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 text-xs font-bold flex items-center gap-2 animate-bounce">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-            {successMsg}
-          </div>
-        )}
+        <div className="flex items-center gap-3">
+          {successMsg && (
+            <div className="p-2.5 rounded-xl bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 text-xs font-bold flex items-center gap-2 animate-bounce">
+              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+              {successMsg}
+            </div>
+          )}
+
+          {isAdmin && activeTab === 'members' && (
+            <button
+              onClick={handleOpenAddModal}
+              className="py-2.5 px-4 rounded-xl bg-gradient-to-r from-gold-400 via-gold-500 to-amber-500 hover:brightness-110 text-slate-950 font-extrabold text-xs shadow-lg flex items-center gap-2"
+            >
+              <UserPlus className="w-4 h-4" /> Thêm Thành Viên Mới
+            </button>
+          )}
+        </div>
       </div>
 
       {!isAdmin && (
         <div className="p-4 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-300 text-xs font-semibold flex items-center gap-3">
           <AlertTriangle className="w-5 h-5 text-gold-400 flex-shrink-0" />
-          <span>Bạn đang ở chế độ xem thử. Hãy chuyển sang vai trò <strong>Admin</strong> trên thanh Sidebar hoặc Header để duyệt thành viên & thay đổi cấu hình hệ thống.</span>
+          <span>Bạn đang ở chế độ xem thử. Hãy chuyển sang vai trò <strong>Admin</strong> trên thanh Sidebar hoặc Header để thực hiện Thêm, Sửa, Xóa thành viên.</span>
         </div>
       )}
 
@@ -118,7 +212,7 @@ export default function SystemPage() {
               : 'border-transparent text-slate-400 hover:text-white'
           }`}
         >
-          <UserCheck className="w-4 h-4" /> Duyệt & Phân Quyền Thành Viên ({pendingCount > 0 ? `${pendingCount} chờ` : profiles.length})
+          <UserCheck className="w-4 h-4" /> Quản Lý Thành Viên ({pendingCount > 0 ? `${pendingCount} chờ duyệt` : profiles.length})
         </button>
         <button
           onClick={() => setActiveTab('config')}
@@ -221,7 +315,7 @@ export default function SystemPage() {
                         <select
                           value={p.role}
                           disabled={!isAdmin}
-                          onChange={e => handleRoleChange(p.id, e.target.value as UserRole, p.full_name)}
+                          onChange={e => updateUserRole(p.id, e.target.value as UserRole)}
                           className="p-1.5 bg-emerald-950 border border-emerald-700 rounded-lg text-white font-bold text-xs"
                         >
                           <option value="admin">Quản trị viên (Admin)</option>
@@ -231,23 +325,42 @@ export default function SystemPage() {
                         </select>
                       </td>
                       <td className="p-3 text-center">
-                        <div className="flex justify-center items-center gap-2">
+                        <div className="flex justify-center items-center gap-1.5">
                           {!p.is_active && (
                             <button
                               onClick={() => handleApprove(p.id, p.full_name)}
                               disabled={!isAdmin}
-                              className="py-1.5 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow flex items-center gap-1"
+                              className="py-1.5 px-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow flex items-center gap-1"
                             >
-                              <UserCheck className="w-3.5 h-3.5" /> Duyệt Tài Khoản
+                              <UserCheck className="w-3.5 h-3.5" /> Duyệt
                             </button>
                           )}
+
+                          <button
+                            onClick={() => handleOpenEditModal(p)}
+                            disabled={!isAdmin}
+                            className="p-1.5 rounded-lg bg-amber-950 border border-amber-700 text-amber-300 hover:bg-amber-900 text-xs font-semibold"
+                            title="Sửa thành viên"
+                          >
+                            <Edit2 className="w-3.5 h-3.5" />
+                          </button>
+
+                          <button
+                            onClick={() => handleDeleteUser(p.id, p.full_name)}
+                            disabled={!isAdmin}
+                            className="p-1.5 rounded-lg bg-red-950 border border-red-700 text-red-300 hover:bg-red-900 text-xs font-semibold"
+                            title="Xóa thành viên"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+
                           <button
                             onClick={() => handleSendMail(p.id, p.email || '')}
                             disabled={!isAdmin}
-                            className="py-1.5 px-2.5 rounded-lg bg-blue-950 border border-blue-700 text-blue-300 hover:bg-blue-900 text-xs font-semibold flex items-center gap-1"
+                            className="p-1.5 rounded-lg bg-blue-950 border border-blue-700 text-blue-300 hover:bg-blue-900 text-xs font-semibold"
                             title="Gửi mail xác nhận kích hoạt"
                           >
-                            <Send className="w-3.5 h-3.5" /> Gửi Mail
+                            <Send className="w-3.5 h-3.5" />
                           </button>
                         </div>
                       </td>
@@ -320,6 +433,117 @@ export default function SystemPage() {
             >
               <Download className="w-4 h-4" /> Kết Xuất File Sao Lưu (.JSON)
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* CREATE / EDIT USER MODAL */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div className="bg-brand-dark border border-emerald-700/60 rounded-3xl max-w-lg w-full p-6 space-y-5 shadow-2xl relative animate-in zoom-in-95">
+
+            <div className="flex items-center justify-between border-b border-emerald-900/60 pb-3">
+              <h3 className="text-base font-extrabold text-white flex items-center gap-2">
+                <UserPlus className="w-5 h-5 text-gold-400" />
+                {editingProfile ? 'Chỉnh Sửa Thông Tin Thành Viên' : 'Thêm Thành Viên Mới Hợp Lệ'}
+              </h3>
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="p-1.5 text-slate-400 hover:text-white rounded-xl bg-emerald-950/60 border border-emerald-800/40"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveUser} className="space-y-4 text-xs">
+              <div>
+                <label className="block text-slate-300 font-semibold mb-1">Họ và Tên Thành Viên *</label>
+                <input
+                  type="text"
+                  required
+                  value={userForm.full_name}
+                  onChange={e => setUserForm({ ...userForm, full_name: e.target.value })}
+                  placeholder="Nguyễn Văn A"
+                  className="w-full p-2.5 bg-emerald-950/80 border border-emerald-700/60 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 font-bold"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-slate-300 font-semibold mb-1">Địa chỉ Email *</label>
+                  <input
+                    type="email"
+                    required
+                    value={userForm.email}
+                    onChange={e => setUserForm({ ...userForm, email: e.target.value })}
+                    placeholder="nguyenvana@riceos.vn"
+                    className="w-full p-2.5 bg-emerald-950/80 border border-emerald-700/60 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-slate-300 font-semibold mb-1">Số điện thoại *</label>
+                  <input
+                    type="text"
+                    required
+                    value={userForm.phone}
+                    onChange={e => setUserForm({ ...userForm, phone: e.target.value })}
+                    placeholder="0905123456"
+                    className="w-full p-2.5 bg-emerald-950/80 border border-emerald-700/60 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-slate-300 font-semibold mb-1">Phân Quyền (Role) *</label>
+                  <select
+                    value={userForm.role}
+                    onChange={e => setUserForm({ ...userForm, role: e.target.value as UserRole })}
+                    className="w-full p-2.5 bg-emerald-950/80 border border-emerald-700/60 rounded-xl text-white font-bold"
+                  >
+                    <option value="admin">Quản trị viên (Admin)</option>
+                    <option value="editor">Biên tập viên (Editor)</option>
+                    <option value="staff">Cán bộ cân (Staff)</option>
+                    <option value="viewer">Người xem (Viewer)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-slate-300 font-semibold mb-1">Trạng Thái Kích Hoạt *</label>
+                  <select
+                    value={userForm.status}
+                    onChange={e => setUserForm({
+                      ...userForm,
+                      status: e.target.value as UserStatus,
+                      is_active: e.target.value === 'active'
+                    })}
+                    className="w-full p-2.5 bg-emerald-950/80 border border-emerald-700/60 rounded-xl text-white font-bold"
+                  >
+                    <option value="active">🟢 Đã kích hoạt (Active)</option>
+                    <option value="pending">🟡 Chờ Admin duyệt (Pending)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="pt-3 flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="py-2.5 px-4 rounded-xl bg-emerald-950/60 hover:bg-emerald-900 border border-emerald-800 text-slate-300 font-bold"
+                >
+                  Hủy Bỏ
+                </button>
+                <button
+                  type="submit"
+                  className="py-2.5 px-5 rounded-xl bg-gradient-to-r from-gold-400 via-gold-500 to-amber-500 text-slate-950 font-extrabold shadow flex items-center gap-1.5"
+                >
+                  <Save className="w-4 h-4" />
+                  {editingProfile ? 'Lưu Thay Đổi' : 'Thêm Thành Viên'}
+                </button>
+              </div>
+            </form>
+
           </div>
         </div>
       )}
