@@ -13,17 +13,21 @@ import {
   ChevronDown,
   Wheat,
   ShieldCheck,
+  User,
+  Settings,
   UserCheck
 } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import SyncStatusBadge from '@/components/SyncStatusBadge';
 import { UserRole } from '@/types/database.types';
 
 export default function Header() {
-  const { currentUser, switchRole, notifications, markNotificationRead, isAdmin } = useApp();
+  const router = useRouter();
+  const { currentUser, switchRole, notifications, markNotificationRead, isAdmin, logoutUser } = useApp();
   const [showNotifMenu, setShowNotifMenu] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
-  const [showRoleSwitcher, setShowRoleSwitcher] = useState(false);
+  const [showUserDropdown, setShowUserDropdown] = useState(false);
   const [phoneInput, setPhoneInput] = useState(currentUser?.phone || '');
   const [savedSuccess, setSavedSuccess] = useState(false);
 
@@ -46,13 +50,13 @@ export default function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-30 bg-brand-dark/90 backdrop-blur-xl border-b border-emerald-800/40 px-4 sm:px-6 py-2.5 flex items-center justify-between shadow-xl">
+      <header className="sticky top-0 z-30 bg-brand-dark/90 backdrop-blur-xl border-b border-emerald-800/40 px-4 sm:px-6 py-3 flex items-center justify-between shadow-xl">
 
         {/* Left App Context / Scope Title */}
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-brand-600 via-brand-500 to-gold-400 p-0.5 shadow flex items-center justify-center">
-            <div className="w-full h-full bg-brand-dark rounded-[6px] flex items-center justify-center">
-              <Wheat className="w-4 h-4 text-gold-400" />
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-600 via-brand-500 to-gold-400 p-0.5 shadow-md flex items-center justify-center">
+            <div className="w-full h-full bg-brand-dark rounded-[10px] flex items-center justify-center">
+              <Wheat className="w-5 h-5 text-gold-400" />
             </div>
           </div>
           <div>
@@ -63,11 +67,11 @@ export default function Header() {
           </div>
         </div>
 
-        {/* Right Horizontal Toolbar: Supabase Sync | Notifications | User Profile | Logout */}
-        <div className="flex items-center gap-2 sm:gap-3">
+        {/* Right Horizontal Toolbar: Supabase Sync | Notifications | Unified User Profile Menu */}
+        <div className="flex items-center gap-3">
 
           {/* 1. Supabase Cloud Sync Status Badge */}
-          <div className="transform scale-95 sm:scale-100">
+          <div className="hidden md:block">
             <SyncStatusBadge />
           </div>
 
@@ -76,14 +80,14 @@ export default function Header() {
             <button
               onClick={() => {
                 setShowNotifMenu(!showNotifMenu);
-                setShowRoleSwitcher(false);
+                setShowUserDropdown(false);
               }}
-              className="relative p-2 rounded-xl bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-800/60 text-slate-200 transition-colors"
+              className="relative p-2.5 rounded-xl bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-800/60 text-slate-200 transition-all shadow"
               title="Thông báo"
             >
-              <Bell className="w-4 h-4 text-emerald-400" />
+              <Bell className="w-4.5 h-4.5 text-emerald-400" />
               {unreadNotifs.length > 0 && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white rounded-full text-[9px] font-bold flex items-center justify-center animate-bounce shadow">
+                <span className="absolute -top-1 -right-1 w-4.5 h-4.5 bg-red-500 text-white rounded-full text-[9px] font-bold flex items-center justify-center animate-bounce shadow">
                   {unreadNotifs.length}
                 </span>
               )}
@@ -127,70 +131,115 @@ export default function Header() {
             )}
           </div>
 
-          {/* 3. User Profile & Role Switcher */}
+          {/* 3. UNIFIED USER PROFILE MENU (CLEAN, NO TRUNCATION, NO SEPARATE LOGOUT BUTTON) */}
           <div className="relative">
             <button
               onClick={() => {
-                setShowRoleSwitcher(!showRoleSwitcher);
+                setShowUserDropdown(!showUserDropdown);
                 setShowNotifMenu(false);
               }}
-              className="flex items-center gap-2 p-1.5 pr-2.5 rounded-xl bg-emerald-950/80 hover:bg-emerald-900/90 border border-emerald-800/60 transition-all"
+              className="flex items-center gap-2.5 p-2 px-3 rounded-2xl bg-emerald-950/80 hover:bg-emerald-900/90 border border-emerald-700/60 transition-all shadow"
             >
-              <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-emerald-500 to-gold-400 p-0.5 flex items-center justify-center shadow">
-                <div className="w-full h-full bg-brand-dark rounded-[6px] flex items-center justify-center text-gold-300 font-black text-xs uppercase">
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-500 via-gold-400 to-emerald-300 p-0.5 shadow flex items-center justify-center flex-shrink-0">
+                <div className="w-full h-full bg-brand-dark rounded-[9px] flex items-center justify-center text-gold-300 font-extrabold text-xs uppercase">
                   {currentUser?.full_name?.charAt(0) || 'U'}
                 </div>
               </div>
 
-              <div className="flex flex-col text-left hidden sm:flex">
-                <span className="text-xs font-bold text-white leading-tight truncate max-w-[110px]">{currentUser?.full_name}</span>
-                <span className={`text-[8px] font-bold px-1.5 py-0.2 rounded-full border ${currentRole.color} w-max mt-0.5`}>
+              <div className="flex flex-col text-left whitespace-nowrap">
+                <span className="text-xs font-extrabold text-white leading-tight">{currentUser?.full_name}</span>
+                <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded-full border ${currentRole.color} w-max mt-0.5`}>
                   {currentRole.label}
                 </span>
               </div>
 
-              <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+              <ChevronDown className="w-4 h-4 text-slate-400 ml-1 flex-shrink-0" />
             </button>
 
-            {/* Role switcher dropdown */}
-            {showRoleSwitcher && (
-              <div className="absolute right-0 mt-2 w-56 bg-brand-dark/95 backdrop-blur-2xl border border-emerald-700/60 rounded-2xl shadow-2xl p-2.5 z-50 animate-in zoom-in-95">
-                <div className="px-2.5 py-1.5 border-b border-emerald-800/50 mb-1.5 flex justify-between items-center">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase">Chuyển vai trò</span>
-                  <button onClick={() => setShowProfileModal(true)} className="text-[10px] font-bold text-gold-400 hover:underline">Hồ sơ</button>
+            {/* Premium Integrated User Dropdown */}
+            {showUserDropdown && (
+              <div className="absolute right-0 mt-2 w-64 bg-brand-dark/95 backdrop-blur-2xl border border-emerald-700/60 rounded-2xl shadow-2xl p-3 z-50 animate-in fade-in zoom-in-95 space-y-2">
+                
+                {/* Header User Card */}
+                <div className="p-2.5 rounded-xl bg-emerald-950/60 border border-emerald-800/40 flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500 to-gold-400 p-0.5 shadow flex-shrink-0">
+                    <div className="w-full h-full bg-brand-dark rounded-[9px] flex items-center justify-center text-gold-300 font-extrabold text-sm">
+                      {currentUser?.full_name?.charAt(0)}
+                    </div>
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs font-bold text-white truncate">{currentUser?.full_name}</p>
+                    <p className="text-[10px] text-emerald-300 font-mono truncate">{currentUser?.email || 'N/A'}</p>
+                  </div>
                 </div>
 
-                <div className="space-y-1">
-                  {(['admin', 'editor', 'staff', 'viewer'] as UserRole[]).map((r) => (
-                    <button
-                      key={r}
-                      onClick={() => {
-                        switchRole(r);
-                        setShowRoleSwitcher(false);
-                      }}
-                      className={`w-full text-left p-1.5 px-2 rounded-xl text-xs font-bold flex items-center justify-between transition-colors ${
-                        currentUser?.role === r
-                          ? 'bg-emerald-600 text-white'
-                          : 'text-slate-300 hover:bg-emerald-900/60'
-                      }`}
+                <div className="border-t border-emerald-900/60 my-1" />
+
+                {/* Actions */}
+                <div className="space-y-1 text-xs font-bold">
+                  <button
+                    onClick={() => {
+                      setShowProfileModal(true);
+                      setShowUserDropdown(false);
+                    }}
+                    className="w-full text-left p-2 rounded-xl text-slate-200 hover:bg-emerald-900/60 flex items-center gap-2 transition-colors"
+                  >
+                    <User className="w-4 h-4 text-gold-400" />
+                    <span>Hồ sơ cá nhân & Đổi SĐT</span>
+                  </button>
+
+                  {isAdmin && (
+                    <Link
+                      href="/system"
+                      onClick={() => setShowUserDropdown(false)}
+                      className="w-full text-left p-2 rounded-xl text-slate-200 hover:bg-emerald-900/60 flex items-center gap-2 transition-colors"
                     >
-                      <span>{roleTitles[r].label}</span>
-                      {currentUser?.role === r && <ShieldCheck className="w-3.5 h-3.5 text-emerald-300" />}
-                    </button>
-                  ))}
+                      <Settings className="w-4 h-4 text-emerald-400" />
+                      <span>Quản trị Hệ Thống</span>
+                    </Link>
+                  )}
                 </div>
+
+                {/* Role Simulation Switcher */}
+                <div className="border-t border-emerald-900/60 my-1 pt-1">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase px-2 mb-1">Chuyển vai trò nhanh (Demo)</p>
+                  <div className="grid grid-cols-2 gap-1">
+                    {(['admin', 'editor', 'staff', 'viewer'] as UserRole[]).map((r) => (
+                      <button
+                        key={r}
+                        onClick={() => {
+                          switchRole(r);
+                          setShowUserDropdown(false);
+                        }}
+                        className={`p-1.5 rounded-lg text-[10px] font-bold border transition-colors ${
+                          currentUser?.role === r
+                            ? 'bg-emerald-600 border-emerald-500 text-white'
+                            : 'bg-emerald-950/40 border-emerald-900/60 text-slate-300 hover:bg-emerald-900/60'
+                        }`}
+                      >
+                        {r.toUpperCase()}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="border-t border-emerald-900/60 pt-1">
+                  <button
+                    onClick={() => {
+                      logoutUser();
+                      setShowUserDropdown(false);
+                      router.push('/');
+                    }}
+                    className="w-full text-left p-2 rounded-xl text-red-400 hover:bg-red-500/10 flex items-center gap-2 transition-colors font-bold"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span>Đăng xuất tài khoản</span>
+                  </button>
+                </div>
+
               </div>
             )}
           </div>
-
-          {/* 4. Logout Button */}
-          <Link
-            href="/login"
-            className="p-2 rounded-xl bg-red-950/60 hover:bg-red-900/80 border border-red-700/50 text-red-300 hover:text-red-200 transition-all flex items-center justify-center"
-            title="Đăng xuất"
-          >
-            <LogOut className="w-4 h-4" />
-          </Link>
 
         </div>
 
@@ -275,13 +324,16 @@ export default function Header() {
             </form>
 
             <div className="border-t border-emerald-900/60 pt-3 flex justify-between items-center">
-              <Link
-                href="/login"
-                onClick={() => setShowProfileModal(false)}
+              <button
+                onClick={() => {
+                  logoutUser();
+                  setShowProfileModal(false);
+                  router.push('/');
+                }}
                 className="text-xs text-red-400 hover:text-red-300 font-bold flex items-center gap-1.5 p-2 rounded-xl bg-red-500/10 border border-red-500/30"
               >
                 <LogOut className="w-4 h-4" /> Đăng Xuất Tài Khoản
-              </Link>
+              </button>
               {isAdmin && (
                 <Link
                   href="/system"
