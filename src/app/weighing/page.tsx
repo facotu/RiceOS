@@ -20,7 +20,8 @@ import {
   Package,
   RotateCcw,
   Sparkles,
-  Camera
+  Camera,
+  Percent
 } from 'lucide-react';
 import Link from 'next/link';
 import { toPng } from 'html-to-image';
@@ -43,24 +44,31 @@ export default function WeighingPage() {
   const [selectedStaffId, setSelectedStaffId] = useState(staffMembers[0]?.id || '');
   const [selectedTruckId, setSelectedTruckId] = useState(trucks[0]?.id || '');
   const [selectedVarietyId, setSelectedVarietyId] = useState(varieties[0]?.id || '');
-  const [fieldRegion, setFieldRegion] = useState(farmers[0]?.field_region || 'Xứ đồng An Trạch 1');
-  const [lot, setLot] = useState(farmers[0]?.lot || 'Lô A1');
+  const [selectedAreaId, setSelectedAreaId] = useState(growingAreas[0]?.id || '');
+  const [fieldRegion, setFieldRegion] = useState(farmers[0]?.field_region || growingAreas[0]?.field_region || 'Xứ đồng An Trạch 1');
+  const [lot, setLot] = useState(farmers[0]?.lot || growingAreas[0]?.lot || 'Lô A1');
   const [unitPrice, setUnitPrice] = useState<number>(varieties[0]?.default_price || 9500);
 
   // Active Session State
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
   const [sessionCode, setSessionCode] = useState<string>('');
 
-  // Mobile Weigh Entry Numpad Input State
-  const [bagCount, setBagCount] = useState<number>(2); // Default 2 or 3 bags
+  // Mobile Weigh Entry State: 1 bao, 2 bao, 3 bao & Tare Deduction Percentage (Mặc định 12%)
+  const [bagCount, setBagCount] = useState<number>(2); // 1, 2, hoặc 3 bao
   const [grossWeightInput, setGrossWeightInput] = useState<string>('150'); // Kg lúa tươi lượt này
-  const [tareWeightInput, setTareWeightInput] = useState<string>('6'); // Trừ bì lượt này
+  const [tarePercentInput, setTarePercentInput] = useState<string>('12'); // Trừ bì % mặc định 12%
+
+  // Calculate current item tare weight & net weight
+  const currentGross = parseFloat(grossWeightInput) || 0;
+  const currentTarePercent = parseFloat(tarePercentInput) || 12;
+  const currentTareKg = Math.round((currentGross * (currentTarePercent / 100)) * 100) / 100;
+  const currentNetKg = Math.max(0, Math.round((currentGross - currentTareKg) * 100) / 100);
 
   // Items table for current weighing
-  const [items, setItems] = useState<Array<{ id: string; sequence: number; bag_count: number; gross_weight: number; tare_weight: number; net_weight: number }>>([
-    { id: '1', sequence: 1, bag_count: 3, gross_weight: 150, tare_weight: 6, net_weight: 144 },
-    { id: '2', sequence: 2, bag_count: 3, gross_weight: 152, tare_weight: 6, net_weight: 146 },
-    { id: '3', sequence: 3, bag_count: 2, gross_weight: 98, tare_weight: 4, net_weight: 94 }
+  const [items, setItems] = useState<Array<{ id: string; sequence: number; bag_count: number; gross_weight: number; tare_percent: number; tare_weight: number; net_weight: number }>>([
+    { id: '1', sequence: 1, bag_count: 3, gross_weight: 150, tare_percent: 12, tare_weight: 18, net_weight: 132 },
+    { id: '2', sequence: 2, bag_count: 3, gross_weight: 152, tare_percent: 12, tare_weight: 18.24, net_weight: 133.76 },
+    { id: '3', sequence: 3, bag_count: 2, gross_weight: 98, tare_percent: 12, tare_weight: 11.76, net_weight: 86.24 }
   ]);
 
   const [savedSuccess, setSavedSuccess] = useState(false);
@@ -74,6 +82,16 @@ export default function WeighingPage() {
     if (f) {
       setFieldRegion(f.field_region);
       setLot(f.lot);
+    }
+  };
+
+  // Auto update when Growing Area dropdown changes
+  const handleAreaSelectChange = (areaId: string) => {
+    setSelectedAreaId(areaId);
+    const area = growingAreas.find(a => a.id === areaId);
+    if (area) {
+      setFieldRegion(area.field_region);
+      setLot(area.lot);
     }
   };
 
@@ -97,23 +115,25 @@ export default function WeighingPage() {
     }
   };
 
-  // Add Weighing Entry (2 or 3 bags)
+  // Add Weighing Entry (1, 2, hoặc 3 bao)
   const handleAddWeighEntry = () => {
     const gross = parseFloat(grossWeightInput) || 0;
-    const tare = parseFloat(tareWeightInput) || 0;
+    const tarePercent = parseFloat(tarePercentInput) || 12;
     if (gross <= 0) {
       alert('Vui lòng nhập sản lượng tươi lớn hơn 0 kg!');
       return;
     }
-    const net = Math.max(0, gross - tare);
+    const tareKg = Math.round((gross * (tarePercent / 100)) * 100) / 100;
+    const netKg = Math.max(0, Math.round((gross - tareKg) * 100) / 100);
 
     const newItem = {
       id: Date.now().toString(),
       sequence: items.length + 1,
       bag_count: bagCount,
       gross_weight: gross,
-      tare_weight: tare,
-      net_weight: net
+      tare_percent: tarePercent,
+      tare_weight: tareKg,
+      net_weight: netKg
     };
 
     setItems(prev => [...prev, newItem]);
@@ -126,10 +146,10 @@ export default function WeighingPage() {
 
   // Cumulative Totals
   const totalBags = items.reduce((sum, item) => sum + item.bag_count, 0);
-  const totalFreshWeight = items.reduce((sum, item) => sum + item.gross_weight, 0);
-  const totalTareWeight = items.reduce((sum, item) => sum + item.tare_weight, 0);
-  const totalDryWeight = Math.max(0, totalFreshWeight - totalTareWeight);
-  const totalAmount = totalDryWeight * unitPrice;
+  const totalFreshWeight = Math.round(items.reduce((sum, item) => sum + item.gross_weight, 0) * 100) / 100;
+  const totalTareWeight = Math.round(items.reduce((sum, item) => sum + item.tare_weight, 0) * 100) / 100;
+  const totalDryWeight = Math.max(0, Math.round((totalFreshWeight - totalTareWeight) * 100) / 100);
+  const totalAmount = Math.round(totalDryWeight * unitPrice);
 
   // Selected entities info
   const currentFarmer = farmers.find(f => f.id === selectedFarmerId) || farmers[0];
@@ -173,11 +193,12 @@ Cán bộ cân: ${currentStaff?.full_name}
 Xe nhận: ${currentTruck?.license_plate} (${currentTruck?.driver_name})
 Giống lúa: ${currentVariety?.name}
 Xứ đồng: ${fieldRegion} - ${lot}
+Trừ bì cài đặt: ${tarePercentInput}%
 --------------------------------
 • Tổng số bao: ${totalBags} bao
 • Sản lượng tươi: ${totalFreshWeight.toLocaleString('vi-VN')} kg
-• Trừ bì: ${totalTareWeight.toLocaleString('vi-VN')} kg
-• Sản lượng khô: ${totalDryWeight.toLocaleString('vi-VN')} kg
+• Tổng trừ bì (${tarePercentInput}%): ${totalTareWeight.toLocaleString('vi-VN')} kg
+• Sản lượng khô thực tính: ${totalDryWeight.toLocaleString('vi-VN')} kg
 • Đơn giá mua: ${unitPrice.toLocaleString('vi-VN')} VNĐ/kg
 ================================
 TỔNG THÀNH TIỀN: ${totalAmount.toLocaleString('vi-VN')} VNĐ
@@ -243,7 +264,7 @@ TỔNG THÀNH TIỀN: ${totalAmount.toLocaleString('vi-VN')} VNĐ
               )}
             </h1>
             <p className="text-xs text-slate-300">
-              Nhập liệu sản lượng tươi ngoài đồng • Tự động trừ bì & tính tiền
+              Nhập liệu 1 bao, 2 bao, 3 bao • Trừ bì theo % (Mặc định {tarePercentInput}%) • Tính tự động
             </p>
           </div>
         </div>
@@ -348,11 +369,23 @@ TỔNG THÀNH TIỀN: ${totalAmount.toLocaleString('vi-VN')} VNĐ
             </select>
           </div>
 
-          {/* Xứ đồng & Lô */}
+          {/* Select & Override Xứ đồng & Lô (Dropdown từ Vùng Trồng) */}
           <div className="space-y-1">
             <label className="text-xs font-semibold text-slate-300 flex items-center gap-1">
-              <MapPin className="w-3.5 h-3.5 text-rose-400" /> Xứ Đồng & Lô *
+              <MapPin className="w-3.5 h-3.5 text-rose-400" /> Lựa Chọn Vùng Trồng (Xứ Đồng & Lô) *
             </label>
+            <select
+              value={selectedAreaId}
+              onChange={(e) => handleAreaSelectChange(e.target.value)}
+              className="w-full p-2 bg-emerald-950/80 border border-emerald-700/60 rounded-xl text-white text-xs font-semibold mb-1"
+            >
+              <option value="">-- Chọn từ danh mục Vùng Trồng --</option>
+              {growingAreas.map(a => (
+                <option key={a.id} value={a.id}>
+                  {a.field_region} - {a.lot} ({a.area.toLocaleString('vi-VN')} m²)
+                </option>
+              ))}
+            </select>
             <div className="grid grid-cols-2 gap-2">
               <input
                 type="text"
@@ -387,52 +420,80 @@ TỔNG THÀNH TIỀN: ${totalAmount.toLocaleString('vi-VN')} VNĐ
         </div>
       </div>
 
-      {/* Main Weighing Execution Layout (Mobile Entry Panel + Active Session Items) */}
+      {/* Main Weighing Execution Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-        {/* Mobile Numpad Data Entry (5 Columns on Desktop) */}
+        {/* Mobile Numpad Data Entry Panel (5 Columns) */}
         <div className="lg:col-span-5 glass-card p-5 rounded-2xl space-y-4">
           <div className="flex justify-between items-center border-b border-emerald-800/40 pb-2">
             <h3 className="text-sm font-bold text-white flex items-center gap-2">
-              <Scale className="w-4 h-4 text-emerald-400" /> Nhập Lượt Cân Lúa (Tươi & Trừ bì)
+              <Scale className="w-4 h-4 text-emerald-400" /> Nhập Lượt Cân (Tươi & Trừ Bì %)
             </h3>
-            <span className="text-[10px] text-gold-400 bg-gold-500/10 px-2 py-0.5 rounded border border-gold-500/30">
+            <span className="text-[10px] text-gold-400 bg-gold-500/10 px-2 py-0.5 rounded border border-gold-500/30 font-bold">
               Lần cân thứ {items.length + 1}
             </span>
           </div>
 
-          {/* Select Bag Count (2 bao hoặc 3 bao) */}
+          {/* Select Bag Count Option (1 bao, 2 bao, hoặc 3 bao) */}
           <div>
             <label className="text-xs font-semibold text-slate-300 block mb-1.5">
-              Số bao lượt này:
+              Chọn số bao lượt này:
             </label>
-            <div className="grid grid-cols-2 gap-2">
-              <button
-                type="button"
-                onClick={() => setBagCount(2)}
-                className={`py-2.5 px-3 rounded-xl font-extrabold text-xs border flex items-center justify-center gap-2 transition-all ${
-                  bagCount === 2
-                    ? 'bg-emerald-600 border-emerald-400 text-white shadow-lg'
-                    : 'bg-emerald-950/60 border-emerald-900 text-slate-400 hover:text-white'
-                }`}
-              >
-                <Package className="w-4 h-4" /> 2 Bao Lúa
-              </button>
-              <button
-                type="button"
-                onClick={() => setBagCount(3)}
-                className={`py-2.5 px-3 rounded-xl font-extrabold text-xs border flex items-center justify-center gap-2 transition-all ${
-                  bagCount === 3
-                    ? 'bg-emerald-600 border-emerald-400 text-white shadow-lg'
-                    : 'bg-emerald-950/60 border-emerald-900 text-slate-400 hover:text-white'
-                }`}
-              >
-                <Package className="w-4 h-4" /> 3 Bao Lúa
-              </button>
+            <div className="grid grid-cols-3 gap-2">
+              {[1, 2, 3].map((count) => (
+                <button
+                  key={count}
+                  type="button"
+                  onClick={() => setBagCount(count)}
+                  className={`py-2.5 px-2 rounded-xl font-extrabold text-xs border flex items-center justify-center gap-1 transition-all ${
+                    bagCount === count
+                      ? 'bg-emerald-600 border-emerald-400 text-white shadow-lg scale-105'
+                      : 'bg-emerald-950/60 border-emerald-900 text-slate-400 hover:text-white'
+                  }`}
+                >
+                  <Package className="w-3.5 h-3.5" /> {count} Bao
+                </button>
+              ))}
             </div>
           </div>
 
-          {/* Weight Inputs (Gross Kg & Tare Kg) */}
+          {/* Tare Percentage (%) Setting (Mặc định 12% tùy chỉnh) */}
+          <div>
+            <div className="flex justify-between items-center mb-1">
+              <label className="text-xs font-semibold text-gold-300 flex items-center gap-1">
+                <Percent className="w-3.5 h-3.5 text-gold-400" /> Tỉ lệ trừ bì (%) * (Mặc định 12%):
+              </label>
+              <span className="text-[11px] text-emerald-400 font-bold">
+                = {currentTareKg} kg trừ bì
+              </span>
+            </div>
+            <div className="grid grid-cols-5 gap-1.5">
+              {['10', '11', '12', '13', '15'].map((pct) => (
+                <button
+                  key={pct}
+                  type="button"
+                  onClick={() => setTarePercentInput(pct)}
+                  className={`py-1.5 rounded-lg text-xs font-bold border transition-colors ${
+                    tarePercentInput === pct
+                      ? 'bg-gold-500/30 border-gold-400 text-gold-300'
+                      : 'bg-emerald-950 border-emerald-900 text-slate-400 hover:text-white'
+                  }`}
+                >
+                  {pct}%
+                </button>
+              ))}
+            </div>
+            <input
+              type="number"
+              step="0.1"
+              value={tarePercentInput}
+              onChange={(e) => setTarePercentInput(e.target.value)}
+              placeholder="12"
+              className="w-full mt-1.5 p-2 bg-brand-dark border border-gold-500/50 rounded-xl text-right font-bold text-gold-300 text-xs focus:outline-none"
+            />
+          </div>
+
+          {/* Gross Weight Display & Calculation Preview */}
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-[11px] font-semibold text-slate-300 block mb-1">
@@ -448,20 +509,20 @@ TỔNG THÀNH TIỀN: ${totalAmount.toLocaleString('vi-VN')} VNĐ
 
             <div>
               <label className="text-[11px] font-semibold text-slate-300 block mb-1">
-                Trừ bì (kg)
+                Lúa khô tính toán ({100 - currentTarePercent}%)
               </label>
-              <input
-                type="number"
-                value={tareWeightInput}
-                onChange={(e) => setTareWeightInput(e.target.value)}
-                className="w-full p-3 bg-brand-dark border border-emerald-800/60 rounded-xl text-right font-extrabold text-gold-300 text-lg focus:outline-none focus:border-gold-400"
-              />
+              <div className="p-3 rounded-xl bg-brand-dark border border-gold-500/60 text-right">
+                <span className="text-2xl font-black text-gold-300 tracking-wider">
+                  {currentNetKg}
+                </span>
+                <span className="text-xs text-gold-400 ml-1">kg</span>
+              </div>
             </div>
           </div>
 
           {/* Quick Add Kg Preset Buttons */}
           <div className="flex gap-2 overflow-x-auto pb-1">
-            {['120', '135', '145', '150', '155', '160'].map((preset) => (
+            {['50', '100', '120', '135', '150', '160'].map((preset) => (
               <button
                 key={preset}
                 type="button"
@@ -499,29 +560,29 @@ TỔNG THÀNH TIỀN: ${totalAmount.toLocaleString('vi-VN')} VNĐ
             onClick={handleAddWeighEntry}
             className="w-full py-3.5 rounded-xl font-extrabold text-sm text-brand-dark bg-gradient-to-r from-emerald-400 via-emerald-300 to-gold-400 hover:brightness-110 shadow-xl shadow-emerald-500/20 flex items-center justify-center gap-2 cursor-pointer transition-all"
           >
-            <Plus className="w-5 h-5" /> Thêm Lượt Cân Này (+{bagCount} Bao)
+            <Plus className="w-5 h-5" /> Thêm Lượt Cân Này (+{bagCount} Bao • Trừ bì {tarePercentInput}%)
           </button>
         </div>
 
-        {/* Session Items Table & Cumulative Calculation Panel (7 Columns on Desktop) */}
+        {/* Session Items Table & Cumulative Calculation Panel (7 Columns) */}
         <div className="lg:col-span-7 space-y-4">
 
           {/* Real-time Summary Cards Header */}
           <div className="glass-card-gold p-4 rounded-2xl grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
             <div>
-              <span className="text-[10px] uppercase font-bold text-gold-400/80">Tổng Số Bao</span>
+              <span className="text-[10px] uppercase font-bold text-gold-400/80">TỔNG SỐ BAO</span>
               <p className="text-xl font-black text-gold-300">{totalBags} bao</p>
             </div>
             <div>
-              <span className="text-[10px] uppercase font-bold text-gold-400/80">Sản Lượng Tươi</span>
+              <span className="text-[10px] uppercase font-bold text-gold-400/80">SẢN LƯỢNG TƯƠI</span>
               <p className="text-xl font-black text-white">{totalFreshWeight.toLocaleString('vi-VN')} kg</p>
             </div>
             <div>
-              <span className="text-[10px] uppercase font-bold text-gold-400/80">Sản Lượng Khô</span>
+              <span className="text-[10px] uppercase font-bold text-gold-400/80">SẢN LƯỢNG KHÔ</span>
               <p className="text-xl font-black text-emerald-400">{totalDryWeight.toLocaleString('vi-VN')} kg</p>
             </div>
             <div>
-              <span className="text-[10px] uppercase font-bold text-gold-400/80">Thành Tiền</span>
+              <span className="text-[10px] uppercase font-bold text-gold-400/80">THÀNH TIỀN</span>
               <p className="text-lg font-black text-gold-300">{totalAmount.toLocaleString('vi-VN')} đ</p>
             </div>
           </div>
@@ -532,7 +593,7 @@ TỔNG THÀNH TIỀN: ${totalAmount.toLocaleString('vi-VN')} VNĐ
               <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider">
                 Danh Sách Chi Tiết {items.length} Lượt Cân
               </h3>
-              <span className="text-[11px] text-slate-400">Trừ bì mặc định ~2kg/bao</span>
+              <span className="text-[11px] text-gold-400 font-semibold">Trừ bì % tự động</span>
             </div>
 
             <div className="overflow-x-auto max-h-72">
@@ -542,6 +603,7 @@ TỔNG THÀNH TIỀN: ${totalAmount.toLocaleString('vi-VN')} VNĐ
                     <th className="p-2">Lượt</th>
                     <th className="p-2">Số bao</th>
                     <th className="p-2 text-right">Cân tươi (kg)</th>
+                    <th className="p-2 text-right">Trừ bì (%)</th>
                     <th className="p-2 text-right">Trừ bì (kg)</th>
                     <th className="p-2 text-right">Cân khô (kg)</th>
                     <th className="p-2 text-center">Xóa</th>
@@ -550,7 +612,7 @@ TỔNG THÀNH TIỀN: ${totalAmount.toLocaleString('vi-VN')} VNĐ
                 <tbody className="divide-y divide-emerald-900/40">
                   {items.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="text-center py-6 text-slate-400 text-xs">
+                      <td colSpan={7} className="text-center py-6 text-slate-400 text-xs">
                         Chưa có lượt cân nào. Hãy bấm nút Thêm Lượt Cân ở bên trái.
                       </td>
                     </tr>
@@ -560,7 +622,8 @@ TỔNG THÀNH TIỀN: ${totalAmount.toLocaleString('vi-VN')} VNĐ
                         <td className="p-2 font-bold text-gold-300">#{item.sequence}</td>
                         <td className="p-2 font-semibold text-white">{item.bag_count} bao</td>
                         <td className="p-2 text-right font-bold text-emerald-300">{item.gross_weight} kg</td>
-                        <td className="p-2 text-right text-gold-400">{item.tare_weight} kg</td>
+                        <td className="p-2 text-right font-bold text-gold-400">{item.tare_percent}%</td>
+                        <td className="p-2 text-right text-slate-300">{item.tare_weight} kg</td>
                         <td className="p-2 text-right font-extrabold text-white">{item.net_weight} kg</td>
                         <td className="p-2 text-center">
                           <button
@@ -578,7 +641,7 @@ TỔNG THÀNH TIỀN: ${totalAmount.toLocaleString('vi-VN')} VNĐ
             </div>
           </div>
 
-          {/* Primary Action Buttons (Ghi Nhập, In Phiếu, Chia sẻ Zalo, Xuất Ảnh) */}
+          {/* Primary Action Buttons */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             <button
               onClick={handleSaveSession}
@@ -617,7 +680,7 @@ TỔNG THÀNH TIỀN: ${totalAmount.toLocaleString('vi-VN')} VNĐ
 
       </div>
 
-      {/* Hidden Printable / Exportable Thermal Receipt Ticket (80mm Layout) */}
+      {/* Hidden Printable Thermal Receipt Ticket */}
       <div className="mt-8">
         <h3 className="text-xs font-bold text-slate-400 mb-2">Xem Trước Phiếu Cân Nhiệt (Receipt Preview):</h3>
 
@@ -648,7 +711,8 @@ TỔNG THÀNH TIỀN: ${totalAmount.toLocaleString('vi-VN')} VNĐ
                 <th className="py-1">Lượt</th>
                 <th className="py-1">Bao</th>
                 <th className="py-1 text-right">Tươi</th>
-                <th className="py-1 text-right">Trừ bì</th>
+                <th className="py-1 text-right">Trừ bì %</th>
+                <th className="py-1 text-right">Trừ bì kg</th>
                 <th className="py-1 text-right">Khô</th>
               </tr>
             </thead>
@@ -658,6 +722,7 @@ TỔNG THÀNH TIỀN: ${totalAmount.toLocaleString('vi-VN')} VNĐ
                   <td className="py-0.5">#{it.sequence}</td>
                   <td className="py-0.5">{it.bag_count}</td>
                   <td className="py-0.5 text-right">{it.gross_weight}</td>
+                  <td className="py-0.5 text-right">{it.tare_percent}%</td>
                   <td className="py-0.5 text-right">{it.tare_weight}</td>
                   <td className="py-0.5 text-right font-bold">{it.net_weight}</td>
                 </tr>
@@ -668,7 +733,7 @@ TỔNG THÀNH TIỀN: ${totalAmount.toLocaleString('vi-VN')} VNĐ
           <div className="space-y-1 text-right font-bold text-[11px]">
             <p>TỔNG SỐ BAO: <span className="text-sm">{totalBags} bao</span></p>
             <p>SẢN LƯỢNG TƯƠI: {totalFreshWeight.toLocaleString('vi-VN')} kg</p>
-            <p>TRỪ BÌ: {totalTareWeight.toLocaleString('vi-VN')} kg</p>
+            <p>TỔNG TRỪ BÌ: {totalTareWeight.toLocaleString('vi-VN')} kg</p>
             <p>SẢN LƯỢNG KHÔ: <span className="text-sm underline">{totalDryWeight.toLocaleString('vi-VN')} kg</span></p>
             <p>ĐƠN GIÁ MUA: {unitPrice.toLocaleString('vi-VN')} VNĐ/kg</p>
             <div className="border-t-2 border-black pt-1 mt-1 text-sm font-black">

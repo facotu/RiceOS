@@ -35,8 +35,8 @@ export default function DashboardPage() {
 
   // Filter sessions based on current logged in user role:
   // If Staff, display metrics belonging to that staff member. If Admin/Editor/Viewer, display all.
-  const relevantSessions = isStaff
-    ? sessions.filter(s => s.staff?.user_id === currentUser?.id || s.staff?.full_name.includes(currentUser?.full_name || ''))
+  const relevantSessions = !isAdmin
+    ? sessions.filter(s => s.created_by === currentUser?.id || s.staff?.user_id === currentUser?.id || s.staff?.full_name.includes(currentUser?.full_name || ''))
     : sessions;
 
   // Aggregate Metrics

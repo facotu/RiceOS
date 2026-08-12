@@ -1,4 +1,5 @@
 export type UserRole = 'admin' | 'editor' | 'viewer' | 'staff';
+export type UserStatus = 'pending' | 'active' | 'blocked';
 
 export interface Profile {
   id: string; // references auth.users
@@ -6,6 +7,7 @@ export interface Profile {
   phone?: string;
   role: UserRole;
   is_active: boolean;
+  status?: UserStatus;
   email?: string;
   created_at: string;
 }
@@ -77,7 +79,7 @@ export interface WeighingSession {
   started_at: string;
   completed_at?: string;
   notes?: string;
-  created_by?: string;
+  created_by?: string;        // ID người dùng tạo phiên cân
 
   // Joined relations
   farmer?: Farmer;
@@ -91,8 +93,9 @@ export interface WeighingItem {
   id: string;
   session_id: string;
   sequence: number;     // Lần cân thứ
-  bag_count: number;    // 2 hoặc 3 bao
+  bag_count: number;    // 1, 2 hoặc 3 bao
   gross_weight: number; // Kg lúa tươi lượt cân này
+  tare_percent?: number;// Trừ bì %
   tare_weight: number;  // Trừ bì lượt cân này
   net_weight: number;   // Kg lúa khô lượt cân này
   weighed_at: string;
@@ -108,6 +111,7 @@ export interface Settlement {
   status: 'pending' | 'completed';
   settled_at: string;
   notes?: string;
+  created_by?: string;
 
   // Joined relations
   farmer?: Farmer;

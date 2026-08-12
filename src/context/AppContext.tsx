@@ -31,6 +31,7 @@ interface AppContextType {
   setCurrentUser: (user: Profile | null) => void;
   switchRole: (role: UserRole) => void;
 
+  profiles: Profile[];
   farmers: Farmer[];
   staffMembers: StaffMember[];
   trucks: Truck[];
@@ -39,6 +40,12 @@ interface AppContextType {
   sessions: WeighingSession[];
   settlements: Settlement[];
   notifications: AppNotification[];
+
+  // Admin User Approval & Role Management
+  approveUser: (id: string) => void;
+  updateUserRole: (id: string, role: UserRole) => void;
+  sendActivationEmail: (id: string) => void;
+  registerNewUser: (fullName: string, email: string, phone: string) => void;
 
   // Master Data CRUD Actions
   addFarmer: (farmer: Omit<Farmer, 'id' | 'created_at'>) => void;
@@ -87,6 +94,7 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
+  const [profiles, setProfiles] = useState<Profile[]>(INITIAL_PROFILES);
   const [currentUser, setCurrentUser] = useState<Profile | null>(INITIAL_PROFILES[0]); // Default Admin
   const [farmers, setFarmers] = useState<Farmer[]>(INITIAL_FARMERS);
   const [staffMembers, setStaffMembers] = useState<StaffMember[]>(INITIAL_STAFF);
@@ -98,9 +106,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [notifications, setNotifications] = useState<AppNotification[]>([
     {
       id: 'notif-1',
-      title: 'Chào mừng bạn đến với RiceOS',
-      message: 'Hệ thống đã sẵn sàng thu mua và cân lúa mùa vụ 2026!',
-      type: 'info',
+      title: 'Yêu cầu duyệt tài khoản mới',
+      message: 'Thành viên Lê Văn Mới vừa đăng ký tài khoản. Admin vui lòng duyệt và cấp quyền.',
+      type: 'warning',
       read: false,
       created_at: new Date().toISOString()
     }
@@ -109,6 +117,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   // Load from localStorage
   useEffect(() => {
     try {
+      const savedProfiles = localStorage.getItem('riceos_profiles');
+      if (savedProfiles) setProfiles(JSON.parse(savedProfiles));
+
       const savedFarmers = localStorage.getItem('riceos_farmers');
       if (savedFarmers) setFarmers(JSON.parse(savedFarmers));
 
@@ -143,16 +154,91 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   };
 
   const switchRole = (role: UserRole) => {
-    const targetUser = INITIAL_PROFILES.find(p => p.role === role) || {
+    const targetUser = profiles.find(p => p.role === role) || {
       id: `usr-${role}-custom`,
       full_name: `Người dùng ${role.toUpperCase()}`,
       phone: '0900000000',
       role,
       is_active: true,
+      status: 'active',
       email: `${role}@riceos.vn`,
       created_at: new Date().toISOString()
     };
     setCurrentUser(targetUser);
+  };
+
+  // User Registration & Admin Approval
+  const registerNewUser = (fullName: string, email: string, phone: string) => {
+    const newProf: Profile = {
+      id: `usr-${Date.now()}`,
+      full_name: fullName,
+      email,
+      phone,
+      role: 'staff',
+      is_active: false,
+      status: 'pending',
+      created_at: new Date().toISOString()
+    };
+
+    const updated = [newProf, ...profiles];
+    setProfiles(updated);
+    saveStorage('riceos_profiles', updated);
+
+    // Push Notification to Admin
+    setNotifications(prev => [
+      {
+        id: `notif-${Date.now()}`,
+        title: 'Đăng ký thành viên mới',
+        message: `${fullName} (${email}) vừa đăng ký. Cần Admin duyệt kích hoạt tài khoản.`,
+        type: 'warning',
+        read: false,
+        created_at: new Date().toISOString()
+      },
+      ...prev
+    ]);
+  };
+
+  const approveUser = (id: string) => {
+    const updated = profiles.map(p => {
+      if (p.id === id) {
+        return { ...p, is_active: true, status: 'active' as const };
+      }
+      return p;
+    });
+    setProfiles(updated);
+    saveStorage('riceos_profiles', updated);
+
+    // Also add to staff members list
+    const targetProf = updated.find(p => p.id === id);
+    if (targetProf) {
+      addStaff({
+        user_id: targetProf.id,
+        full_name: targetProf.full_name,
+        phone: targetProf.phone || '0900000000'
+      });
+      sendActivationEmail(id);
+    }
+  };
+
+  const updateUserRole = (id: string, role: UserRole) => {
+    const updated = profiles.map(p => p.id === id ? { ...p, role } : p);
+    setProfiles(updated);
+    saveStorage('riceos_profiles', updated);
+  };
+
+  const sendActivationEmail = (id: string) => {
+    const target = profiles.find(p => p.id === id);
+    setNotifications(prev => [
+      {
+        id: `notif-${Date.now()}`,
+        title: 'Đã gửi Mail kích hoạt',
+        message: `Hệ thống đã gửi Mail xác nhận kích hoạt tài khoản tới ${target?.email || 'thành viên'}.`,
+        type: 'success',
+        read: false,
+        created_at: new Date().toISOString()
+      },
+      ...prev
+    ]);
   };
 
   // Farmer CRUD
@@ -275,7 +361,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     saveStorage('riceos_areas', updated);
   };
 
-  // Session Management
+  // Session Management (Strictly isolated by created_by for members)
   const createSession = (sessionData: Omit<WeighingSession, 'id' | 'session_code' | 'total_fresh_weight' | 'total_tare_weight' | 'total_dry_weight' | 'total_bags' | 'total_amount' | 'status' | 'started_at' | 'items'>) => {
     const farmer = farmers.find(f => f.id === sessionData.farmer_id);
     const staff = staffMembers.find(s => s.id === sessionData.staff_id);
@@ -454,6 +540,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       status: paidAmount >= totalAmount ? 'completed' : 'pending',
       settled_at: now.toISOString(),
       notes,
+      created_by: currentUser?.id,
       farmer
     };
 
@@ -492,6 +579,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         currentUser,
         setCurrentUser,
         switchRole,
+        profiles,
         farmers,
         staffMembers,
         trucks,
@@ -500,6 +588,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         sessions,
         settlements,
         notifications,
+        approveUser,
+        updateUserRole,
+        sendActivationEmail,
+        registerNewUser,
         addFarmer,
         updateFarmer,
         deleteFarmer,

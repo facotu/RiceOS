@@ -22,6 +22,7 @@ import { WeighingSession } from '@/types/database.types';
 
 export default function HistoryPage() {
   const {
+    currentUser,
     sessions,
     farmers,
     varieties,
@@ -83,10 +84,9 @@ export default function HistoryPage() {
       s.farmer?.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       s.field_region.toLowerCase().includes(searchQuery.toLowerCase());
 
-    const matchesFarmer = selectedFarmerId === 'all' || s.farmer_id === selectedFarmerId;
-    const matchesVariety = selectedVarietyId === 'all' || s.variety_id === selectedVarietyId;
+    const matchesMember = isAdmin || s.created_by === currentUser?.id || s.staff?.user_id === currentUser?.id || s.staff?.full_name.includes(currentUser?.full_name || '');
 
-    return matchesSearch && matchesFarmer && matchesVariety;
+    return matchesSearch && matchesFarmer && matchesVariety && matchesMember;
   });
 
   const totalFresh = filteredSessions.reduce((sum, s) => sum + s.total_fresh_weight, 0);

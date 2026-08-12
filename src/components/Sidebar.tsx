@@ -38,6 +38,7 @@ export default function Sidebar() {
   const navLinks = [
     { href: '/', label: 'Dashboard', icon: LayoutDashboard },
     { href: '/weighing', label: 'Phiên Cân Lúa', icon: Scale, highlight: true },
+    { href: '/users', label: 'Duyệt Thành Viên', icon: UserCheck, adminOnly: true },
     { href: '/master-data', label: 'Dữ Liệu Danh Mục', icon: Database, adminOnly: true },
     { href: '/settlement', label: 'Quyết Toán Tiền', icon: Receipt },
     { href: '/trucks', label: 'Xe Nhận Vận Chuyển', icon: Truck },
