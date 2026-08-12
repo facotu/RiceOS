@@ -72,6 +72,7 @@ export default function WeighingPage() {
   ]);
 
   const [savedSuccess, setSavedSuccess] = useState(false);
+  const [zaloSuccessMsg, setZaloSuccessMsg] = useState('');
   const [zaloMsg, setZaloMsg] = useState('');
   const ticketRef = useRef<HTMLDivElement>(null);
 
@@ -82,6 +83,10 @@ export default function WeighingPage() {
     if (f) {
       setFieldRegion(f.field_region);
       setLot(f.lot);
+      const matchingArea = growingAreas.find(a => a.field_region === f.field_region && a.lot === f.lot);
+      if (matchingArea) {
+        setSelectedAreaId(matchingArea.id);
+      }
     }
   };
 
@@ -204,16 +209,9 @@ Trừ bì cài đặt: ${tarePercentInput}%
 TỔNG THÀNH TIỀN: ${totalAmount.toLocaleString('vi-VN')} VNĐ
 ================================`;
 
-    setZaloMsg(text);
-    if (navigator.share) {
-      navigator.share({
-        title: `Phiếu cân lúa - ${currentFarmer?.name}`,
-        text: text
-      }).catch(() => {});
-    } else {
-      navigator.clipboard.writeText(text);
-      alert('Đã sao chép nội dung phiếu cân! Bạn có thể dán vào Zalo ngay.');
-    }
+    navigator.clipboard.writeText(text);
+    setZaloSuccessMsg('Đã sao chép thông tin phiếu cân gửi Zalo thành công!');
+    setTimeout(() => setZaloSuccessMsg(''), 3500);
   };
 
   // Image Export for Zalo
@@ -260,6 +258,11 @@ TỔNG THÀNH TIỀN: ${totalAmount.toLocaleString('vi-VN')} VNĐ
               {savedSuccess && (
                 <span className="text-xs bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-2 py-0.5 rounded-full flex items-center gap-1 animate-bounce">
                   <CheckCircle2 className="w-3.5 h-3.5" /> Đã Lưu!
+                </span>
+              )}
+              {zaloSuccessMsg && (
+                <span className="text-xs bg-blue-500/20 text-blue-300 border border-blue-500/40 px-2 py-0.5 rounded-full flex items-center gap-1 animate-bounce">
+                  <CheckCircle2 className="w-3.5 h-3.5" /> Đã Sao Chép Zalo!
                 </span>
               )}
             </h1>
@@ -377,31 +380,14 @@ TỔNG THÀNH TIỀN: ${totalAmount.toLocaleString('vi-VN')} VNĐ
             <select
               value={selectedAreaId}
               onChange={(e) => handleAreaSelectChange(e.target.value)}
-              className="w-full p-2 bg-emerald-950/80 border border-emerald-700/60 rounded-xl text-white text-xs font-semibold mb-1"
+              className="w-full p-2.5 bg-emerald-950/80 border border-emerald-700/60 rounded-xl text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
             >
-              <option value="">-- Chọn từ danh mục Vùng Trồng --</option>
               {growingAreas.map(a => (
                 <option key={a.id} value={a.id}>
                   {a.field_region} - {a.lot} ({a.area.toLocaleString('vi-VN')} m²)
                 </option>
               ))}
             </select>
-            <div className="grid grid-cols-2 gap-2">
-              <input
-                type="text"
-                value={fieldRegion}
-                onChange={(e) => setFieldRegion(e.target.value)}
-                placeholder="Xứ đồng"
-                className="p-2 bg-brand-dark/90 border border-emerald-800/60 rounded-xl text-white text-xs"
-              />
-              <input
-                type="text"
-                value={lot}
-                onChange={(e) => setLot(e.target.value)}
-                placeholder="Lô"
-                className="p-2 bg-brand-dark/90 border border-emerald-800/60 rounded-xl text-white text-xs"
-              />
-            </div>
           </div>
 
           {/* Unit Price (Giá mua) */}

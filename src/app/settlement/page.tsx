@@ -91,12 +91,9 @@ TỔNG THÀNH TIỀN QUYẾT TOÁN: ${totalAmount.toLocaleString('vi-VN')} VNĐ
 ================================
 Đã thanh toán đủ cho hộ dân!`;
 
-    if (navigator.share) {
-      navigator.share({ title: `Quyết toán - ${currentFarmer?.name}`, text }).catch(() => {});
-    } else {
-      navigator.clipboard.writeText(text);
-      alert('Đã sao chép nội dung quyết toán! Bạn có thể dán sang Zalo ngay.');
-    }
+    navigator.clipboard.writeText(text);
+    setSuccessMsg('Đã sao chép nội dung quyết toán gửi Zalo thành công!');
+    setTimeout(() => setSuccessMsg(''), 3500);
   };
 
   const filteredFarmers = farmers.filter(f =>

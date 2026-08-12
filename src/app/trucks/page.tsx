@@ -94,12 +94,8 @@ Cán bộ phụ trách cân: ${primaryStaffName}
 ================================
 HÀNG ĐÃ GIAO ĐỦ CHO TÀI XẾ XÁC NHẬN!`;
 
-    if (navigator.share) {
-      navigator.share({ title: `Báo cáo xe ${currentTruck?.license_plate}`, text }).catch(() => {});
-    } else {
-      navigator.clipboard.writeText(text);
-      alert('Đã sao chép nội dung báo cáo chuyến xe! Bạn có thể dán vào Zalo ngay.');
-    }
+    navigator.clipboard.writeText(text);
+    alert(`Đã sao chép báo cáo chuyến xe ${currentTruck?.license_plate}! Bạn có thể mở Zalo và dán ngay.`);
   };
 
   const handleExportTruckImage = async () => {

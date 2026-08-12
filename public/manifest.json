@@ -1,0 +1,10 @@
+{
+  "name": "RiceOS - Hệ Thống Cân Lúa Thông Minh",
+  "short_name": "RiceOS",
+  "description": "Ứng dụng quản lý cân lúa ngoài đồng ruộng hỗ trợ di động, Supabase và Vercel",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0b1a12",
+  "theme_color": "#16a34a",
+  "orientation": "portrait-primary"
+}

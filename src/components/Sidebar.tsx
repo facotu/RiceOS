@@ -23,7 +23,7 @@ import {
   PlusCircle,
   ChevronRight
 } from 'lucide-react';
-import { UserRole } from '@/types/database.types';
+import SyncStatusBadge from '@/components/SyncStatusBadge';
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -124,6 +124,9 @@ export default function Sidebar() {
 
       {/* Bottom User Info & Role Controls */}
       <div className="space-y-3 pt-4 border-t border-emerald-800/40">
+
+        {/* Supabase Cloud & Network Sync Status Badge */}
+        <SyncStatusBadge />
 
         {/* Notification Bell Box */}
         <button
