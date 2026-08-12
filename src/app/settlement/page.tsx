@@ -12,15 +12,25 @@ import {
   Wheat,
   UserCheck,
   Clock,
-  ShieldCheck
+  ShieldCheck,
+  Trash2,
+  Edit2,
+  Plus,
+  X
 } from 'lucide-react';
+import { Settlement } from '@/types/database.types';
 
 export default function SettlementPage() {
-  const { farmers, sessions, createSettlement, settlements } = useApp();
+  const { farmers, sessions, createSettlement, updateSettlement, deleteSettlement, settlements } = useApp();
   const [selectedFarmerId, setSelectedFarmerId] = useState(farmers[0]?.id || '');
   const [farmerSearch, setFarmerSearch] = useState('');
   const [paidInput, setPaidInput] = useState<string>('');
   const [successMsg, setSuccessMsg] = useState('');
+
+  // Edit Settlement Modal State
+  const [editingSettlement, setEditingSettlement] = useState<Settlement | null>(null);
+  const [editAmount, setEditAmount] = useState<number>(0);
+  const [editNotes, setEditNotes] = useState<string>('');
 
   const currentFarmer = farmers.find(f => f.id === selectedFarmerId) || farmers[0];
 
@@ -38,6 +48,29 @@ export default function SettlementPage() {
     createSettlement(selectedFarmerId, amountToPay, 'Thanh toán chuyển khoản ngân hàng');
     setSuccessMsg(`Đã tạo phiếu quyết toán thành công cho hộ ${currentFarmer?.name}!`);
     setTimeout(() => setSuccessMsg(''), 3000);
+  };
+
+  const openEditSettlement = (st: Settlement) => {
+    setEditingSettlement(st);
+    setEditAmount(st.paid_amount);
+    setEditNotes(st.notes || '');
+  };
+
+  const handleSaveEditSettlement = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingSettlement) return;
+    updateSettlement(editingSettlement.id, {
+      paid_amount: editAmount,
+      status: editAmount >= editingSettlement.total_amount ? 'completed' : 'pending',
+      notes: editNotes
+    });
+    setEditingSettlement(null);
+  };
+
+  const handleDeleteSettlement = (id: string, code: string) => {
+    if (confirm(`Bạn có chắc chắn muốn xóa phiếu quyết toán ${code}?`)) {
+      deleteSettlement(id);
+    }
   };
 
   const handleShareZaloSettlement = () => {
@@ -84,7 +117,7 @@ TỔNG THÀNH TIỀN QUYẾT TOÁN: ${totalAmount.toLocaleString('vi-VN')} VNĐ
             Quyết Toán Tiền Lúa Với Hộ Dân
           </h1>
           <p className="text-xs text-slate-300">
-            Chọn hộ nông dân để xem toàn bộ thông tin phiên cân & tổng hợp số tiền cần thanh toán
+            Tạo mới, xem chi tiết, Sửa thông tin thanh toán & Xóa phiếu quyết toán
           </p>
         </div>
 
@@ -96,7 +129,7 @@ TỔNG THÀNH TIỀN QUYẾT TOÁN: ${totalAmount.toLocaleString('vi-VN')} VNĐ
         )}
       </div>
 
-      {/* Main Grid: Farmer Selection & Settlement Details */}
+      {/* Main Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
         {/* Farmer Selector */}
@@ -148,7 +181,7 @@ TỔNG THÀNH TIỀN QUYẾT TOÁN: ${totalAmount.toLocaleString('vi-VN')} VNĐ
         {/* Settlement Sheet & Action Panel */}
         <div className="lg:col-span-8 space-y-4">
 
-          {/* Farmer Master Profile & Overview Card */}
+          {/* Farmer Master Profile */}
           <div className="glass-card-gold p-5 rounded-2xl space-y-3">
             <div className="flex justify-between items-start border-b border-gold-500/30 pb-3">
               <div>
@@ -184,10 +217,49 @@ TỔNG THÀNH TIỀN QUYẾT TOÁN: ${totalAmount.toLocaleString('vi-VN')} VNĐ
             </div>
           </div>
 
-          {/* Sessions breakdown for selected farmer */}
+          {/* Existing Settlements List for this farmer with Edit & Delete */}
+          {settlements.length > 0 && (
+            <div className="glass-card p-4 rounded-2xl space-y-2">
+              <h3 className="text-xs font-bold text-gold-300 uppercase tracking-wider">
+                Danh Sách Phiếu Quyết Toán Đã Tạo
+              </h3>
+              <div className="space-y-2">
+                {settlements.map(st => (
+                  <div key={st.id} className="p-3 rounded-xl bg-emerald-950/60 border border-emerald-800/60 flex justify-between items-center text-xs">
+                    <div>
+                      <p className="font-extrabold text-gold-300">{st.settlement_code}</p>
+                      <p className="text-slate-300">Đã trả: <strong className="text-emerald-400">{st.paid_amount.toLocaleString('vi-VN')} VNĐ</strong> / {st.total_amount.toLocaleString('vi-VN')} VNĐ</p>
+                      <span className={`inline-block px-1.5 py-0.2 rounded text-[10px] font-bold ${st.status === 'completed' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-amber-500/20 text-amber-300'}`}>
+                        {st.status === 'completed' ? 'Hoàn thành' : 'Đang xử lý'}
+                      </span>
+                    </div>
+
+                    <div className="flex gap-1">
+                      <button
+                        onClick={() => openEditSettlement(st)}
+                        className="p-1.5 text-gold-400 hover:bg-gold-500/20 rounded"
+                        title="Sửa phiếu quyết toán"
+                      >
+                        <Edit2 className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteSettlement(st.id, st.settlement_code)}
+                        className="p-1.5 text-red-400 hover:bg-red-500/20 rounded"
+                        title="Xóa phiếu quyết toán"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Sessions breakdown */}
           <div className="glass-card p-5 rounded-2xl space-y-3">
             <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider">
-              Chi Tiết Các Phiên Cân Thu Mua Của Hộ {currentFarmer?.name}
+              Chi Tiết Phiên Cân Hộ {currentFarmer?.name}
             </h3>
 
             <div className="overflow-x-auto">
@@ -243,7 +315,7 @@ TỔNG THÀNH TIỀN QUYẾT TOÁN: ${totalAmount.toLocaleString('vi-VN')} VNĐ
                   onClick={handleProcessSettlement}
                   className="flex-1 sm:flex-initial py-2.5 px-4 rounded-xl bg-gradient-to-r from-gold-400 to-gold-500 hover:brightness-110 text-brand-dark font-extrabold text-xs shadow-lg flex items-center justify-center gap-1.5"
                 >
-                  <CheckCircle2 className="w-4 h-4" /> Xác Nhận Quyết Toán
+                  <CheckCircle2 className="w-4 h-4" /> Tạo Quyết Toán Mới
                 </button>
               </div>
             </div>
@@ -252,6 +324,50 @@ TỔNG THÀNH TIỀN QUYẾT TOÁN: ${totalAmount.toLocaleString('vi-VN')} VNĐ
         </div>
 
       </div>
+
+      {/* Edit Settlement Modal */}
+      {editingSettlement && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-brand-dark border border-emerald-700/60 rounded-2xl w-full max-w-md p-6 space-y-4 shadow-2xl animate-in zoom-in-95">
+            <div className="flex justify-between items-center border-b border-emerald-800/50 pb-3">
+              <h3 className="text-base font-bold text-gold-300">
+                Sửa Phiếu Quyết Toán {editingSettlement.settlement_code}
+              </h3>
+              <button onClick={() => setEditingSettlement(null)} className="text-slate-400 hover:text-white">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveEditSettlement} className="space-y-3">
+              <div>
+                <label className="text-xs font-semibold text-slate-300">Số tiền đã thanh toán (VNĐ)</label>
+                <input
+                  type="number"
+                  value={editAmount}
+                  onChange={e => setEditAmount(parseFloat(e.target.value) || 0)}
+                  className="w-full p-2.5 bg-emerald-950 border border-emerald-800 rounded-xl text-gold-300 font-extrabold text-sm"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-slate-300">Ghi chú quyết toán</label>
+                <textarea
+                  value={editNotes}
+                  onChange={e => setEditNotes(e.target.value)}
+                  className="w-full p-2.5 bg-emerald-950 border border-emerald-800 rounded-xl text-white text-xs h-20"
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="w-full py-2.5 rounded-xl font-bold text-xs text-brand-dark bg-gold-400 hover:bg-gold-300 transition-colors shadow-lg mt-3"
+              >
+                Lưu Thay Đổi
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
 
     </div>
   );

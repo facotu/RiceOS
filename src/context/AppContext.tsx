@@ -40,7 +40,7 @@ interface AppContextType {
   settlements: Settlement[];
   notifications: AppNotification[];
 
-  // Master Data Actions
+  // Master Data CRUD Actions
   addFarmer: (farmer: Omit<Farmer, 'id' | 'created_at'>) => void;
   updateFarmer: (id: string, farmer: Partial<Farmer>) => void;
   deleteFarmer: (id: string) => void;
@@ -61,13 +61,18 @@ interface AppContextType {
   updateArea: (id: string, area: Partial<GrowingArea>) => void;
   deleteArea: (id: string) => void;
 
-  // Session Actions
+  // Session CRUD Actions
   createSession: (sessionData: Omit<WeighingSession, 'id' | 'session_code' | 'total_fresh_weight' | 'total_tare_weight' | 'total_dry_weight' | 'total_bags' | 'total_amount' | 'status' | 'started_at' | 'items'>) => WeighingSession;
+  updateSession: (id: string, sessionData: Partial<WeighingSession>) => void;
+  deleteSession: (id: string) => void;
   addWeighingItem: (sessionId: string, bagCount: number, grossWeight: number, tareWeight: number) => void;
+  deleteWeighingItem: (sessionId: string, itemId: string) => void;
   completeSession: (sessionId: string) => void;
 
-  // Settlement Actions
+  // Settlement CRUD Actions
   createSettlement: (farmerId: string, paidAmount: number, notes?: string) => Settlement;
+  updateSettlement: (id: string, settlementData: Partial<Settlement>) => void;
+  deleteSettlement: (id: string) => void;
 
   // Notifications
   markNotificationRead: (id: string) => void;
@@ -101,7 +106,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   ]);
 
-  // Load from localStorage on client side
+  // Load from localStorage
   useEffect(() => {
     try {
       const savedFarmers = localStorage.getItem('riceos_farmers');
@@ -129,7 +134,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  // Save changes helper
   const saveStorage = (key: string, data: any) => {
     try {
       localStorage.setItem(key, JSON.stringify(data));
@@ -305,20 +309,41 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setSessions(updated);
     saveStorage('riceos_sessions', updated);
 
-    // Push notification
-    setNotifications(prev => [
-      {
-        id: `notif-${Date.now()}`,
-        title: 'Phiên cân mới khởi tạo',
-        message: `Phiên ${code} cho hộ ${farmer?.name || 'chủ lúa'} vừa được tạo.`,
-        type: 'info',
-        read: false,
-        created_at: new Date().toISOString()
-      },
-      ...prev
-    ]);
-
     return newSession;
+  };
+
+  const updateSession = (id: string, data: Partial<WeighingSession>) => {
+    const updated = sessions.map(s => {
+      if (s.id === id) {
+        const farmer = data.farmer_id ? farmers.find(f => f.id === data.farmer_id) : s.farmer;
+        const staff = data.staff_id ? staffMembers.find(st => st.id === data.staff_id) : s.staff;
+        const truck = data.truck_id ? trucks.find(t => t.id === data.truck_id) : s.truck;
+        const variety = data.variety_id ? varieties.find(v => v.id === data.variety_id) : s.variety;
+        const unitPrice = data.unit_price !== undefined ? data.unit_price : s.unit_price;
+        const totalDry = data.total_dry_weight !== undefined ? data.total_dry_weight : s.total_dry_weight;
+        const totalAmount = totalDry * unitPrice;
+
+        return {
+          ...s,
+          ...data,
+          unit_price: unitPrice,
+          total_amount: totalAmount,
+          farmer,
+          staff,
+          truck,
+          variety
+        };
+      }
+      return s;
+    });
+    setSessions(updated);
+    saveStorage('riceos_sessions', updated);
+  };
+
+  const deleteSession = (id: string) => {
+    const updated = sessions.filter(s => s.id !== id);
+    setSessions(updated);
+    saveStorage('riceos_sessions', updated);
   };
 
   const addWeighingItem = (sessionId: string, bagCount: number, grossWeight: number, tareWeight: number) => {
@@ -364,6 +389,36 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     saveStorage('riceos_sessions', updatedSessions);
   };
 
+  const deleteWeighingItem = (sessionId: string, itemId: string) => {
+    const session = sessions.find(s => s.id === sessionId);
+    if (!session) return;
+
+    const updatedItems = (session.items || []).filter(item => item.id !== itemId).map((item, idx) => ({ ...item, sequence: idx + 1 }));
+    const totalBags = updatedItems.reduce((sum, item) => sum + item.bag_count, 0);
+    const totalFresh = updatedItems.reduce((sum, item) => sum + item.gross_weight, 0);
+    const totalTare = updatedItems.reduce((sum, item) => sum + item.tare_weight, 0);
+    const totalDry = Math.max(0, totalFresh - totalTare);
+    const totalAmount = totalDry * session.unit_price;
+
+    const updatedSessions = sessions.map(s => {
+      if (s.id === sessionId) {
+        return {
+          ...s,
+          items: updatedItems,
+          total_bags: totalBags,
+          total_fresh_weight: totalFresh,
+          total_tare_weight: totalTare,
+          total_dry_weight: totalDry,
+          total_amount: totalAmount
+        };
+      }
+      return s;
+    });
+
+    setSessions(updatedSessions);
+    saveStorage('riceos_sessions', updatedSessions);
+  };
+
   const completeSession = (sessionId: string) => {
     const updatedSessions = sessions.map(s => {
       if (s.id === sessionId) {
@@ -377,24 +432,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     });
     setSessions(updatedSessions);
     saveStorage('riceos_sessions', updatedSessions);
-
-    const completedSes = updatedSessions.find(s => s.id === sessionId);
-    if (completedSes) {
-      setNotifications(prev => [
-        {
-          id: `notif-${Date.now()}`,
-          title: 'Hoàn thành phiên cân',
-          message: `Phiên ${completedSes.session_code} đã hoàn thành với tổng ${completedSes.total_bags} bao (${completedSes.total_dry_weight} kg khô).`,
-          type: 'success',
-          read: false,
-          created_at: new Date().toISOString()
-        },
-        ...prev
-      ]);
-    }
   };
 
-  // Settlement
+  // Settlement CRUD
   const createSettlement = (farmerId: string, paidAmount: number, notes?: string) => {
     const farmer = farmers.find(f => f.id === farmerId);
     const farmerSessions = sessions.filter(s => s.farmer_id === farmerId);
@@ -421,17 +461,19 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setSettlements(updated);
     saveStorage('riceos_settlements', updated);
 
-    // Mark farmer sessions as settled
-    const updatedSessions = sessions.map(s => {
-      if (s.farmer_id === farmerId) {
-        return { ...s, status: 'settled' as const };
-      }
-      return s;
-    });
-    setSessions(updatedSessions);
-    saveStorage('riceos_sessions', updatedSessions);
-
     return newSettlement;
+  };
+
+  const updateSettlement = (id: string, data: Partial<Settlement>) => {
+    const updated = settlements.map(st => st.id === id ? { ...st, ...data } : st);
+    setSettlements(updated);
+    saveStorage('riceos_settlements', updated);
+  };
+
+  const deleteSettlement = (id: string) => {
+    const updated = settlements.filter(st => st.id !== id);
+    setSettlements(updated);
+    saveStorage('riceos_settlements', updated);
   };
 
   const markNotificationRead = (id: string) => {
@@ -474,9 +516,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         updateArea,
         deleteArea,
         createSession,
+        updateSession,
+        deleteSession,
         addWeighingItem,
+        deleteWeighingItem,
         completeSession,
         createSettlement,
+        updateSettlement,
+        deleteSettlement,
         markNotificationRead,
         isAdmin,
         isEditor,

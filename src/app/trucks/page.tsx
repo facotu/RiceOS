@@ -12,14 +12,56 @@ import {
   Package,
   Wheat,
   Calendar,
-  CheckCircle2
+  CheckCircle2,
+  Plus,
+  Edit2,
+  Trash2,
+  X
 } from 'lucide-react';
 import { toPng } from 'html-to-image';
+import { Truck as TruckType } from '@/types/database.types';
 
 export default function TruckDetailsPage() {
-  const { trucks, sessions, staffMembers } = useApp();
+  const { trucks, addTruck, updateTruck, deleteTruck, sessions, staffMembers, isAdmin } = useApp();
   const [selectedTruckId, setSelectedTruckId] = useState(trucks[0]?.id || '');
   const manifestRef = useRef<HTMLDivElement>(null);
+
+  // Modal Truck State
+  const [truckModalOpen, setTruckModalOpen] = useState(false);
+  const [editingTruck, setEditingTruck] = useState<TruckType | null>(null);
+  const [truckForm, setTruckForm] = useState({
+    license_plate: '',
+    driver_name: '',
+    phone: ''
+  });
+
+  const openAddTruck = () => {
+    setEditingTruck(null);
+    setTruckForm({ license_plate: '', driver_name: '', phone: '' });
+    setTruckModalOpen(true);
+  };
+
+  const openEditTruck = (t: TruckType) => {
+    setEditingTruck(t);
+    setTruckForm({ license_plate: t.license_plate, driver_name: t.driver_name, phone: t.phone });
+    setTruckModalOpen(true);
+  };
+
+  const handleSaveTruck = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (editingTruck) {
+      updateTruck(editingTruck.id, truckForm);
+    } else {
+      addTruck(truckForm);
+    }
+    setTruckModalOpen(false);
+  };
+
+  const handleDeleteTruck = (id: string, plate: string) => {
+    if (confirm(`Bạn có chắc chắn muốn xóa xe ${plate}?`)) {
+      deleteTruck(id);
+    }
+  };
 
   const currentTruck = trucks.find(t => t.id === selectedTruckId) || trucks[0];
 
@@ -88,11 +130,20 @@ HÀNG ĐÃ GIAO ĐỦ CHO TÀI XẾ XÁC NHẬN!`;
             Chi Tiết Tải Trọng Xe Nhận Lúa
           </h1>
           <p className="text-xs text-slate-300">
-            Xem đầy đủ thông tin sản lượng tươi, số bao, giờ nhận, giờ kết thúc và xuất thẻ ảnh gửi Zalo
+            Thêm mới xe nhận, Sửa thông tin tài xế, Xóa và xem sản lượng vận chuyển
           </p>
         </div>
 
         <div className="flex gap-2">
+          {isAdmin && (
+            <button
+              onClick={openAddTruck}
+              className="py-2.5 px-4 rounded-xl bg-gold-400 hover:bg-gold-300 text-brand-dark font-extrabold text-xs shadow-md flex items-center gap-1.5"
+            >
+              <Plus className="w-4 h-4" /> Thêm Xe Mới
+            </button>
+          )}
+
           <button
             onClick={handleShareZaloTruck}
             className="py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs shadow-md flex items-center gap-1.5"
@@ -113,9 +164,11 @@ HÀNG ĐÃ GIAO ĐỦ CHO TÀI XẾ XÁC NHẬN!`;
 
         {/* Truck Selection List */}
         <div className="lg:col-span-4 glass-card p-5 rounded-2xl space-y-3">
-          <h3 className="text-sm font-bold text-white flex items-center gap-2 border-b border-emerald-800/40 pb-2">
-            <Truck className="w-4 h-4 text-amber-400" /> Chọn Xe Vận Chuyển
-          </h3>
+          <div className="flex justify-between items-center border-b border-emerald-800/40 pb-2">
+            <h3 className="text-sm font-bold text-white flex items-center gap-2">
+              <Truck className="w-4 h-4 text-amber-400" /> Danh Sách Xe Vận Chuyển
+            </h3>
+          </div>
 
           <div className="space-y-2">
             {trucks.map(t => {
@@ -124,10 +177,10 @@ HÀNG ĐÃ GIAO ĐỦ CHO TÀI XẾ XÁC NHẬN!`;
               const tFresh = tSessions.reduce((sum, s) => sum + s.total_fresh_weight, 0);
 
               return (
-                <button
+                <div
                   key={t.id}
                   onClick={() => setSelectedTruckId(t.id)}
-                  className={`w-full text-left p-3.5 rounded-xl border transition-all ${
+                  className={`p-3.5 rounded-xl border transition-all cursor-pointer ${
                     isSelected
                       ? 'bg-amber-500/20 border-amber-500 text-white shadow-lg'
                       : 'bg-emerald-950/40 border-emerald-900/60 text-slate-300 hover:bg-emerald-900/50'
@@ -135,15 +188,35 @@ HÀNG ĐÃ GIAO ĐỦ CHO TÀI XẾ XÁC NHẬN!`;
                 >
                   <div className="flex justify-between items-center">
                     <span className="font-extrabold text-sm text-gold-300">{t.license_plate}</span>
-                    <span className="text-[10px] bg-amber-500/20 px-2 py-0.5 rounded text-amber-300 border border-amber-500/40 font-bold">
-                      {tSessions.length} phiên
-                    </span>
+                    <div className="flex items-center gap-1">
+                      <span className="text-[10px] bg-amber-500/20 px-2 py-0.5 rounded text-amber-300 border border-amber-500/40 font-bold mr-1">
+                        {tSessions.length} phiên
+                      </span>
+                      {isAdmin && (
+                        <>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); openEditTruck(t); }}
+                            className="p-1 text-gold-400 hover:bg-gold-500/20 rounded"
+                            title="Sửa thông tin xe"
+                          >
+                            <Edit2 className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); handleDeleteTruck(t.id, t.license_plate); }}
+                            className="p-1 text-red-400 hover:bg-red-500/20 rounded"
+                            title="Xóa xe"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </>
+                      )}
+                    </div>
                   </div>
                   <p className="text-xs text-slate-300 mt-1">Tài xế: {t.driver_name} ({t.phone})</p>
                   <p className="text-xs font-black text-amber-400 mt-1">
                     Tải tươi: {tFresh.toLocaleString('vi-VN')} kg
                   </p>
-                </button>
+                </div>
               );
             })}
           </div>
@@ -212,7 +285,7 @@ HÀNG ĐÃ GIAO ĐỦ CHO TÀI XẾ XÁC NHẬN!`;
             </div>
           </div>
 
-          {/* Table breakdown of sessions loaded onto this truck */}
+          {/* Table breakdown */}
           <div className="glass-card p-5 rounded-2xl space-y-3">
             <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider">
               Danh Sách Lô Hàng Thu Mua Đã Chất Lên Xe {currentTruck?.license_plate}
@@ -251,6 +324,67 @@ HÀNG ĐÃ GIAO ĐỦ CHO TÀI XẾ XÁC NHẬN!`;
         </div>
 
       </div>
+
+      {/* Add / Edit Truck Modal */}
+      {truckModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-brand-dark border border-emerald-700/60 rounded-2xl w-full max-w-md p-6 space-y-4 shadow-2xl animate-in zoom-in-95">
+            <div className="flex justify-between items-center border-b border-emerald-800/50 pb-3">
+              <h3 className="text-base font-bold text-gold-300">
+                {editingTruck ? 'Sửa Thông Tin Xe Nhận' : 'Thêm Xe Nhận Vận Chuyển Mới'}
+              </h3>
+              <button onClick={() => setTruckModalOpen(false)} className="text-slate-400 hover:text-white">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveTruck} className="space-y-3">
+              <div>
+                <label className="text-xs font-semibold text-slate-300">Biển số xe *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="92C-123.45"
+                  value={truckForm.license_plate}
+                  onChange={e => setTruckForm({ ...truckForm, license_plate: e.target.value })}
+                  className="w-full p-2.5 bg-emerald-950 border border-emerald-800 rounded-xl text-xs text-white"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-slate-300">Họ tên tài xế *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Nguyễn Văn Tải"
+                  value={truckForm.driver_name}
+                  onChange={e => setTruckForm({ ...truckForm, driver_name: e.target.value })}
+                  className="w-full p-2.5 bg-emerald-950 border border-emerald-800 rounded-xl text-xs text-white"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-slate-300">Số điện thoại *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="0905123456"
+                  value={truckForm.phone}
+                  onChange={e => setTruckForm({ ...truckForm, phone: e.target.value })}
+                  className="w-full p-2.5 bg-emerald-950 border border-emerald-800 rounded-xl text-xs text-white"
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="w-full py-2.5 rounded-xl font-bold text-xs text-brand-dark bg-gold-400 hover:bg-gold-300 transition-colors shadow-lg mt-3"
+              >
+                Lưu Thay Đổi
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
 
     </div>
   );
