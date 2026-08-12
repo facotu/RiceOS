@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { AppProvider } from "@/context/AppContext";
 import Sidebar from "@/components/Sidebar";
+import Header from "@/components/Header";
 
 const inter = Inter({ subsets: ["latin", "vietnamese"] });
 
@@ -41,6 +42,7 @@ export default function RootLayout({
           <div className="flex flex-col lg:flex-row min-h-screen">
             <Sidebar />
             <div className="flex-1 flex flex-col lg:pl-64 min-w-0">
+              <Header />
               <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
                 {children}
               </main>

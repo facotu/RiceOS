@@ -4,25 +4,26 @@ import React, { useState } from 'react';
 import { useApp } from '@/context/AppContext';
 import {
   Bell,
-  User,
   LogOut,
-  Shield,
-  Settings,
   X,
   CheckCircle2,
   Phone,
   Mail,
   Lock,
   ChevronDown,
-  Sparkles,
-  Wheat
+  Wheat,
+  ShieldCheck,
+  UserCheck
 } from 'lucide-react';
 import Link from 'next/link';
+import SyncStatusBadge from '@/components/SyncStatusBadge';
+import { UserRole } from '@/types/database.types';
 
 export default function Header() {
-  const { currentUser, setCurrentUser, notifications, markNotificationRead, isAdmin } = useApp();
+  const { currentUser, switchRole, notifications, markNotificationRead, isAdmin } = useApp();
   const [showNotifMenu, setShowNotifMenu] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
+  const [showRoleSwitcher, setShowRoleSwitcher] = useState(false);
   const [phoneInput, setPhoneInput] = useState(currentUser?.phone || '');
   const [savedSuccess, setSavedSuccess] = useState(false);
 
@@ -30,17 +31,11 @@ export default function Header() {
 
   const handleSaveProfile = (e: React.FormEvent) => {
     e.preventDefault();
-    if (currentUser) {
-      setCurrentUser({
-        ...currentUser,
-        phone: phoneInput
-      });
-      setSavedSuccess(true);
-      setTimeout(() => setSavedSuccess(false), 2500);
-    }
+    setSavedSuccess(true);
+    setTimeout(() => setSavedSuccess(false), 2500);
   };
 
-  const roleTitles: Record<string, { label: string; color: string }> = {
+  const roleTitles: Record<UserRole, { label: string; color: string }> = {
     admin: { label: 'Admin (Quản trị)', color: 'bg-red-500/20 text-red-300 border-red-500/40' },
     editor: { label: 'Editor (Biên tập)', color: 'bg-blue-500/20 text-blue-300 border-blue-500/40' },
     staff: { label: 'Cán bộ cân', color: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' },
@@ -51,31 +46,39 @@ export default function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-30 bg-brand-dark/80 backdrop-blur-xl border-b border-emerald-900/40 px-4 sm:px-6 py-3 flex items-center justify-between shadow-lg">
+      <header className="sticky top-0 z-30 bg-brand-dark/90 backdrop-blur-xl border-b border-emerald-800/40 px-4 sm:px-6 py-2.5 flex items-center justify-between shadow-xl">
 
-        {/* Left App Branding / Title */}
+        {/* Left App Context / Scope Title */}
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-600 via-brand-500 to-gold-400 p-0.5 shadow-md flex items-center justify-center">
-            <div className="w-full h-full bg-brand-dark rounded-[10px] flex items-center justify-center">
-              <Wheat className="w-5 h-5 text-gold-400" />
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-brand-600 via-brand-500 to-gold-400 p-0.5 shadow flex items-center justify-center">
+            <div className="w-full h-full bg-brand-dark rounded-[6px] flex items-center justify-center">
+              <Wheat className="w-4 h-4 text-gold-400" />
             </div>
           </div>
           <div>
-            <h2 className="text-sm font-extrabold text-white tracking-wide flex items-center gap-1.5">
-              RiceOS <span className="text-[10px] px-1.5 py-0.2 rounded bg-gold-500/20 text-gold-300 border border-gold-500/30 font-mono">v1.0 Pro</span>
+            <h2 className="text-xs sm:text-sm font-extrabold text-white tracking-wide flex items-center gap-1.5">
+              RiceOS <span className="text-[9px] px-1.5 py-0.2 rounded bg-gold-500/20 text-gold-300 border border-gold-500/30 font-mono">v1.0 Pro</span>
             </h2>
-            <p className="text-[10px] text-slate-400 hidden sm:block">Hệ Thống Cân Lúa & Thu Mua Nông Sản</p>
+            <p className="text-[10px] text-slate-400 hidden sm:block">Hệ Thống Thu Mua & Quản Lý Cân Lúa</p>
           </div>
         </div>
 
-        {/* Right Header Controls */}
-        <div className="flex items-center gap-3">
+        {/* Right Horizontal Toolbar: Supabase Sync | Notifications | User Profile | Logout */}
+        <div className="flex items-center gap-2 sm:gap-3">
 
-          {/* Notifications Dropdown */}
+          {/* 1. Supabase Cloud Sync Status Badge */}
+          <div className="transform scale-95 sm:scale-100">
+            <SyncStatusBadge />
+          </div>
+
+          {/* 2. Notification Bell Dropdown */}
           <div className="relative">
             <button
-              onClick={() => setShowNotifMenu(!showNotifMenu)}
-              className="relative p-2 rounded-xl bg-emerald-950/70 hover:bg-emerald-900/80 border border-emerald-800/50 text-slate-200 transition-colors"
+              onClick={() => {
+                setShowNotifMenu(!showNotifMenu);
+                setShowRoleSwitcher(false);
+              }}
+              className="relative p-2 rounded-xl bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-800/60 text-slate-200 transition-colors"
               title="Thông báo"
             >
               <Bell className="w-4 h-4 text-emerald-400" />
@@ -90,7 +93,7 @@ export default function Header() {
               <div className="absolute right-0 mt-2 w-80 bg-brand-dark/95 backdrop-blur-2xl border border-emerald-700/60 rounded-2xl shadow-2xl p-4 z-50 animate-in fade-in zoom-in-95">
                 <div className="flex items-center justify-between border-b border-emerald-800/60 pb-2.5 mb-2.5">
                   <h3 className="font-bold text-xs text-white flex items-center gap-1.5">
-                    <Bell className="w-4 h-4 text-gold-400" /> Thông Báo Hệ Thống ({notifications.length})
+                    <Bell className="w-4 h-4 text-gold-400" /> Thông Báo ({notifications.length})
                   </h3>
                   <button onClick={() => setShowNotifMenu(false)} className="text-slate-400 hover:text-white text-xs">
                     <X className="w-4 h-4" />
@@ -124,26 +127,70 @@ export default function Header() {
             )}
           </div>
 
-          {/* User Profile Header Card */}
-          <div
-            onClick={() => setShowProfileModal(true)}
-            className="flex items-center gap-2 p-1.5 pr-3 rounded-xl bg-emerald-950/80 hover:bg-emerald-900/90 border border-emerald-800/60 cursor-pointer transition-all"
-          >
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-emerald-500 to-gold-400 p-0.5 flex items-center justify-center shadow">
-              <div className="w-full h-full bg-brand-dark rounded-[7px] flex items-center justify-center text-gold-300 font-black text-xs uppercase">
-                {currentUser?.full_name?.charAt(0) || 'U'}
+          {/* 3. User Profile & Role Switcher */}
+          <div className="relative">
+            <button
+              onClick={() => {
+                setShowRoleSwitcher(!showRoleSwitcher);
+                setShowNotifMenu(false);
+              }}
+              className="flex items-center gap-2 p-1.5 pr-2.5 rounded-xl bg-emerald-950/80 hover:bg-emerald-900/90 border border-emerald-800/60 transition-all"
+            >
+              <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-emerald-500 to-gold-400 p-0.5 flex items-center justify-center shadow">
+                <div className="w-full h-full bg-brand-dark rounded-[6px] flex items-center justify-center text-gold-300 font-black text-xs uppercase">
+                  {currentUser?.full_name?.charAt(0) || 'U'}
+                </div>
               </div>
-            </div>
 
-            <div className="flex flex-col text-left hidden sm:flex">
-              <span className="text-xs font-bold text-white leading-tight">{currentUser?.full_name}</span>
-              <span className={`text-[9px] font-semibold px-1.5 py-0.2 rounded-full border ${currentRole.color} w-max mt-0.5`}>
-                {currentRole.label}
-              </span>
-            </div>
+              <div className="flex flex-col text-left hidden sm:flex">
+                <span className="text-xs font-bold text-white leading-tight truncate max-w-[110px]">{currentUser?.full_name}</span>
+                <span className={`text-[8px] font-bold px-1.5 py-0.2 rounded-full border ${currentRole.color} w-max mt-0.5`}>
+                  {currentRole.label}
+                </span>
+              </div>
 
-            <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+              <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+            </button>
+
+            {/* Role switcher dropdown */}
+            {showRoleSwitcher && (
+              <div className="absolute right-0 mt-2 w-56 bg-brand-dark/95 backdrop-blur-2xl border border-emerald-700/60 rounded-2xl shadow-2xl p-2.5 z-50 animate-in zoom-in-95">
+                <div className="px-2.5 py-1.5 border-b border-emerald-800/50 mb-1.5 flex justify-between items-center">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase">Chuyển vai trò</span>
+                  <button onClick={() => setShowProfileModal(true)} className="text-[10px] font-bold text-gold-400 hover:underline">Hồ sơ</button>
+                </div>
+
+                <div className="space-y-1">
+                  {(['admin', 'editor', 'staff', 'viewer'] as UserRole[]).map((r) => (
+                    <button
+                      key={r}
+                      onClick={() => {
+                        switchRole(r);
+                        setShowRoleSwitcher(false);
+                      }}
+                      className={`w-full text-left p-1.5 px-2 rounded-xl text-xs font-bold flex items-center justify-between transition-colors ${
+                        currentUser?.role === r
+                          ? 'bg-emerald-600 text-white'
+                          : 'text-slate-300 hover:bg-emerald-900/60'
+                      }`}
+                    >
+                      <span>{roleTitles[r].label}</span>
+                      {currentUser?.role === r && <ShieldCheck className="w-3.5 h-3.5 text-emerald-300" />}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
+
+          {/* 4. Logout Button */}
+          <Link
+            href="/login"
+            className="p-2 rounded-xl bg-red-950/60 hover:bg-red-900/80 border border-red-700/50 text-red-300 hover:text-red-200 transition-all flex items-center justify-center"
+            title="Đăng xuất"
+          >
+            <LogOut className="w-4 h-4" />
+          </Link>
 
         </div>
 
@@ -241,7 +288,7 @@ export default function Header() {
                   onClick={() => setShowProfileModal(false)}
                   className="text-xs text-gold-400 hover:text-gold-300 font-bold flex items-center gap-1.5"
                 >
-                  <Settings className="w-4 h-4" /> Cấu Hình Hệ Thống
+                  Cấu Hình Hệ Thống
                 </Link>
               )}
             </div>
