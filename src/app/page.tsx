@@ -348,40 +348,6 @@ export default function Home() {
                       <LogIn className="w-4 h-4" /> Đăng Nhập Hệ Thống
                     </button>
 
-                    {/* Quick Demo Logins */}
-                    <div className="pt-2 border-t border-emerald-900/60 space-y-1.5">
-                      <p className="text-[10px] text-slate-400 font-bold uppercase text-center">Đăng nhập nhanh kiểm thử (Demo)</p>
-                      <div className="grid grid-cols-2 gap-1.5">
-                        <button
-                          type="button"
-                          onClick={() => handleQuickLogin('admin@riceos.vn')}
-                          className="p-1.5 rounded-lg bg-red-950/60 border border-red-800 text-red-300 text-[10px] font-bold"
-                        >
-                          👑 Admin (Quản trị)
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleQuickLogin('hung.canbo@riceos.vn')}
-                          className="p-1.5 rounded-lg bg-emerald-950/60 border border-emerald-800 text-emerald-300 text-[10px] font-bold"
-                        >
-                          ⚖️ Cán bộ cân 1
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleQuickLogin('nam.canbo@riceos.vn')}
-                          className="p-1.5 rounded-lg bg-emerald-950/60 border border-emerald-800 text-emerald-300 text-[10px] font-bold"
-                        >
-                          ⚖️ Cán bộ cân 2
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleQuickLogin('levanmoi.new@gmail.com')}
-                          className="p-1.5 rounded-lg bg-amber-950/60 border border-amber-800 text-amber-300 text-[10px] font-bold"
-                        >
-                          ⏳ TK Chờ duyệt
-                        </button>
-                      </div>
-                    </div>
                   </form>
                 )}
 
