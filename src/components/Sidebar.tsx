@@ -14,15 +14,14 @@ import {
   History,
   BarChart3,
   Camera,
-  Bell,
-  UserCheck,
   Settings,
+  Bell,
   LogOut,
   Menu,
   X,
   ShieldCheck,
-  PlusCircle,
-  ChevronRight
+  ChevronRight,
+  UserCheck
 } from 'lucide-react';
 import SyncStatusBadge from '@/components/SyncStatusBadge';
 import { UserRole } from '@/types/database.types';
@@ -30,7 +29,6 @@ import { UserRole } from '@/types/database.types';
 export default function Sidebar() {
   const pathname = usePathname();
   const { currentUser, switchRole, notifications, markNotificationRead, isAdmin } = useApp();
-
   const [mobileOpen, setMobileOpen] = useState(false);
   const [showRoleSelector, setShowRoleSelector] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -57,43 +55,31 @@ export default function Sidebar() {
   };
 
   const SidebarContent = () => (
-    <div className="flex flex-col h-full bg-brand-dark/95 backdrop-blur-2xl border-r border-emerald-800/40 text-slate-100 p-4 justify-between select-none">
-
-      <div className="space-y-6">
-
-        {/* Brand Header Logo */}
-        <Link href="/" className="flex items-center gap-3 px-2 py-1 group">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 via-brand-500 to-gold-400 p-0.5 flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
+    <div className="flex flex-col h-full bg-brand-dark/95 backdrop-blur-xl border-r border-emerald-800/40 p-4 relative">
+      
+      {/* Top Branding Logo */}
+      <div className="flex items-center justify-between pb-4 border-b border-emerald-800/40">
+        <Link href="/" className="flex items-center gap-3 group">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 via-brand-500 to-gold-400 p-0.5 shadow-lg shadow-emerald-950/50 group-hover:scale-105 transition-transform">
             <div className="w-full h-full bg-brand-dark rounded-[10px] flex items-center justify-center">
-              <Wheat className="w-6 h-6 text-gold-400 group-hover:rotate-12 transition-transform" />
+              <Wheat className="w-6 h-6 text-gold-400" />
             </div>
           </div>
-          <div className="flex flex-col">
-            <span className="font-extrabold text-xl tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-gold-400 to-emerald-100">
+          <div>
+            <span className="font-extrabold text-lg tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-gold-400 to-emerald-100 block">
               RICE<span className="text-gold-400">OS</span>
             </span>
-            <span className="text-[9px] text-emerald-400/90 font-bold tracking-widest uppercase">
-              Cân Lúa Thông Minh
-            </span>
+            <span className="text-[10px] text-slate-400 font-medium block">Cân Lúa Thông Minh</span>
           </div>
         </Link>
+      </div>
 
-        {/* Quick New Session Button */}
-        <Link
-          href="/weighing"
-          onClick={() => setMobileOpen(false)}
-          className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-gold-400 via-gold-500 to-emerald-500 hover:brightness-110 text-brand-dark font-extrabold text-xs shadow-xl shadow-gold-500/15 transition-all cursor-pointer"
-        >
-          <PlusCircle className="w-4.5 h-4.5" />
-          <span>Phiên Cân Mới</span>
-        </Link>
-
-        {/* Navigation Vertical Menu */}
+      {/* Main Navigation Links */}
+      <div className="flex-1 py-4 overflow-y-auto space-y-1">
+        <div className="px-3 pb-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+          Phân Hệ Quản Lý
+        </div>
         <nav className="space-y-1">
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-3 mb-2">
-            Phân Hệ Chức Năng
-          </p>
-
           {navLinks.map((link) => {
             if (link.adminOnly && !isAdmin) return null;
             const isActive = pathname === link.href;
@@ -104,56 +90,79 @@ export default function Sidebar() {
                 key={link.href}
                 href={link.href}
                 onClick={() => setMobileOpen(false)}
-                className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all ${
+                className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all group ${
                   isActive
-                    ? 'bg-gradient-to-r from-emerald-600/40 to-emerald-800/30 text-emerald-200 border border-emerald-500/50 shadow-inner'
+                    ? 'bg-gradient-to-r from-emerald-600 to-brand-600 text-white shadow-lg shadow-emerald-900/40 border border-emerald-400/30'
                     : link.highlight
-                    ? 'bg-gold-500/10 text-gold-300 hover:bg-gold-500/20 border border-gold-500/30'
-                    : 'text-slate-300 hover:text-white hover:bg-white/5'
+                    ? 'bg-gold-500/10 text-gold-300 border border-gold-500/30 hover:bg-gold-500/20'
+                    : 'text-slate-300 hover:text-white hover:bg-emerald-950/60'
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <Icon className={`w-4.5 h-4.5 ${isActive ? 'text-emerald-400' : link.highlight ? 'text-gold-400' : 'text-slate-400'}`} />
+                  <Icon className={`w-4 h-4 ${isActive ? 'text-white' : link.highlight ? 'text-gold-400' : 'text-emerald-400'}`} />
                   <span>{link.label}</span>
                 </div>
-                {isActive && <ChevronRight className="w-4 h-4 text-emerald-400" />}
+                {isActive && <ChevronRight className="w-4 h-4 text-gold-400" />}
               </Link>
             );
           })}
         </nav>
-
       </div>
 
-      {/* Bottom User Info & Role Controls */}
-      <div className="space-y-3 pt-4 border-t border-emerald-800/40">
+      {/* Bottom Horizontal Utility Control Bar */}
+      <div className="space-y-2 pt-3 border-t border-emerald-800/40 relative">
 
-        {/* Supabase Cloud & Network Sync Status Badge */}
+        {/* Supabase Status Indicator */}
         <SyncStatusBadge />
 
-        {/* Notification Bell Box */}
-        <button
-          onClick={() => setShowNotifications(!showNotifications)}
-          className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-emerald-950/60 hover:bg-emerald-900/60 border border-emerald-800/40 text-xs font-medium text-slate-300 transition-colors"
-        >
-          <div className="flex items-center gap-2">
-            <Bell className="w-4 h-4 text-emerald-400" />
-            <span>Thông báo đẩy</span>
-          </div>
-          {unreadCount > 0 ? (
-            <span className="px-2 py-0.5 rounded-full bg-red-500 text-white text-[10px] font-bold animate-bounce">
-              {unreadCount}
-            </span>
-          ) : (
-            <span className="text-[10px] text-slate-400">{notifications.length}</span>
-          )}
-        </button>
+        {/* Horizontal Action Bar: Notification | Profile & Role | Logout */}
+        <div className="flex items-center justify-between gap-1.5 p-1.5 rounded-xl bg-emerald-950/80 border border-emerald-800/60">
+          
+          {/* 1. Notification Button */}
+          <button
+            onClick={() => setShowNotifications(!showNotifications)}
+            className="relative p-2 rounded-xl bg-emerald-900/60 hover:bg-emerald-800/80 border border-emerald-700/50 text-emerald-300 transition-all flex items-center justify-center"
+            title="Thông báo đẩy"
+          >
+            <Bell className="w-4 h-4" />
+            {unreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white rounded-full text-[9px] font-bold flex items-center justify-center animate-bounce shadow">
+                {unreadCount}
+              </span>
+            )}
+          </button>
 
-        {/* Notifications Drawer Modal */}
+          {/* 2. User Profile Card & Role Switcher */}
+          <button
+            onClick={() => setShowRoleSelector(!showRoleSelector)}
+            className="flex-1 flex items-center gap-2 px-2 py-1.5 rounded-xl bg-brand-dark/90 hover:bg-emerald-900/60 border border-emerald-800/60 min-w-0 transition-all"
+            title="Hồ sơ & Đổi vai trò"
+          >
+            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-gold-400 to-emerald-600 flex items-center justify-center text-brand-dark font-extrabold text-[11px] shadow flex-shrink-0">
+              {currentUser?.full_name?.charAt(0) || 'U'}
+            </div>
+            <div className="flex flex-col text-left min-w-0 flex-1">
+              <span className="text-xs font-bold text-white truncate leading-tight">{currentUser?.full_name?.split(' ')[0]}</span>
+              <span className="text-[9px] font-semibold text-gold-400 uppercase tracking-tight truncate">{currentUser?.role}</span>
+            </div>
+          </button>
+
+          {/* 3. Logout Button */}
+          <Link
+            href="/login"
+            className="p-2 rounded-xl bg-red-950/60 hover:bg-red-900/80 border border-red-700/50 text-red-300 transition-all flex items-center justify-center"
+            title="Thoát / Đăng nhập lại"
+          >
+            <LogOut className="w-4 h-4" />
+          </Link>
+        </div>
+
+        {/* Notifications Popup */}
         {showNotifications && (
-          <div className="absolute bottom-20 left-4 right-4 bg-brand-dark/95 backdrop-blur-xl border border-emerald-700/60 rounded-xl shadow-2xl p-3 z-50 animate-in slide-in-from-bottom-2">
+          <div className="absolute bottom-16 left-0 right-0 bg-brand-dark/95 backdrop-blur-xl border border-emerald-700/60 rounded-2xl shadow-2xl p-3 z-50 animate-in slide-in-from-bottom-2">
             <div className="flex items-center justify-between border-b border-emerald-800/50 pb-2 mb-2">
               <h3 className="font-bold text-xs text-emerald-300 flex items-center gap-1.5">
-                <Bell className="w-3.5 h-3.5 text-gold-400" /> Notifications
+                <Bell className="w-3.5 h-3.5 text-gold-400" /> Notifications ({notifications.length})
               </h3>
               <button onClick={() => setShowNotifications(false)} className="text-slate-400 text-xs">Đóng</button>
             </div>
@@ -174,51 +183,26 @@ export default function Sidebar() {
           </div>
         )}
 
-        {/* Current Logged in User Profile & Role Switcher */}
-        <div className="relative">
-          <button
-            onClick={() => setShowRoleSelector(!showRoleSelector)}
-            className="w-full flex items-center gap-3 p-2 rounded-xl bg-emerald-950/80 hover:bg-emerald-900/80 border border-emerald-700/60 text-left transition-colors"
-          >
-            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-gold-400 to-emerald-600 flex items-center justify-center text-brand-dark font-extrabold text-sm shadow-md">
-              {currentUser?.full_name?.charAt(0) || 'U'}
+        {/* Role Selector Popup */}
+        {showRoleSelector && (
+          <div className="absolute bottom-16 left-0 right-0 bg-brand-dark/95 backdrop-blur-xl border border-emerald-700/60 rounded-2xl shadow-2xl p-3 z-50 animate-in slide-in-from-bottom-2 text-white">
+            <p className="text-[11px] font-bold text-slate-300 mb-2">Chuyển vai trò nhanh (Simulate Role):</p>
+            <div className="space-y-1">
+              {(['admin', 'editor', 'staff', 'viewer'] as UserRole[]).map(r => (
+                <button
+                  key={r}
+                  onClick={() => { switchRole(r); setShowRoleSelector(false); }}
+                  className={`w-full text-left p-1.5 px-2.5 rounded-lg text-xs font-semibold border flex items-center justify-between ${
+                    currentUser?.role === r ? 'bg-emerald-600/40 border-emerald-500 text-emerald-200' : 'bg-emerald-950/40 border-emerald-900 text-slate-300'
+                  }`}
+                >
+                  <span>{roleLabels[r].title}</span>
+                  {currentUser?.role === r && <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />}
+                </button>
+              ))}
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-xs font-bold text-emerald-100 truncate">{currentUser?.full_name}</p>
-              <span className={`inline-block px-1.5 py-0.2 text-[9px] font-bold rounded border ${currentUser ? roleLabels[currentUser.role]?.badgeColor : ''}`}>
-                {currentUser ? roleLabels[currentUser.role]?.title : ''}
-              </span>
-            </div>
-          </button>
-
-          {/* Role selector dropdown */}
-          {showRoleSelector && (
-            <div className="absolute bottom-14 left-0 right-0 bg-brand-dark/95 backdrop-blur-xl border border-emerald-700/60 rounded-xl shadow-2xl p-3 z-50 animate-in slide-in-from-bottom-2 text-white">
-              <p className="text-[11px] font-bold text-slate-300 mb-2">Đổi quyền kiểm thử (Simulate Role):</p>
-              <div className="space-y-1">
-                {(['admin', 'editor', 'staff', 'viewer'] as UserRole[]).map(r => (
-                  <button
-                    key={r}
-                    onClick={() => { switchRole(r); setShowRoleSelector(false); }}
-                    className={`w-full text-left p-1.5 px-2.5 rounded-lg text-xs font-semibold border flex items-center justify-between ${
-                      currentUser?.role === r ? 'bg-emerald-600/40 border-emerald-500 text-emerald-200' : 'bg-emerald-950/40 border-emerald-900 text-slate-300'
-                    }`}
-                  >
-                    <span>{roleLabels[r].title}</span>
-                    {currentUser?.role === r && <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-
-        <Link
-          href="/login"
-          className="flex items-center gap-2 text-slate-400 hover:text-white text-xs px-2 py-1 transition-colors"
-        >
-          <LogOut className="w-3.5 h-3.5" /> Thoát / Đăng nhập lại
-        </Link>
+          </div>
+        )}
 
       </div>
 
