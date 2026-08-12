@@ -76,10 +76,12 @@ export interface FieldPlot {
   zoom_level?: number;
   area_total_sao?: number; // Tổng diện tích Lô (sào)
   area_total_ha?: number;  // Diện tích quy đổi (ha)
+  area_m2?: number;        // Diện tích mét vuông
   main_variety?: string;   // Giống lúa chủ đạo (HT1, J02, v.v.)
   status?: 'harvesting' | 'waiting' | 'completed';
   description?: string;
   farmers_count?: number; // Số hộ sản xuất thuộc lô
+  kml_file_name?: string; // Tên file KML/KMZ đã nạp bản đồ
 }
 
 // Push Notification Type

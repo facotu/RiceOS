@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { UserProfile, WeighingSession, SystemSettings, AppNotification } from './types';
-import { DEMO_USERS, DEFAULT_SETTINGS, INITIAL_NOTIFICATIONS } from './supabaseClient';
+import React, { useState, useEffect } from 'react';
+import { UserProfile, WeighingSession, SystemSettings, AppNotification, FieldPlot, Farmer } from './types';
+import { DEMO_USERS, DEFAULT_SETTINGS, INITIAL_NOTIFICATIONS, SAMPLE_FARMERS } from './supabaseClient';
 import { AuthView } from './components/AuthView';
 import { MainLayout } from './components/MainLayout';
 import { DashboardView } from './components/DashboardView';
@@ -107,6 +107,47 @@ export const App: React.FC = () => {
   const [settings, setSettings] = useState<SystemSettings>(DEFAULT_SETTINGS);
   const [notifications, setNotifications] = useState<AppNotification[]>(INITIAL_NOTIFICATIONS);
 
+  // Persistent Field Plots State
+  const [plots, setPlots] = useState<FieldPlot[]>(() => {
+    try {
+      const saved = localStorage.getItem('riceos_plots');
+      return saved ? JSON.parse(saved) : DEFAULT_SETTINGS.fields_plots;
+    } catch {
+      return DEFAULT_SETTINGS.fields_plots;
+    }
+  });
+
+  // Persistent Farmers State
+  const [farmers, setFarmers] = useState<Farmer[]>(() => {
+    try {
+      const saved = localStorage.getItem('riceos_farmers');
+      return saved ? JSON.parse(saved) : SAMPLE_FARMERS;
+    } catch {
+      return SAMPLE_FARMERS;
+    }
+  });
+
+  // Sync Plots with localStorage and system settings
+  const handleUpdatePlots = (updatedPlots: FieldPlot[]) => {
+    setPlots(updatedPlots);
+    setSettings((prev) => ({ ...prev, fields_plots: updatedPlots }));
+    try {
+      localStorage.setItem('riceos_plots', JSON.stringify(updatedPlots));
+    } catch (e) {
+      console.error('Lỗi khi lưu plots vào localStorage', e);
+    }
+  };
+
+  // Sync Farmers with localStorage
+  const handleUpdateFarmers = (updatedFarmers: Farmer[]) => {
+    setFarmers(updatedFarmers);
+    try {
+      localStorage.setItem('riceos_farmers', JSON.stringify(updatedFarmers));
+    } catch (e) {
+      console.error('Lỗi khi lưu farmers vào localStorage', e);
+    }
+  };
+
   const handleSaveSession = (newSession: WeighingSession) => {
     setSessions([newSession, ...sessions]);
 
@@ -155,7 +196,10 @@ export const App: React.FC = () => {
             return (
               <FieldMapView
                 currentUser={currentUser}
-                plots={settings.fields_plots}
+                plots={plots}
+                farmers={farmers}
+                onUpdatePlots={handleUpdatePlots}
+                onUpdateFarmers={handleUpdateFarmers}
                 onNavigateWeighing={() => onTabChange('weighing')}
               />
             );
