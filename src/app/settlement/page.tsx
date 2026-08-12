@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useApp } from '@/context/AppContext';
 import {
-  ReceiptCheck,
+  Receipt,
   Search,
   CheckCircle2,
   Share2,
@@ -80,7 +80,7 @@ TỔNG THÀNH TIỀN QUYẾT TOÁN: ${totalAmount.toLocaleString('vi-VN')} VNĐ
             Phân Hệ Quyết Toán Thu Mua
           </span>
           <h1 className="text-2xl font-extrabold text-white mt-1 flex items-center gap-2">
-            <ReceiptCheck className="w-6 h-6 text-gold-400" />
+            <Receipt className="w-6 h-6 text-gold-400" />
             Quyết Toán Tiền Lúa Với Hộ Dân
           </h1>
           <p className="text-xs text-slate-300">
