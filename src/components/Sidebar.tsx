@@ -24,6 +24,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import SyncStatusBadge from '@/components/SyncStatusBadge';
+import { UserRole } from '@/types/database.types';
 
 export default function Sidebar() {
   const pathname = usePathname();
