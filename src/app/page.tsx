@@ -31,7 +31,8 @@ import {
   Camera,
   Receipt,
   Share2,
-  Check
+  Check,
+  BarChart3
 } from 'lucide-react';
 import {
   ResponsiveContainer,
