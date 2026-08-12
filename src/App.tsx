@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { UserProfile, WeighingSession, SystemSettings, AppNotification, FieldPlot, Farmer } from './types';
 import { DEMO_USERS, DEFAULT_SETTINGS, INITIAL_NOTIFICATIONS, SAMPLE_FARMERS } from './supabaseClient';
 import { AuthView } from './components/AuthView';

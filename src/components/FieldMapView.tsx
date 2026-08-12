@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FieldPlot, Farmer, UserProfile, GPSLatLng } from '../types';
-import { readKMLOrKMZFile, ParsedKMLResult, calculateGeodesicArea, calculateCenterCoordinates } from '../utils/kmlParser';
+import { readKMLOrKMZFile, ParsedKMLResult } from '../utils/kmlParser';
 import { parseFarmersText, generateFarmerCSVTemplate, ParsedFarmerRow } from '../utils/farmerImportUtils';
 import {
   MapPin,
@@ -19,8 +19,6 @@ import {
   Download,
   Search,
   CheckCircle,
-  AlertTriangle,
-  RefreshCw,
   FileText
 } from 'lucide-react';
 
@@ -299,7 +297,7 @@ export const FieldMapView: React.FC<FieldMapViewProps> = ({
       );
       parserResult.then((res) => {
         setKmlParseResult(res);
-      }).catch((e) => {
+      }).catch(() => {
         setKmlFileError('Không thể phân tích dữ liệu XML dán vào. Vui lòng kiểm tra lại.');
       }).finally(() => {
         setIsParsingKml(false);

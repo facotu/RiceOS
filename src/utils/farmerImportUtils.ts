@@ -1,5 +1,3 @@
-import { Farmer } from '../types';
-
 export interface ParsedFarmerRow {
   name: string;
   phone: string;
