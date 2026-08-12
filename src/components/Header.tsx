@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '@/context/AppContext';
 import {
   Bell,
@@ -12,24 +12,40 @@ import {
   Lock,
   ChevronDown,
   Wheat,
-  ShieldCheck,
   User,
+  HelpCircle,
+  Clock,
+  Globe,
+  Check,
   Settings,
-  UserCheck
+  ShieldCheck
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import SyncStatusBadge from '@/components/SyncStatusBadge';
 import { UserRole } from '@/types/database.types';
 
 export default function Header() {
   const router = useRouter();
   const { currentUser, switchRole, notifications, markNotificationRead, isAdmin, logoutUser } = useApp();
+  
   const [showNotifMenu, setShowNotifMenu] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showUserDropdown, setShowUserDropdown] = useState(false);
   const [phoneInput, setPhoneInput] = useState(currentUser?.phone || '');
   const [savedSuccess, setSavedSuccess] = useState(false);
+
+  // Live real-time clock
+  const [currentTime, setCurrentTime] = useState<string>('');
+
+  useEffect(() => {
+    const updateClock = () => {
+      const now = new Date();
+      setCurrentTime(now.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }));
+    };
+    updateClock();
+    const interval = setInterval(updateClock, 10000);
+    return () => clearInterval(interval);
+  }, []);
 
   const unreadNotifs = notifications.filter(n => !n.read);
 
@@ -39,24 +55,32 @@ export default function Header() {
     setTimeout(() => setSavedSuccess(false), 2500);
   };
 
-  const roleTitles: Record<UserRole, { label: string; color: string }> = {
-    admin: { label: 'Admin (Quản trị)', color: 'bg-red-500/20 text-red-300 border-red-500/40' },
-    editor: { label: 'Editor (Biên tập)', color: 'bg-blue-500/20 text-blue-300 border-blue-500/40' },
-    staff: { label: 'Cán bộ cân', color: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' },
-    viewer: { label: 'Người xem', color: 'bg-slate-500/20 text-slate-300 border-slate-500/40' }
+  // Helper to extract initials dynamically (e.g. Phạm Văn Admin -> PA)
+  const getInitials = (name?: string) => {
+    if (!name) return 'RO';
+    const parts = name.trim().split(' ');
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+    return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
   };
 
-  const currentRole = roleTitles[currentUser?.role || 'staff'];
+  const roleConfigs: Record<UserRole, { badgeText: string; modeText: string; badgeColor: string; textColor: string }> = {
+    admin: { badgeText: 'ADMIN', modeText: 'ADMIN MODE', badgeColor: 'bg-red-500/20 text-red-300 border-red-500/40', textColor: 'text-red-400' },
+    editor: { badgeText: 'EDITOR', modeText: 'EDITOR MODE', badgeColor: 'bg-blue-500/20 text-blue-300 border-blue-500/40', textColor: 'text-blue-400' },
+    staff: { badgeText: 'STAFF', modeText: 'STAFF MODE', badgeColor: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40', textColor: 'text-emerald-400' },
+    viewer: { badgeText: 'VIEWER', modeText: 'VIEWER MODE', badgeColor: 'bg-slate-500/20 text-slate-300 border-slate-500/40', textColor: 'text-slate-400' }
+  };
+
+  const currentRoleInfo = roleConfigs[currentUser?.role || 'staff'];
 
   return (
     <>
-      <header className="sticky top-0 z-30 bg-brand-dark/90 backdrop-blur-xl border-b border-emerald-800/40 px-4 sm:px-6 py-3 flex items-center justify-between shadow-xl">
+      <header className="sticky top-0 z-30 bg-brand-dark/95 backdrop-blur-xl border-b border-emerald-800/40 px-4 sm:px-6 py-2.5 flex items-center justify-between shadow-xl">
 
-        {/* Left App Context / Scope Title */}
+        {/* Left App Title */}
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-600 via-brand-500 to-gold-400 p-0.5 shadow-md flex items-center justify-center">
-            <div className="w-full h-full bg-brand-dark rounded-[10px] flex items-center justify-center">
-              <Wheat className="w-5 h-5 text-gold-400" />
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-brand-600 via-brand-500 to-gold-400 p-0.5 shadow flex items-center justify-center">
+            <div className="w-full h-full bg-brand-dark rounded-[6px] flex items-center justify-center">
+              <Wheat className="w-4 h-4 text-gold-400" />
             </div>
           </div>
           <div>
@@ -67,32 +91,34 @@ export default function Header() {
           </div>
         </div>
 
-        {/* Right Horizontal Toolbar: Supabase Sync | Notifications | Unified User Profile Menu */}
-        <div className="flex items-center gap-3">
+        {/* Right Header Toolbar - Dynamic SaaS Pattern */}
+        <div className="flex items-center gap-2.5 sm:gap-3">
 
-          {/* 1. Supabase Cloud Sync Status Badge */}
-          <div className="hidden md:block">
-            <SyncStatusBadge />
+          {/* 1. Real-Time Clock Pill */}
+          <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-950/80 border border-emerald-800/60 text-slate-200 text-xs font-semibold">
+            <Clock className="w-3.5 h-3.5 text-gold-400" />
+            <span>{currentTime || '00:00'}</span>
           </div>
 
-          {/* 2. Notification Bell Dropdown */}
+          {/* 2. Notification Bell Button */}
           <div className="relative">
             <button
               onClick={() => {
                 setShowNotifMenu(!showNotifMenu);
                 setShowUserDropdown(false);
               }}
-              className="relative p-2.5 rounded-xl bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-800/60 text-slate-200 transition-all shadow"
+              className="relative p-2 rounded-xl bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-800/60 text-slate-200 transition-colors"
               title="Thông báo"
             >
               <Bell className="w-4.5 h-4.5 text-emerald-400" />
               {unreadNotifs.length > 0 && (
-                <span className="absolute -top-1 -right-1 w-4.5 h-4.5 bg-red-500 text-white rounded-full text-[9px] font-bold flex items-center justify-center animate-bounce shadow">
-                  {unreadNotifs.length}
+                <span className="absolute -top-1 -right-1 w-4.5 h-4.5 bg-red-500 text-white rounded-full text-[9px] font-extrabold flex items-center justify-center animate-bounce shadow">
+                  {unreadNotifs.length > 9 ? '9+' : unreadNotifs.length}
                 </span>
               )}
             </button>
 
+            {/* Notifications Drawer */}
             {showNotifMenu && (
               <div className="absolute right-0 mt-2 w-80 bg-brand-dark/95 backdrop-blur-2xl border border-emerald-700/60 rounded-2xl shadow-2xl p-4 z-50 animate-in fade-in zoom-in-95">
                 <div className="flex items-center justify-between border-b border-emerald-800/60 pb-2.5 mb-2.5">
@@ -131,76 +157,111 @@ export default function Header() {
             )}
           </div>
 
-          {/* 3. UNIFIED USER PROFILE MENU (CLEAN, NO TRUNCATION, NO SEPARATE LOGOUT BUTTON) */}
+          {/* 3. Help / Support Button */}
+          <button
+            onClick={() => router.push('/')}
+            className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-800/60 text-slate-200 text-xs font-semibold transition-colors"
+          >
+            <HelpCircle className="w-3.5 h-3.5 text-gold-400" />
+            <span>Trợ giúp</span>
+          </button>
+
+          {/* 4. Vertical Divider */}
+          <div className="h-6 w-px bg-emerald-800/60 mx-0.5" />
+
+          {/* 5. DYNAMIC USER PROFILE BUTTON & DROPDOWN */}
           <div className="relative">
             <button
               onClick={() => {
                 setShowUserDropdown(!showUserDropdown);
                 setShowNotifMenu(false);
               }}
-              className="flex items-center gap-2.5 p-2 px-3 rounded-2xl bg-emerald-950/80 hover:bg-emerald-900/90 border border-emerald-700/60 transition-all shadow"
+              className="flex items-center gap-2.5 p-1.5 pl-2 pr-3 rounded-2xl bg-emerald-950/80 hover:bg-emerald-900/90 border border-emerald-800/60 transition-all shadow"
             >
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-500 via-gold-400 to-emerald-300 p-0.5 shadow flex items-center justify-center flex-shrink-0">
-                <div className="w-full h-full bg-brand-dark rounded-[9px] flex items-center justify-center text-gold-300 font-extrabold text-xs uppercase">
-                  {currentUser?.full_name?.charAt(0) || 'U'}
+              {/* Dynamic Initials Avatar */}
+              <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-gold-400 via-emerald-500 to-gold-300 p-0.5 shadow flex items-center justify-center flex-shrink-0">
+                <div className="w-full h-full bg-brand-dark rounded-full flex items-center justify-center text-gold-300 font-extrabold text-xs tracking-wider">
+                  {getInitials(currentUser?.full_name)}
                 </div>
               </div>
 
+              {/* Dynamic User Name & Mode */}
               <div className="flex flex-col text-left whitespace-nowrap">
-                <span className="text-xs font-extrabold text-white leading-tight">{currentUser?.full_name}</span>
-                <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded-full border ${currentRole.color} w-max mt-0.5`}>
-                  {currentRole.label}
+                <div className="flex items-center gap-1">
+                  <span className="text-xs font-extrabold text-white leading-tight">
+                    {currentUser?.full_name || 'Khách Hàng'}
+                  </span>
+                  <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                </div>
+                <span className={`text-[9px] font-bold ${currentRoleInfo.textColor} tracking-wider uppercase leading-none mt-0.5`}>
+                  {currentRoleInfo.modeText}
                 </span>
               </div>
-
-              <ChevronDown className="w-4 h-4 text-slate-400 ml-1 flex-shrink-0" />
             </button>
 
-            {/* Premium Integrated User Dropdown */}
+            {/* DYNAMIC USER DROPDOWN CARD */}
             {showUserDropdown && (
-              <div className="absolute right-0 mt-2 w-64 bg-brand-dark/95 backdrop-blur-2xl border border-emerald-700/60 rounded-2xl shadow-2xl p-3 z-50 animate-in fade-in zoom-in-95 space-y-2">
+              <div className="absolute right-0 mt-2 w-72 bg-brand-dark/95 backdrop-blur-2xl border border-emerald-700/60 rounded-3xl shadow-2xl p-4 z-50 animate-in fade-in zoom-in-95 space-y-3">
                 
-                {/* Header User Card */}
-                <div className="p-2.5 rounded-xl bg-emerald-950/60 border border-emerald-800/40 flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500 to-gold-400 p-0.5 shadow flex-shrink-0">
-                    <div className="w-full h-full bg-brand-dark rounded-[9px] flex items-center justify-center text-gold-300 font-extrabold text-sm">
-                      {currentUser?.full_name?.charAt(0)}
-                    </div>
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-xs font-bold text-white truncate">{currentUser?.full_name}</p>
-                    <p className="text-[10px] text-emerald-300 font-mono truncate">{currentUser?.email || 'N/A'}</p>
+                {/* Header User Info Card */}
+                <div className="p-3 rounded-2xl bg-emerald-950/80 border border-emerald-800/50 space-y-1">
+                  <h4 className="text-sm font-black text-white uppercase tracking-wide">
+                    {currentUser?.full_name || 'NGƯỜI DÙNG RICE OS'}
+                  </h4>
+                  <p className="text-xs font-mono text-emerald-300">
+                    {currentUser?.email || 'chua_dang_nhap@riceos.vn'}
+                  </p>
+                  
+                  {/* Badges Row */}
+                  <div className="flex items-center gap-2 pt-1">
+                    <span className={`px-2 py-0.5 rounded-lg text-[10px] font-extrabold uppercase border ${currentRoleInfo.badgeColor}`}>
+                      {currentRoleInfo.badgeText}
+                    </span>
+                    <span className="text-[10px] font-semibold text-emerald-400 flex items-center gap-1">
+                      <Check className="w-3 h-3 text-emerald-400" /> Đã xác thực
+                    </span>
                   </div>
                 </div>
 
                 <div className="border-t border-emerald-900/60 my-1" />
 
-                {/* Actions */}
+                {/* Dropdown Navigation Options */}
                 <div className="space-y-1 text-xs font-bold">
                   <button
                     onClick={() => {
                       setShowProfileModal(true);
                       setShowUserDropdown(false);
                     }}
-                    className="w-full text-left p-2 rounded-xl text-slate-200 hover:bg-emerald-900/60 flex items-center gap-2 transition-colors"
+                    className="w-full text-left p-2.5 rounded-xl text-slate-200 hover:bg-emerald-900/60 flex items-center gap-2.5 transition-colors"
                   >
                     <User className="w-4 h-4 text-gold-400" />
-                    <span>Hồ sơ cá nhân & Đổi SĐT</span>
+                    <span>Hồ sơ cá nhân</span>
                   </button>
 
                   {isAdmin && (
                     <Link
                       href="/system"
                       onClick={() => setShowUserDropdown(false)}
-                      className="w-full text-left p-2 rounded-xl text-slate-200 hover:bg-emerald-900/60 flex items-center gap-2 transition-colors"
+                      className="w-full text-left p-2.5 rounded-xl text-slate-200 hover:bg-emerald-900/60 flex items-center gap-2.5 transition-colors"
                     >
                       <Settings className="w-4 h-4 text-emerald-400" />
                       <span>Quản trị Hệ Thống</span>
                     </Link>
                   )}
+
+                  <button
+                    onClick={() => {
+                      setShowUserDropdown(false);
+                      router.push('/');
+                    }}
+                    className="w-full text-left p-2.5 rounded-xl text-slate-200 hover:bg-emerald-900/60 flex items-center gap-2.5 transition-colors"
+                  >
+                    <Globe className="w-4 h-4 text-blue-400" />
+                    <span>Trang giới thiệu</span>
+                  </button>
                 </div>
 
-                {/* Role Simulation Switcher */}
+                {/* Role Switcher Demo */}
                 <div className="border-t border-emerald-900/60 my-1 pt-1">
                   <p className="text-[10px] font-bold text-slate-400 uppercase px-2 mb-1">Chuyển vai trò nhanh (Demo)</p>
                   <div className="grid grid-cols-2 gap-1">
@@ -230,9 +291,9 @@ export default function Header() {
                       setShowUserDropdown(false);
                       router.push('/');
                     }}
-                    className="w-full text-left p-2 rounded-xl text-red-400 hover:bg-red-500/10 flex items-center gap-2 transition-colors font-bold"
+                    className="w-full text-left p-2.5 rounded-xl text-red-400 hover:bg-red-500/10 flex items-center gap-2.5 transition-colors font-extrabold"
                   >
-                    <LogOut className="w-4 h-4" />
+                    <LogOut className="w-4 h-4 text-red-400" />
                     <span>Đăng xuất tài khoản</span>
                   </button>
                 </div>
@@ -258,15 +319,15 @@ export default function Header() {
             </button>
 
             <div className="flex items-center gap-4 border-b border-emerald-900/60 pb-4">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-emerald-500 via-gold-400 to-emerald-300 p-0.5 shadow-xl flex items-center justify-center">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-gold-400 via-emerald-500 to-gold-300 p-0.5 shadow-xl flex items-center justify-center">
                 <div className="w-full h-full bg-brand-dark rounded-[14px] flex items-center justify-center text-gold-300 font-extrabold text-xl">
-                  {currentUser?.full_name?.charAt(0)}
+                  {getInitials(currentUser?.full_name)}
                 </div>
               </div>
               <div>
                 <h3 className="text-lg font-extrabold text-white">{currentUser?.full_name}</h3>
-                <span className={`inline-block text-xs font-bold px-2 py-0.5 rounded-full border ${currentRole.color} mt-1`}>
-                  {currentRole.label}
+                <span className={`inline-block text-xs font-bold px-2.5 py-0.5 rounded-full border ${currentRoleInfo.badgeColor} mt-1`}>
+                  {currentRoleInfo.modeText}
                 </span>
               </div>
             </div>
@@ -287,7 +348,7 @@ export default function Header() {
                     type="text"
                     disabled
                     value={currentUser?.email || 'chua_cap_nhat@riceos.vn'}
-                    className="w-full pl-9 pr-3 py-2 bg-emerald-950/50 border border-emerald-900 rounded-xl text-slate-400"
+                    className="w-full pl-9 pr-3 py-2 bg-emerald-950/50 border border-emerald-900 rounded-xl text-slate-400 font-mono"
                   />
                 </div>
               </div>
@@ -309,7 +370,7 @@ export default function Header() {
               <div className="pt-2 flex gap-2">
                 <button
                   type="submit"
-                  className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-gold-400 to-gold-500 text-slate-950 font-extrabold text-xs shadow-lg hover:from-gold-300 hover:to-gold-400 transition-all"
+                  className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-gold-400 to-gold-500 text-slate-950 font-extrabold text-xs shadow-lg transition-all"
                 >
                   Lưu Thay Đổi
                 </button>
@@ -338,7 +399,7 @@ export default function Header() {
                 <Link
                   href="/system"
                   onClick={() => setShowProfileModal(false)}
-                  className="text-xs text-gold-400 hover:text-gold-300 font-bold flex items-center gap-1.5"
+                  className="text-xs text-gold-400 font-bold flex items-center gap-1.5"
                 >
                   Cấu Hình Hệ Thống
                 </Link>
