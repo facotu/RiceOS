@@ -16,6 +16,7 @@ import {
   Camera,
   Bell,
   UserCheck,
+  Settings,
   LogOut,
   Menu,
   X,
