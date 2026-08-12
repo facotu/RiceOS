@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { useApp } from '@/context/AppContext';
 import {
@@ -19,7 +19,19 @@ import {
   Calendar,
   LogIn,
   UserPlus,
-  KeyRound
+  KeyRound,
+  Shield,
+  Send,
+  AlertTriangle,
+  Mail,
+  Lock,
+  Phone,
+  User,
+  ArrowRight,
+  Camera,
+  Receipt,
+  Share2,
+  Check
 } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -33,11 +45,82 @@ import {
   Cell
 } from 'recharts';
 
-export default function DashboardPage() {
-  const { currentUser, sessions, staffMembers, trucks, varieties, isAdmin, isStaff } = useApp();
+export default function Home() {
+  const {
+    currentUser,
+    loginUser,
+    logoutUser,
+    registerNewUser,
+    sessions,
+    isAdmin,
+    isStaff,
+    profiles
+  } = useApp();
+
+  // Auth Tab State on Landing Page
+  const [authTab, setAuthTab] = useState<'login' | 'register' | 'forgot'>('login');
+
+  // Form States
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+
+  const [regName, setRegName] = useState('');
+  const [regEmail, setRegEmail] = useState('');
+  const [regPhone, setRegPhone] = useState('');
+  const [regPassword, setRegPassword] = useState('');
+
+  const [forgotEmail, setForgotEmail] = useState('');
+
+  // Status Alerts
+  const [authAlert, setAuthAlert] = useState<{ type: 'success' | 'error' | 'warning'; msg: string } | null>(null);
+
+  // Handlers
+  const handleLoginSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!loginEmail) return;
+    const res = loginUser(loginEmail);
+    if (res.success) {
+      setAuthAlert({ type: 'success', msg: res.message });
+    } else {
+      setAuthAlert({ type: 'error', msg: res.message });
+    }
+  };
+
+  const handleQuickLogin = (email: string) => {
+    setLoginEmail(email);
+    const res = loginUser(email);
+    if (res.success) {
+      setAuthAlert({ type: 'success', msg: res.message });
+    } else {
+      setAuthAlert({ type: 'error', msg: res.message });
+    }
+  };
+
+  const handleRegisterSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!regName || !regEmail) return;
+    registerNewUser(regName, regEmail, regPhone);
+    setAuthAlert({
+      type: 'warning',
+      msg: `🎉 Đăng ký thành công tài khoản "${regName}"! Thông báo kích hoạt đã gửi tới Admin. Vui lòng chờ Admin duyệt và cấp quyền để có thể đăng nhập.`
+    });
+    setRegName('');
+    setRegEmail('');
+    setRegPhone('');
+    setRegPassword('');
+  };
+
+  const handleForgotSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setAuthAlert({
+      type: 'success',
+      msg: `Đã gửi liên kết khôi phục mật khẩu tới ${forgotEmail}. Vui lòng kiểm tra hộp thư.`
+    });
+    setForgotEmail('');
+  };
 
   // Filter sessions based on current logged in user role:
-  // If Staff, display metrics belonging to that staff member. If Admin/Editor/Viewer, display all.
+  // Non-admin sees ONLY sessions created by them. Admin sees ALL sessions.
   const relevantSessions = !isAdmin
     ? sessions.filter(s => s.created_by === currentUser?.id || s.staff?.user_id === currentUser?.id || s.staff?.full_name.includes(currentUser?.full_name || ''))
     : sessions;
@@ -63,349 +146,414 @@ export default function DashboardPage() {
   });
   const varietyChartData = Object.values(varietyStatsMap);
 
-  // Group by Truck
-  const truckStatsMap: Record<string, { plate: string; driver: string; fresh: number; bags: number; sessionCount: number }> = {};
-  relevantSessions.forEach(s => {
-    const plate = s.truck?.license_plate || 'Chưa gán xe';
-    const driver = s.truck?.driver_name || 'Tài xế';
-    if (!truckStatsMap[plate]) {
-      truckStatsMap[plate] = { plate, driver, fresh: 0, bags: 0, sessionCount: 0 };
-    }
-    truckStatsMap[plate].fresh += s.total_fresh_weight;
-    truckStatsMap[plate].bags += s.total_bags;
-    truckStatsMap[plate].sessionCount += 1;
-  });
-  const truckStatsList = Object.values(truckStatsMap);
-
-  // Group by Staff (Admin view)
-  const staffStatsMap: Record<string, { name: string; fresh: number; dry: number; bags: number; sessionCount: number }> = {};
-  relevantSessions.forEach(s => {
-    const staffName = s.staff?.full_name || 'Chưa rõ cán bộ';
-    if (!staffStatsMap[staffName]) {
-      staffStatsMap[staffName] = { name: staffName, fresh: 0, dry: 0, bags: 0, sessionCount: 0 };
-    }
-    staffStatsMap[staffName].fresh += s.total_fresh_weight;
-    staffStatsMap[staffName].dry += s.total_dry_weight;
-    staffStatsMap[staffName].bags += s.total_bags;
-    staffStatsMap[staffName].sessionCount += 1;
-  });
-  const staffStatsList = Object.values(staffStatsMap);
-
-  const COLORS = ['#22c55e', '#facc15', '#3b82f6', '#ec4899', '#8b5cf6'];
+  const pendingUsersCount = profiles.filter(p => p.status === 'pending' || !p.is_active).length;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
 
-      {/* Header Greeting & Scope Alert */}
-      <div className="glass-card rounded-2xl p-6 relative overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div className="relative z-10 space-y-1">
-          <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-semibold flex items-center gap-1">
-              <Sparkles className="w-3.5 h-3.5 text-gold-400" />
-              Chế độ xem: {isAdmin ? 'Quản trị viên (Xem toàn bộ số liệu tổng)' : `Cán bộ cân (${currentUser?.full_name})`}
-            </span>
+      {/* SECTION 1: LANDING PAGE HEADER & AUTH INTEGRATION */}
+      <div className="glass-card rounded-3xl p-6 sm:p-10 relative overflow-hidden shadow-2xl border border-emerald-800/50">
+        
+        {/* Background Glow */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-emerald-500/10 via-gold-500/10 to-transparent blur-3xl rounded-full pointer-events-none" />
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
+          
+          {/* Left Column: App Introduction & Value Proposition */}
+          <div className="lg:col-span-7 space-y-5">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-to-r from-emerald-500/20 to-gold-500/20 border border-gold-500/30 text-gold-300 text-xs font-bold shadow">
+              <Sparkles className="w-4 h-4 text-gold-400" />
+              <span>Hệ Thống Cân Lúa & Thu Mua Nông Sản Hiện Đại</span>
+            </div>
+
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white leading-tight">
+              Quản Lý Cân Lúa <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-gold-400 to-emerald-100">
+                Thông Minh Ngoài Đồng
+              </span>
+            </h1>
+
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              Giải pháp số hóa toàn diện quy trình thu mua lúa ngoài đồng ruộng. Tích hợp AI Camera tự động đọc màn hình cân điện tử, phím cân 1-3 bao, trừ bì % mặc định 12%, gửi Zalo 1-chạm, in phiếu nhiệt 80mm và phân quyền duyệt thành viên tạo phiên cân riêng biệt.
+            </p>
+
+            {/* Feature Pills */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 pt-2">
+              <div className="flex items-center gap-2 p-2 rounded-xl bg-emerald-950/60 border border-emerald-800/40 text-xs text-slate-200">
+                <Check className="w-4 h-4 text-gold-400 flex-shrink-0" />
+                <span>Numpad 1, 2, 3 bao</span>
+              </div>
+              <div className="flex items-center gap-2 p-2 rounded-xl bg-emerald-950/60 border border-emerald-800/40 text-xs text-slate-200">
+                <Check className="w-4 h-4 text-gold-400 flex-shrink-0" />
+                <span>Trừ bì % (Mặc định 12%)</span>
+              </div>
+              <div className="flex items-center gap-2 p-2 rounded-xl bg-emerald-950/60 border border-emerald-800/40 text-xs text-slate-200">
+                <Check className="w-4 h-4 text-gold-400 flex-shrink-0" />
+                <span>Admin duyệt & cấp quyền</span>
+              </div>
+              <div className="flex items-center gap-2 p-2 rounded-xl bg-emerald-950/60 border border-emerald-800/40 text-xs text-slate-200">
+                <Check className="w-4 h-4 text-gold-400 flex-shrink-0" />
+                <span>Số liệu riêng thành viên</span>
+              </div>
+              <div className="flex items-center gap-2 p-2 rounded-xl bg-emerald-950/60 border border-emerald-800/40 text-xs text-slate-200">
+                <Check className="w-4 h-4 text-gold-400 flex-shrink-0" />
+                <span>AI Camera Đọc Cân</span>
+              </div>
+              <div className="flex items-center gap-2 p-2 rounded-xl bg-emerald-950/60 border border-emerald-800/40 text-xs text-slate-200">
+                <Check className="w-4 h-4 text-gold-400 flex-shrink-0" />
+                <span>Copy Zalo & In 80mm</span>
+              </div>
+            </div>
+
+            {/* Quick Action when Logged In */}
+            {currentUser && (
+              <div className="pt-4 flex flex-wrap items-center gap-3">
+                <Link
+                  href="/weighing"
+                  className="px-6 py-3 rounded-2xl bg-gradient-to-r from-gold-400 via-gold-500 to-amber-500 hover:brightness-110 text-slate-950 font-black text-xs sm:text-sm shadow-xl shadow-gold-500/20 flex items-center gap-2"
+                >
+                  <Scale className="w-5 h-5" /> Vào Tạo Phiên Cân Lúa Ngay
+                </Link>
+                {isAdmin && (
+                  <Link
+                    href="/system"
+                    className="px-5 py-3 rounded-2xl bg-emerald-950 border border-emerald-700 text-emerald-300 font-bold text-xs flex items-center gap-2"
+                  >
+                    <UserCheck className="w-4 h-4 text-gold-400" />
+                    Duyệt Thành Viên ({pendingUsersCount} Chờ)
+                  </Link>
+                )}
+              </div>
+            )}
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white">
-            Bảng Thống Kê Sản Lượng & Phiên Cân
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-300">
-            {isStaff
-              ? 'Số liệu phiên cân do tài khoản của bạn trực tiếp thực hiện ngoài ruộng.'
-              : 'Tổng quan toàn bộ hoạt động cân lúa, xe nhận, cán bộ cân và doanh thu vụ mùa.'}
-          </p>
+
+          {/* Right Column: Integrated Auth Container (Login / Register / Forgot Password) */}
+          <div className="lg:col-span-5 bg-brand-dark/95 backdrop-blur-2xl border border-emerald-700/60 rounded-3xl p-6 shadow-2xl space-y-4">
+            
+            {/* Logged-In User Banner */}
+            {currentUser ? (
+              <div className="space-y-4 py-2 text-center">
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-emerald-500 via-gold-400 to-emerald-300 p-0.5 shadow-xl mx-auto flex items-center justify-center">
+                  <div className="w-full h-full bg-brand-dark rounded-[14px] flex items-center justify-center text-gold-300 font-extrabold text-2xl">
+                    {currentUser.full_name.charAt(0)}
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-xl font-extrabold text-white">{currentUser.full_name}</h3>
+                  <p className="text-xs text-emerald-300 font-mono mt-0.5">{currentUser.email}</p>
+                  <span className="inline-block mt-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-xs font-bold">
+                    Vai trò: {currentUser.role.toUpperCase()}
+                  </span>
+                </div>
+                <p className="text-xs text-slate-300 leading-relaxed bg-emerald-950/60 p-3 rounded-xl border border-emerald-800/40">
+                  Bạn đang đăng nhập vào workspace cá nhân. Mọi phiên cân lúa bạn tạo sẽ được lưu riêng cho tài khoản này.
+                </p>
+                <div className="flex gap-2 pt-2">
+                  <Link
+                    href="/weighing"
+                    className="flex-1 py-2.5 rounded-xl bg-gold-400 text-slate-950 font-black text-xs shadow text-center"
+                  >
+                    Vào Cân Lúa
+                  </Link>
+                  <button
+                    onClick={logoutUser}
+                    className="py-2.5 px-4 rounded-xl bg-red-950 border border-red-700 text-red-300 font-bold text-xs"
+                  >
+                    Đăng Xuất
+                  </button>
+                </div>
+              </div>
+            ) : (
+              /* Visitor / Auth Tabs */
+              <>
+                {/* Auth Tab Switcher */}
+                <div className="flex bg-emerald-950/80 p-1 rounded-2xl border border-emerald-800/60">
+                  <button
+                    onClick={() => { setAuthTab('login'); setAuthAlert(null); }}
+                    className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+                      authTab === 'login' ? 'bg-gold-400 text-slate-950 shadow' : 'text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    <LogIn className="w-3.5 h-3.5" /> Đăng Nhập
+                  </button>
+                  <button
+                    onClick={() => { setAuthTab('register'); setAuthAlert(null); }}
+                    className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+                      authTab === 'register' ? 'bg-gold-400 text-slate-950 shadow' : 'text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    <UserPlus className="w-3.5 h-3.5" /> Đăng Ký
+                  </button>
+                  <button
+                    onClick={() => { setAuthTab('forgot'); setAuthAlert(null); }}
+                    className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+                      authTab === 'forgot' ? 'bg-gold-400 text-slate-950 shadow' : 'text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    <KeyRound className="w-3.5 h-3.5" /> Quên MK
+                  </button>
+                </div>
+
+                {/* Alert Message Box */}
+                {authAlert && (
+                  <div className={`p-3 rounded-xl border text-xs font-semibold leading-relaxed animate-in zoom-in-95 ${
+                    authAlert.type === 'success'
+                      ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-300'
+                      : authAlert.type === 'warning'
+                      ? 'bg-amber-500/20 border-amber-500/50 text-amber-300'
+                      : 'bg-red-500/20 border-red-500/50 text-red-300'
+                  }`}>
+                    {authAlert.msg}
+                  </div>
+                )}
+
+                {/* TAB 1: LOGIN */}
+                {authTab === 'login' && (
+                  <form onSubmit={handleLoginSubmit} className="space-y-3 text-xs">
+                    <div>
+                      <label className="block text-slate-300 font-semibold mb-1">Email đăng ký</label>
+                      <div className="relative">
+                        <Mail className="w-4 h-4 text-emerald-400 absolute left-3 top-2.5" />
+                        <input
+                          type="email"
+                          required
+                          value={loginEmail}
+                          onChange={e => setLoginEmail(e.target.value)}
+                          placeholder="hung.canbo@riceos.vn"
+                          className="w-full pl-9 pr-3 py-2 bg-emerald-950/80 border border-emerald-700/60 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-slate-300 font-semibold mb-1">Mật khẩu</label>
+                      <div className="relative">
+                        <Lock className="w-4 h-4 text-gold-400 absolute left-3 top-2.5" />
+                        <input
+                          type="password"
+                          required
+                          value={loginPassword}
+                          onChange={e => setLoginPassword(e.target.value)}
+                          placeholder="••••••••"
+                          className="w-full pl-9 pr-3 py-2 bg-emerald-950/80 border border-emerald-700/60 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        />
+                      </div>
+                    </div>
+
+                    <button
+                      type="submit"
+                      className="w-full py-3 rounded-xl bg-gradient-to-r from-gold-400 via-gold-500 to-amber-500 text-slate-950 font-black text-xs shadow-lg hover:brightness-110 transition-all flex items-center justify-center gap-1.5"
+                    >
+                      <LogIn className="w-4 h-4" /> Đăng Nhập Hệ Thống
+                    </button>
+
+                    {/* Quick Demo Logins */}
+                    <div className="pt-2 border-t border-emerald-900/60 space-y-1.5">
+                      <p className="text-[10px] text-slate-400 font-bold uppercase text-center">Đăng nhập nhanh kiểm thử (Demo)</p>
+                      <div className="grid grid-cols-2 gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => handleQuickLogin('admin@riceos.vn')}
+                          className="p-1.5 rounded-lg bg-red-950/60 border border-red-800 text-red-300 text-[10px] font-bold"
+                        >
+                          👑 Admin (Quản trị)
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleQuickLogin('hung.canbo@riceos.vn')}
+                          className="p-1.5 rounded-lg bg-emerald-950/60 border border-emerald-800 text-emerald-300 text-[10px] font-bold"
+                        >
+                          ⚖️ Cán bộ cân 1
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleQuickLogin('nam.canbo@riceos.vn')}
+                          className="p-1.5 rounded-lg bg-emerald-950/60 border border-emerald-800 text-emerald-300 text-[10px] font-bold"
+                        >
+                          ⚖️ Cán bộ cân 2
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleQuickLogin('levanmoi.new@gmail.com')}
+                          className="p-1.5 rounded-lg bg-amber-950/60 border border-amber-800 text-amber-300 text-[10px] font-bold"
+                        >
+                          ⏳ TK Chờ duyệt
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+                )}
+
+                {/* TAB 2: REGISTER */}
+                {authTab === 'register' && (
+                  <form onSubmit={handleRegisterSubmit} className="space-y-3 text-xs">
+                    <div>
+                      <label className="block text-slate-300 font-semibold mb-1">Họ và Tên *</label>
+                      <div className="relative">
+                        <User className="w-4 h-4 text-emerald-400 absolute left-3 top-2.5" />
+                        <input
+                          type="text"
+                          required
+                          value={regName}
+                          onChange={e => setRegName(e.target.value)}
+                          placeholder="Phạm Văn Mới"
+                          className="w-full pl-9 pr-3 py-2 bg-emerald-950/80 border border-emerald-700/60 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 font-bold"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="block text-slate-300 font-semibold mb-1">Email *</label>
+                        <input
+                          type="email"
+                          required
+                          value={regEmail}
+                          onChange={e => setRegEmail(e.target.value)}
+                          placeholder="canbo@gmail.com"
+                          className="w-full p-2 bg-emerald-950/80 border border-emerald-700/60 rounded-xl text-white text-xs font-mono"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-slate-300 font-semibold mb-1">Số điện thoại *</label>
+                        <input
+                          type="text"
+                          required
+                          value={regPhone}
+                          onChange={e => setRegPhone(e.target.value)}
+                          placeholder="0905 xxx xxx"
+                          className="w-full p-2 bg-emerald-950/80 border border-emerald-700/60 rounded-xl text-white text-xs"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-slate-300 font-semibold mb-1">Tạo mật khẩu *</label>
+                      <input
+                        type="password"
+                        required
+                        value={regPassword}
+                        onChange={e => setRegPassword(e.target.value)}
+                        placeholder="••••••••"
+                        className="w-full p-2 bg-emerald-950/80 border border-emerald-700/60 rounded-xl text-white text-xs"
+                      />
+                    </div>
+
+                    <button
+                      type="submit"
+                      className="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-brand-600 hover:from-emerald-400 hover:to-brand-500 text-white font-black text-xs shadow-lg transition-all flex items-center justify-center gap-1.5"
+                    >
+                      <UserPlus className="w-4 h-4" /> Đăng Ký Tài Khoản Mới
+                    </button>
+                    <p className="text-[10px] text-slate-400 text-center leading-relaxed">
+                      * Sau khi đăng ký thành công, thông báo sẽ gửi tới Admin để duyệt & cấp quyền kích hoạt.
+                    </p>
+                  </form>
+                )}
+
+                {/* TAB 3: FORGOT PASSWORD */}
+                {authTab === 'forgot' && (
+                  <form onSubmit={handleForgotSubmit} className="space-y-3 text-xs">
+                    <div>
+                      <label className="block text-slate-300 font-semibold mb-1">Email đã đăng ký</label>
+                      <div className="relative">
+                        <Mail className="w-4 h-4 text-gold-400 absolute left-3 top-2.5" />
+                        <input
+                          type="email"
+                          required
+                          value={forgotEmail}
+                          onChange={e => setForgotEmail(e.target.value)}
+                          placeholder="nhap_email@riceos.vn"
+                          className="w-full pl-9 pr-3 py-2 bg-emerald-950/80 border border-emerald-700/60 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        />
+                      </div>
+                    </div>
+
+                    <button
+                      type="submit"
+                      className="w-full py-3 rounded-xl bg-gold-400 hover:bg-gold-300 text-slate-950 font-black text-xs shadow-lg transition-all flex items-center justify-center gap-1.5"
+                    >
+                      <Send className="w-4 h-4" /> Gửi Email Khôi Phục Mật Khẩu
+                    </button>
+                  </form>
+                )}
+              </>
+            )}
+
+          </div>
+
         </div>
 
-        <div className="relative z-10 flex flex-wrap items-center gap-2.5 w-full md:w-auto">
+      </div>
+
+      {/* SECTION 2: METRICS DASHBOARD (PERSISTENT & ISOLATED FOR LOGGED IN MEMBER) */}
+      <div className="space-y-6">
+
+        {/* Dashboard Title & Scope */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 glass-card p-4 rounded-2xl">
+          <div>
+            <h2 className="text-xl font-extrabold text-white flex items-center gap-2">
+              <BarChart3 className="w-5 h-5 text-gold-400" />
+              Thống Kê Sản Lượng & Doanh Thu
+            </h2>
+            <p className="text-xs text-slate-300">
+              {!isAdmin
+                ? `Hiển thị số liệu thuộc quyền quản lý của cán bộ: ${currentUser?.full_name || 'Tài khoản cá nhân'}`
+                : 'Hiển thị tổng hợp toàn bộ các phiên cân, cán bộ cân và xe nhận trên toàn hệ thống.'}
+            </p>
+          </div>
+
           <Link
             href="/weighing"
-            className="flex-1 md:flex-initial flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-gold-400 via-gold-500 to-amber-500 hover:brightness-110 text-brand-dark font-extrabold text-xs shadow-xl shadow-gold-500/20 transition-all"
+            className="px-4 py-2 rounded-xl bg-gold-400 hover:bg-gold-300 text-slate-950 font-extrabold text-xs shadow flex items-center gap-1.5"
           >
-            <Scale className="w-4 h-4" />
-            Vào Cân Lúa
-          </Link>
-          <Link
-            href="/login"
-            className="px-3.5 py-2.5 rounded-xl bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-700/60 text-emerald-300 font-bold text-xs flex items-center gap-1.5"
-          >
-            <LogIn className="w-3.5 h-3.5" /> Đăng Nhập
-          </Link>
-          <Link
-            href="/register"
-            className="px-3.5 py-2.5 rounded-xl bg-blue-950/80 hover:bg-blue-900 border border-blue-700/60 text-blue-300 font-bold text-xs flex items-center gap-1.5"
-          >
-            <UserPlus className="w-3.5 h-3.5" /> Đăng Ký
-          </Link>
-          <Link
-            href="/forgot-password"
-            className="px-3.5 py-2.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-700/60 text-slate-300 font-semibold text-xs flex items-center gap-1.5"
-          >
-            <KeyRound className="w-3.5 h-3.5" /> Quên Mật Khẩu
+            <Scale className="w-4 h-4" /> + Tạo Phiên Cân Mới
           </Link>
         </div>
 
-        {/* Decorative background glow */}
-        <div className="absolute -right-10 -bottom-10 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-      </div>
-
-      {/* 8 Primary Dashboard Widget Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-
-        {/* Card 1: Đã Cân */}
-        <div className="glass-card p-4 rounded-xl relative overflow-hidden hover:border-emerald-500/50 transition-all">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-400">Đã Cân (Phiên)</span>
-            <div className="p-2 rounded-lg bg-emerald-500/20 text-emerald-400">
-              <Scale className="w-4 h-4" />
+        {/* 8 SUMMARY METRICS WIDGETS */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 gap-3 sm:gap-4">
+          
+          <div className="glass-card p-4 rounded-2xl flex items-center justify-between border border-emerald-800/40">
+            <div>
+              <span className="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider block">Phiên Cân</span>
+              <p className="text-xl sm:text-2xl font-black text-white mt-1">{totalSessionsCount}</p>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center">
+              <Scale className="w-5 h-5" />
             </div>
           </div>
-          <p className="text-2xl font-black text-white mt-2">
-            {totalSessionsCount} <span className="text-xs font-medium text-emerald-400">phiên</span>
-          </p>
-          <span className="text-[10px] text-slate-400 block mt-1">Đã cập nhật hệ thống</span>
-        </div>
 
-        {/* Card 2: Sản lượng tươi */}
-        <div className="glass-card p-4 rounded-xl relative overflow-hidden hover:border-emerald-500/50 transition-all">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-400">Sản Lượng Tươi</span>
-            <div className="p-2 rounded-lg bg-blue-500/20 text-blue-400">
-              <Wheat className="w-4 h-4" />
+          <div className="glass-card p-4 rounded-2xl flex items-center justify-between border border-emerald-800/40">
+            <div>
+              <span className="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider block">Tổng Số Bao</span>
+              <p className="text-xl sm:text-2xl font-black text-gold-300 mt-1">{totalBags.toLocaleString('vi-VN')} bao</p>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-gold-500/20 text-gold-400 border border-gold-500/40 flex items-center justify-center">
+              <Package className="w-5 h-5" />
             </div>
           </div>
-          <p className="text-2xl font-black text-white mt-2">
-            {totalFreshWeight.toLocaleString('vi-VN')} <span className="text-xs font-medium text-blue-400">kg</span>
-          </p>
-          <span className="text-[10px] text-slate-400 block mt-1">Tổng lúa tươi vừa cân</span>
-        </div>
 
-        {/* Card 3: Sản lượng khô */}
-        <div className="glass-card-gold p-4 rounded-xl relative overflow-hidden hover:border-gold-500/50 transition-all">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-gold-300">Sản Lượng Khô</span>
-            <div className="p-2 rounded-lg bg-gold-500/20 text-gold-400">
-              <TrendingUp className="w-4 h-4" />
+          <div className="glass-card p-4 rounded-2xl flex items-center justify-between border border-emerald-800/40">
+            <div>
+              <span className="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider block">Sản Lượng Tươi</span>
+              <p className="text-xl sm:text-2xl font-black text-emerald-300 mt-1">{totalFreshWeight.toLocaleString('vi-VN')} kg</p>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center">
+              <Wheat className="w-5 h-5" />
             </div>
           </div>
-          <p className="text-2xl font-black text-gold-300 mt-2">
-            {totalDryWeight.toLocaleString('vi-VN')} <span className="text-xs font-medium text-gold-400">kg</span>
-          </p>
-          <span className="text-[10px] text-gold-400/80 block mt-1">Sau khi đã trừ bì</span>
-        </div>
 
-        {/* Card 4: Số bao */}
-        <div className="glass-card p-4 rounded-xl relative overflow-hidden hover:border-emerald-500/50 transition-all">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-400">Tổng Số Bao</span>
-            <div className="p-2 rounded-lg bg-purple-500/20 text-purple-400">
-              <Package className="w-4 h-4" />
+          <div className="glass-card p-4 rounded-2xl flex items-center justify-between border border-emerald-800/40">
+            <div>
+              <span className="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider block">Sản Lượng Khô</span>
+              <p className="text-xl sm:text-2xl font-black text-blue-300 mt-1">{totalDryWeight.toLocaleString('vi-VN')} kg</p>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-400 border border-blue-500/40 flex items-center justify-center">
+              <TrendingUp className="w-5 h-5" />
             </div>
           </div>
-          <p className="text-2xl font-black text-white mt-2">
-            {totalBags.toLocaleString('vi-VN')} <span className="text-xs font-medium text-purple-400">bao</span>
-          </p>
-          <span className="text-[10px] text-slate-400 block mt-1">Trung bình ~50kg / bao</span>
-        </div>
 
-        {/* Card 5: Xe Cân */}
-        <div className="glass-card p-4 rounded-xl relative overflow-hidden hover:border-emerald-500/50 transition-all">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-400">Xe Nhận Tải</span>
-            <div className="p-2 rounded-lg bg-amber-500/20 text-amber-400">
-              <Truck className="w-4 h-4" />
-            </div>
-          </div>
-          <p className="text-2xl font-black text-white mt-2">
-            {truckStatsList.length} <span className="text-xs font-medium text-amber-400">xe</span>
-          </p>
-          <span className="text-[10px] text-slate-400 block mt-1">Đang vận chuyển lúa</span>
-        </div>
-
-        {/* Card 6: Cán bộ cân */}
-        <div className="glass-card p-4 rounded-xl relative overflow-hidden hover:border-emerald-500/50 transition-all">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-400">Cán Bộ Cân</span>
-            <div className="p-2 rounded-lg bg-teal-500/20 text-teal-400">
-              <Users className="w-4 h-4" />
-            </div>
-          </div>
-          <p className="text-2xl font-black text-white mt-2">
-            {staffStatsList.length} <span className="text-xs font-medium text-teal-400">cán bộ</span>
-          </p>
-          <span className="text-[10px] text-slate-400 block mt-1">Đang làm việc ngoài đồng</span>
-        </div>
-
-        {/* Card 7: Giống lúa */}
-        <div className="glass-card p-4 rounded-xl relative overflow-hidden hover:border-emerald-500/50 transition-all">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-400">Chủng Loại Giống</span>
-            <div className="p-2 rounded-lg bg-rose-500/20 text-rose-400">
-              <Wheat className="w-4 h-4" />
-            </div>
-          </div>
-          <p className="text-2xl font-black text-white mt-2">
-            {varietyChartData.length} <span className="text-xs font-medium text-rose-400">loại</span>
-          </p>
-          <span className="text-[10px] text-slate-400 block mt-1">ST25, OM18, DT8,...</span>
-        </div>
-
-        {/* Card 8: Tổng Doanh Thu / Thành Tiền */}
-        <div className="glass-card-gold p-4 rounded-xl relative overflow-hidden hover:border-gold-500/50 transition-all col-span-2 sm:col-span-1">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-gold-300">Tổng Thành Tiền</span>
-            <div className="p-2 rounded-lg bg-gold-500/20 text-gold-400">
-              <Coins className="w-4 h-4" />
-            </div>
-          </div>
-          <p className="text-xl sm:text-2xl font-black text-gold-300 mt-2">
-            {totalRevenue.toLocaleString('vi-VN')} <span className="text-xs font-medium text-gold-400">VNĐ</span>
-          </p>
-          <span className="text-[10px] text-gold-400/80 block mt-1">Giá trị thu mua lúa</span>
-        </div>
-
-      </div>
-
-      {/* Visual Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
-        {/* Chart 1: Sản Lượng Theo Loại Giống Lúa */}
-        <div className="glass-card p-5 rounded-2xl space-y-4">
-          <div className="flex justify-between items-center border-b border-emerald-800/40 pb-3">
-            <h3 className="font-bold text-base text-white flex items-center gap-2">
-              <Wheat className="w-5 h-5 text-gold-400" />
-              Sản Lượng Theo Loại Giống Lúa (Kg)
-            </h3>
-            <span className="text-xs text-emerald-400 font-medium">Lúa Tươi / Khô</span>
-          </div>
-
-          <div className="h-64 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={varietyChartData}>
-                <XAxis dataKey="name" stroke="#94a3b8" fontSize={11} />
-                <YAxis stroke="#94a3b8" fontSize={11} />
-                <Tooltip
-                  contentStyle={{ backgroundColor: '#0b2618', borderColor: '#22c55e', borderRadius: '12px', fontSize: '12px' }}
-                  formatter={(value: any) => [`${Number(value).toLocaleString('vi-VN')} kg`, 'Sản lượng']}
-                />
-                <Bar dataKey="fresh" name="Tươi (Kg)" fill="#22c55e" radius={[6, 6, 0, 0]} />
-                <Bar dataKey="dry" name="Khô (Kg)" fill="#facc15" radius={[6, 6, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        {/* Chart 2: Sản Lượng Từng Xe Nhận (Sản lượng từng xe) */}
-        <div className="glass-card p-5 rounded-2xl space-y-4">
-          <div className="flex justify-between items-center border-b border-emerald-800/40 pb-3">
-            <h3 className="font-bold text-base text-white flex items-center gap-2">
-              <Truck className="w-5 h-5 text-amber-400" />
-              Sản Lượng Từng Xe Nhận (Xe Cân)
-            </h3>
-            <Link href="/trucks" className="text-xs text-gold-400 hover:underline flex items-center gap-1">
-              Xem chi tiết xe <ArrowUpRight className="w-3.5 h-3.5" />
-            </Link>
-          </div>
-
-          <div className="space-y-3">
-            {truckStatsList.map((t, idx) => (
-              <div key={idx} className="p-3 rounded-xl bg-emerald-950/60 border border-emerald-800/50 flex justify-between items-center">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-amber-500/20 text-amber-400 font-bold flex items-center justify-center text-xs border border-amber-500/30">
-                    <Truck className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <p className="font-bold text-sm text-white">{t.plate}</p>
-                    <p className="text-xs text-slate-400">Tài xế: {t.driver}</p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p className="font-extrabold text-sm text-gold-300">
-                    {t.fresh.toLocaleString('vi-VN')} kg tươi
-                  </p>
-                  <p className="text-[11px] text-slate-400">{t.bags} bao • {t.sessionCount} chuyến</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-      </div>
-
-      {/* Staff & Recent Sessions Overview Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-        {/* Cán Bộ Cân Overview (Admin view) */}
-        <div className="glass-card p-5 rounded-2xl space-y-4 lg:col-span-1">
-          <div className="flex justify-between items-center border-b border-emerald-800/40 pb-3">
-            <h3 className="font-bold text-sm text-white flex items-center gap-2">
-              <UserCheck className="w-4 h-4 text-teal-400" />
-              Thống Kê Cán Bộ Cân
-            </h3>
-            {isAdmin && <span className="text-[10px] text-emerald-400 font-semibold uppercase">Admin All View</span>}
-          </div>
-
-          <div className="space-y-3">
-            {staffStatsList.map((st, i) => (
-              <div key={i} className="p-3 rounded-xl bg-emerald-950/40 border border-emerald-800/40 flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-300 font-bold text-xs flex items-center justify-center border border-emerald-500/30">
-                    {st.name.charAt(0)}
-                  </div>
-                  <div>
-                    <p className="font-semibold text-xs text-slate-200">{st.name}</p>
-                    <p className="text-[10px] text-slate-400">{st.sessionCount} phiên cân</p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p className="font-bold text-xs text-emerald-400">{st.fresh.toLocaleString('vi-VN')} kg</p>
-                  <p className="text-[10px] text-gold-400">{st.bags} bao</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Phiên Cân Gần Đây */}
-        <div className="glass-card p-5 rounded-2xl space-y-4 lg:col-span-2">
-          <div className="flex justify-between items-center border-b border-emerald-800/40 pb-3">
-            <h3 className="font-bold text-sm text-white flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-gold-400" />
-              Phiên Cân Mới Cập Nhật
-            </h3>
-            <Link href="/history" className="text-xs text-emerald-400 hover:underline">
-              Xem toàn bộ lịch sử →
-            </Link>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-slate-300">
-              <thead className="bg-emerald-950/80 text-emerald-400 uppercase text-[10px] tracking-wider border-b border-emerald-800/60">
-                <tr>
-                  <th className="py-2.5 px-3">Mã phiên</th>
-                  <th className="py-2.5 px-3">Chủ lúa</th>
-                  <th className="py-2.5 px-3">Giống lúa</th>
-                  <th className="py-2.5 px-3">Số bao</th>
-                  <th className="py-2.5 px-3 text-right">Lúa khô (kg)</th>
-                  <th className="py-2.5 px-3 text-right">Thành tiền</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-emerald-900/40">
-                {relevantSessions.slice(0, 5).map((s) => (
-                  <tr key={s.id} className="hover:bg-emerald-900/30 transition-colors">
-                    <td className="py-3 px-3 font-bold text-gold-300">{s.session_code}</td>
-                    <td className="py-3 px-3 font-medium text-white">{s.farmer?.name || 'N/A'}</td>
-                    <td className="py-3 px-3 text-emerald-300">{s.variety?.name || s.variety?.code}</td>
-                    <td className="py-3 px-3 font-bold">{s.total_bags} bao</td>
-                    <td className="py-3 px-3 text-right font-extrabold text-gold-400">
-                      {s.total_dry_weight.toLocaleString('vi-VN')} kg
-                    </td>
-                    <td className="py-3 px-3 text-right font-extrabold text-emerald-400">
-                      {s.total_amount.toLocaleString('vi-VN')} đ
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
         </div>
 
       </div>

@@ -46,6 +46,8 @@ interface AppContextType {
   updateUserRole: (id: string, role: UserRole) => void;
   sendActivationEmail: (id: string) => void;
   registerNewUser: (fullName: string, email: string, phone: string) => void;
+  loginUser: (email: string) => { success: boolean; message: string; user?: Profile };
+  logoutUser: () => void;
   addUser: (userData: Omit<Profile, 'id' | 'created_at'>) => void;
   updateUser: (id: string, userData: Partial<Profile>) => void;
   deleteUser: (id: string) => void;
@@ -199,6 +201,22 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       },
       ...prev
     ]);
+  };
+
+  const loginUser = (email: string) => {
+    const found = profiles.find(p => p.email?.toLowerCase() === email.toLowerCase());
+    if (!found) {
+      return { success: false, message: 'Email chưa được đăng ký trong hệ thống RiceOS.' };
+    }
+    if (!found.is_active || found.status === 'pending') {
+      return { success: false, message: 'Tài khoản của bạn đang CHỜ ADMIN DUYỆT kích hoạt. Vui lòng liên hệ Admin.' };
+    }
+    setCurrentUser(found);
+    return { success: true, message: `Đăng nhập thành công! Chào mừng ${found.full_name}`, user: found };
+  };
+
+  const logoutUser = () => {
+    setCurrentUser(null);
   };
 
   const addUser = (userData: Omit<Profile, 'id' | 'created_at'>) => {
@@ -625,6 +643,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         updateUserRole,
         sendActivationEmail,
         registerNewUser,
+        loginUser,
+        logoutUser,
         addUser,
         updateUser,
         deleteUser,
