@@ -16,7 +16,10 @@ import {
   Sparkles,
   UserCheck,
   CheckCircle2,
-  Calendar
+  Calendar,
+  LogIn,
+  UserPlus,
+  KeyRound
 } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -112,13 +115,31 @@ export default function DashboardPage() {
           </p>
         </div>
 
-        <div className="relative z-10 flex items-center gap-3 w-full md:w-auto">
+        <div className="relative z-10 flex flex-wrap items-center gap-2.5 w-full md:w-auto">
           <Link
             href="/weighing"
-            className="flex-1 md:flex-initial flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-gold-400 via-gold-500 to-amber-500 hover:brightness-110 text-brand-dark font-extrabold text-sm shadow-xl shadow-gold-500/20 transition-all"
+            className="flex-1 md:flex-initial flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-gold-400 via-gold-500 to-amber-500 hover:brightness-110 text-brand-dark font-extrabold text-xs shadow-xl shadow-gold-500/20 transition-all"
           >
-            <Scale className="w-5 h-5" />
-            Cân Lúa Ngay
+            <Scale className="w-4 h-4" />
+            Vào Cân Lúa
+          </Link>
+          <Link
+            href="/login"
+            className="px-3.5 py-2.5 rounded-xl bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-700/60 text-emerald-300 font-bold text-xs flex items-center gap-1.5"
+          >
+            <LogIn className="w-3.5 h-3.5" /> Đăng Nhập
+          </Link>
+          <Link
+            href="/register"
+            className="px-3.5 py-2.5 rounded-xl bg-blue-950/80 hover:bg-blue-900 border border-blue-700/60 text-blue-300 font-bold text-xs flex items-center gap-1.5"
+          >
+            <UserPlus className="w-3.5 h-3.5" /> Đăng Ký
+          </Link>
+          <Link
+            href="/forgot-password"
+            className="px-3.5 py-2.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-700/60 text-slate-300 font-semibold text-xs flex items-center gap-1.5"
+          >
+            <KeyRound className="w-3.5 h-3.5" /> Quên Mật Khẩu
           </Link>
         </div>
 
