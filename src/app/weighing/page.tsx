@@ -69,7 +69,7 @@ export default function WeighingPage() {
 
   // Mobile Weigh Entry State: 1 bao, 2 bao, 3 bao, 4 bao & Tare Deduction Percentage (Mặc định 12%)
   const [bagCount, setBagCount] = useState<number>(2); // 1, 2, 3, 4 bao
-  const [grossWeightInput, setGrossWeightInput] = useState<string>('150'); // Kg lúa tươi lượt này
+  const [grossWeightInput, setGrossWeightInput] = useState<string>(''); // Khai báo trống cho người dùng gõ từ đầu
   const [tarePercentInput, setTarePercentInput] = useState<string>('12'); // Trừ bì % mặc định 12%
 
   // Items table for current weighing
@@ -206,7 +206,7 @@ export default function WeighingPage() {
 
     setItems(prev => [...prev, newItem]);
     playBeep(1000, 0.1); // High beep on successful add
-    setGrossWeightInput('150'); // reset default for fast repeat
+    setGrossWeightInput(''); // Để trống cho lượt cân tiếp theo
 
     // Re-focus input for continuous physical keypad entry
     setTimeout(() => {
@@ -239,7 +239,7 @@ export default function WeighingPage() {
       return;
     }
     setItems([]);
-    setGrossWeightInput('150');
+    setGrossWeightInput('');
     setActiveSessionId(null);
     setSessionCode('');
     setSavedSuccess(false);
