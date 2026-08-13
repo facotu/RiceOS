@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useApp } from '@/context/AppContext';
 import {
   Scale,
@@ -21,7 +21,9 @@ import {
   RotateCcw,
   Sparkles,
   Camera,
-  Percent
+  Percent,
+  RefreshCw,
+  Undo2
 } from 'lucide-react';
 import Link from 'next/link';
 import { toPng } from 'html-to-image';
@@ -45,16 +47,16 @@ export default function WeighingPage() {
   const [selectedTruckId, setSelectedTruckId] = useState(trucks[0]?.id || '');
   const [selectedVarietyId, setSelectedVarietyId] = useState(varieties[0]?.id || '');
   const [selectedAreaId, setSelectedAreaId] = useState(growingAreas[0]?.id || '');
-  const [fieldRegion, setFieldRegion] = useState(farmers[0]?.field_region || growingAreas[0]?.field_region || 'Xứ đồng An Trạch 1');
-  const [lot, setLot] = useState(farmers[0]?.lot || growingAreas[0]?.lot || 'Lô A1');
-  const [unitPrice, setUnitPrice] = useState<number>(varieties[0]?.default_price || 9500);
+  const [fieldRegion, setFieldRegion] = useState(farmers[0]?.field_region || growingAreas[0]?.field_region || 'Tổ 9');
+  const [lot, setLot] = useState(farmers[0]?.lot || growingAreas[0]?.lot || 'Lô 1');
+  const [unitPrice, setUnitPrice] = useState<number>(varieties[0]?.default_price || 8400);
 
   // Active Session State
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
   const [sessionCode, setSessionCode] = useState<string>('');
 
-  // Mobile Weigh Entry State: 1 bao, 2 bao, 3 bao & Tare Deduction Percentage (Mặc định 12%)
-  const [bagCount, setBagCount] = useState<number>(2); // 1, 2, hoặc 3 bao
+  // Mobile Weigh Entry State: 1 bao, 2 bao, 3 bao, 4 bao & Tare Deduction Percentage (Mặc định 12%)
+  const [bagCount, setBagCount] = useState<number>(2); // 1, 2, 3, 4 bao
   const [grossWeightInput, setGrossWeightInput] = useState<string>('150'); // Kg lúa tươi lượt này
   const [tarePercentInput, setTarePercentInput] = useState<string>('12'); // Trừ bì % mặc định 12%
 
@@ -73,7 +75,6 @@ export default function WeighingPage() {
 
   const [savedSuccess, setSavedSuccess] = useState(false);
   const [zaloSuccessMsg, setZaloSuccessMsg] = useState('');
-  const [zaloMsg, setZaloMsg] = useState('');
   const ticketRef = useRef<HTMLDivElement>(null);
 
   // Auto update fields when Farmer changes
@@ -120,7 +121,7 @@ export default function WeighingPage() {
     }
   };
 
-  // Add Weighing Entry (1, 2, hoặc 3 bao)
+  // Add Weighing Entry (1, 2, 3, 4 bao)
   const handleAddWeighEntry = () => {
     const gross = parseFloat(grossWeightInput) || 0;
     const tarePercent = parseFloat(tarePercentInput) || 12;
@@ -145,8 +146,27 @@ export default function WeighingPage() {
     setGrossWeightInput('150'); // reset default for fast repeat
   };
 
+  // Remove individual item
   const handleRemoveItem = (id: string) => {
     setItems(prev => prev.filter(item => item.id !== id).map((item, idx) => ({ ...item, sequence: idx + 1 })));
+  };
+
+  // Undo last added item
+  const handleUndoLastItem = () => {
+    if (items.length === 0) return;
+    setItems(prev => prev.slice(0, -1));
+  };
+
+  // Reset & Start New Weighing Session
+  const handleResetNewSession = () => {
+    if (items.length > 0 && !confirm('Bạn có chắc chắn muốn xóa lượt cân hiện tại để mở Phiên Cân Mới?')) {
+      return;
+    }
+    setItems([]);
+    setGrossWeightInput('150');
+    setActiveSessionId(null);
+    setSessionCode('');
+    setSavedSuccess(false);
   };
 
   // Cumulative Totals
@@ -185,22 +205,22 @@ export default function WeighingPage() {
     completeSession(newSes.id);
 
     setSavedSuccess(true);
-    setTimeout(() => setSavedSuccess(false), 3000);
+    setTimeout(() => setSavedSuccess(false), 3500);
   };
 
   // Zalo Text Export & Web Share
   const handleShareZalo = () => {
     const text = `🌾 PHIẾU CÂN LÚA RICE OS
 --------------------------------
-Mã phiên: ${sessionCode || 'PC-MỚI'}
-Chủ lúa: ${currentFarmer?.name} (SĐT: ${currentFarmer?.phone})
+Mã phiên: ${sessionCode || 'PC-20260813-MỚI'}
+Hộ sản xuất: ${currentFarmer?.name} (SĐT: ${currentFarmer?.phone})
 Cán bộ cân: ${currentStaff?.full_name}
 Xe nhận: ${currentTruck?.license_plate} (${currentTruck?.driver_name})
-Giống lúa: ${currentVariety?.name}
+Giống lúa: ${currentVariety?.name} (${currentVariety?.code})
 Xứ đồng: ${fieldRegion} - ${lot}
 Trừ bì cài đặt: ${tarePercentInput}%
 --------------------------------
-• Tổng số bao: ${totalBags} bao
+• Tổng số bao: ${totalBags} bao (${items.length} lượt cân)
 • Sản lượng tươi: ${totalFreshWeight.toLocaleString('vi-VN')} kg
 • Tổng trừ bì (${tarePercentInput}%): ${totalTareWeight.toLocaleString('vi-VN')} kg
 • Sản lượng khô thực tính: ${totalDryWeight.toLocaleString('vi-VN')} kg
@@ -234,11 +254,13 @@ TỔNG THÀNH TIỀN: ${totalAmount.toLocaleString('vi-VN')} VNĐ
     window.print();
   };
 
-  // Filtered farmers list
+  // Filtered farmers list for search
   const filteredFarmers = farmers.filter(f =>
     f.name.toLowerCase().includes(farmerSearch.toLowerCase()) ||
     f.phone.includes(farmerSearch) ||
-    f.field_region.toLowerCase().includes(farmerSearch.toLowerCase())
+    (f.landowner_name && f.landowner_name.toLowerCase().includes(farmerSearch.toLowerCase())) ||
+    f.field_region.toLowerCase().includes(farmerSearch.toLowerCase()) ||
+    f.lot.toLowerCase().includes(farmerSearch.toLowerCase())
   );
 
   return (
@@ -254,10 +276,10 @@ TỔNG THÀNH TIỀN: ${totalAmount.toLocaleString('vi-VN')} VNĐ
           </div>
           <div>
             <h1 className="text-xl font-extrabold text-white flex items-center gap-2">
-              Phiên Cân Lúa Trực Tiếp
+              Phiên Cân Lúa Trực Tiếp (Ngoài Đồng)
               {savedSuccess && (
                 <span className="text-xs bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-2 py-0.5 rounded-full flex items-center gap-1 animate-bounce">
-                  <CheckCircle2 className="w-3.5 h-3.5" /> Đã Lưu!
+                  <CheckCircle2 className="w-3.5 h-3.5" /> Đã Lưu Phiên Cân!
                 </span>
               )}
               {zaloSuccessMsg && (
@@ -267,38 +289,54 @@ TỔNG THÀNH TIỀN: ${totalAmount.toLocaleString('vi-VN')} VNĐ
               )}
             </h1>
             <p className="text-xs text-slate-300">
-              Nhập liệu 1 bao, 2 bao, 3 bao • Trừ bì theo % (Mặc định {tarePercentInput}%) • Tính tự động
+              Nhập liệu 1, 2, 3, 4 bao • Trừ bì % linh hoạt (Mặc định {tarePercentInput}%) • Tự động tính lúa khô & thành tiền
             </p>
           </div>
         </div>
 
-        {/* Quick OCR AI Camera shortcut */}
-        <Link
-          href="/ai-camera"
-          className="flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-emerald-950 border border-emerald-700/60 hover:bg-emerald-900 text-gold-300 font-bold text-xs shadow-md transition-colors"
-        >
-          <Camera className="w-4 h-4 text-gold-400" />
-          <span>AI Camera Đọc Cân</span>
-        </Link>
+        {/* Quick Action Controls */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleResetNewSession}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-700/60 text-emerald-300 font-bold text-xs shadow-md transition-colors cursor-pointer"
+            title="Xóa danh sách lượt cân để bắt đầu cân cho hộ tiếp theo"
+          >
+            <RefreshCw className="w-3.5 h-3.5 text-gold-400" />
+            <span>Tạo Phiên Mới</span>
+          </button>
+
+          <Link
+            href="/ai-camera"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-gold-400 to-gold-500 hover:brightness-110 text-brand-dark font-extrabold text-xs shadow-md transition-all"
+          >
+            <Camera className="w-4 h-4" />
+            <span>AI Camera Đọc Cân</span>
+          </Link>
+        </div>
       </div>
 
-      {/* Form Selection Section (Chủ ruộng, Cán bộ, Xe, Giống lúa, Xứ đồng, Lô) */}
+      {/* Form Selection Section (Chủ hộ sản xuất, Cán bộ, Xe, Giống lúa, Xứ đồng, Lô) */}
       <div className="glass-card p-5 rounded-2xl space-y-4">
         <h3 className="text-sm font-bold text-emerald-300 flex items-center gap-2 border-b border-emerald-800/40 pb-2">
-          <Wheat className="w-4 h-4 text-gold-400" /> Thông Tin Thu Mua Phiên Cân
+          <Wheat className="w-4 h-4 text-gold-400" /> Thông Tin Nông Hộ & Vùng Trồng Thu Mua
         </h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
 
-          {/* Search & Select Farmer (Hộ sản xuất / Chủ ruộng) */}
+          {/* Search & Select Farmer (Hộ sản xuất) */}
           <div className="space-y-1">
-            <label className="text-xs font-semibold text-slate-300 flex items-center gap-1">
-              <Search className="w-3.5 h-3.5 text-gold-400" /> Chọn Hộ Sản Xuất (Chủ Ruộng) *
+            <label className="text-xs font-semibold text-slate-300 flex items-center justify-between">
+              <span className="flex items-center gap-1">
+                <Search className="w-3.5 h-3.5 text-gold-400" /> Chọn Hộ Sản Xuất *
+              </span>
+              {currentFarmer?.landowner_name && (
+                <span className="text-[10px] text-slate-400 font-normal">Chủ: {currentFarmer.landowner_name}</span>
+              )}
             </label>
             <div className="relative">
               <input
                 type="text"
-                placeholder="Tìm tên, SĐT chủ ruộng..."
+                placeholder="Tìm theo tên hộ sản xuất, SĐT, Lô..."
                 value={farmerSearch}
                 onChange={(e) => setFarmerSearch(e.target.value)}
                 className="w-full pl-8 pr-3 py-1.5 bg-brand-dark/90 border border-emerald-800/60 rounded-lg text-white text-xs mb-1 focus:ring-1 focus:ring-emerald-500"
@@ -312,7 +350,7 @@ TỔNG THÀNH TIỀN: ${totalAmount.toLocaleString('vi-VN')} VNĐ
             >
               {filteredFarmers.map(f => (
                 <option key={f.id} value={f.id}>
-                  {f.name} - {f.phone} ({f.field_region})
+                  {f.name} - {f.phone} ({f.field_region} - {f.lot})
                 </option>
               ))}
             </select>
@@ -420,18 +458,18 @@ TỔNG THÀNH TIỀN: ${totalAmount.toLocaleString('vi-VN')} VNĐ
             </span>
           </div>
 
-          {/* Select Bag Count Option (1 bao, 2 bao, hoặc 3 bao) */}
+          {/* Select Bag Count Option (1, 2, 3, hoặc 4 bao) */}
           <div>
             <label className="text-xs font-semibold text-slate-300 block mb-1.5">
               Chọn số bao lượt này:
             </label>
-            <div className="grid grid-cols-3 gap-2">
-              {[1, 2, 3].map((count) => (
+            <div className="grid grid-cols-4 gap-2">
+              {[1, 2, 3, 4].map((count) => (
                 <button
                   key={count}
                   type="button"
                   onClick={() => setBagCount(count)}
-                  className={`py-2.5 px-2 rounded-xl font-extrabold text-xs border flex items-center justify-center gap-1 transition-all ${
+                  className={`py-2 px-1 rounded-xl font-extrabold text-xs border flex items-center justify-center gap-1 transition-all ${
                     bagCount === count
                       ? 'bg-emerald-600 border-emerald-400 text-white shadow-lg scale-105'
                       : 'bg-emerald-950/60 border-emerald-900 text-slate-400 hover:text-white'
@@ -483,12 +521,22 @@ TỔNG THÀNH TIỀN: ${totalAmount.toLocaleString('vi-VN')} VNĐ
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-[11px] font-semibold text-slate-300 block mb-1">
-                Sản lượng tươi (kg)
+                Sản lượng tươi (kg) (Nhấn Enter để thêm)
               </label>
-              <div className="p-3 rounded-xl bg-brand-dark border-2 border-emerald-500/60 text-right">
-                <span className="text-2xl font-black text-emerald-400 tracking-wider">
-                  {grossWeightInput || '0'}
-                </span>
+              <div className="p-2.5 rounded-xl bg-brand-dark border-2 border-emerald-500/60 flex items-center justify-between">
+                <input
+                  type="number"
+                  value={grossWeightInput}
+                  onChange={(e) => setGrossWeightInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleAddWeighEntry();
+                    }
+                  }}
+                  className="bg-transparent text-2xl font-black text-emerald-400 tracking-wider text-right w-full focus:outline-none font-mono"
+                  placeholder="0"
+                />
                 <span className="text-xs text-slate-400 ml-1">kg</span>
               </div>
             </div>
@@ -497,8 +545,8 @@ TỔNG THÀNH TIỀN: ${totalAmount.toLocaleString('vi-VN')} VNĐ
               <label className="text-[11px] font-semibold text-slate-300 block mb-1">
                 Lúa khô tính toán ({100 - currentTarePercent}%)
               </label>
-              <div className="p-3 rounded-xl bg-brand-dark border border-gold-500/60 text-right">
-                <span className="text-2xl font-black text-gold-300 tracking-wider">
+              <div className="p-2.5 rounded-xl bg-brand-dark border border-gold-500/60 text-right">
+                <span className="text-2xl font-black text-gold-300 tracking-wider font-mono">
                   {currentNetKg}
                 </span>
                 <span className="text-xs text-gold-400 ml-1">kg</span>
@@ -508,7 +556,7 @@ TỔNG THÀNH TIỀN: ${totalAmount.toLocaleString('vi-VN')} VNĐ
 
           {/* Quick Add Kg Preset Buttons */}
           <div className="flex gap-2 overflow-x-auto pb-1">
-            {['50', '100', '120', '135', '150', '160'].map((preset) => (
+            {['50', '100', '120', '135', '150', '160', '180'].map((preset) => (
               <button
                 key={preset}
                 type="button"
@@ -540,14 +588,26 @@ TỔNG THÀNH TIỀN: ${totalAmount.toLocaleString('vi-VN')} VNĐ
             ))}
           </div>
 
-          {/* Add Entry Button */}
-          <button
-            type="button"
-            onClick={handleAddWeighEntry}
-            className="w-full py-3.5 rounded-xl font-extrabold text-sm text-brand-dark bg-gradient-to-r from-emerald-400 via-emerald-300 to-gold-400 hover:brightness-110 shadow-xl shadow-emerald-500/20 flex items-center justify-center gap-2 cursor-pointer transition-all"
-          >
-            <Plus className="w-5 h-5" /> Thêm Lượt Cân Này (+{bagCount} Bao • Trừ bì {tarePercentInput}%)
-          </button>
+          {/* Add Entry & Undo Buttons */}
+          <div className="space-y-2">
+            <button
+              type="button"
+              onClick={handleAddWeighEntry}
+              className="w-full py-3.5 rounded-xl font-extrabold text-sm text-brand-dark bg-gradient-to-r from-emerald-400 via-emerald-300 to-gold-400 hover:brightness-110 shadow-xl shadow-emerald-500/20 flex items-center justify-center gap-2 cursor-pointer transition-all"
+            >
+              <Plus className="w-5 h-5" /> Thêm Lượt Cân (+{bagCount} Bao • Trừ bì {tarePercentInput}%)
+            </button>
+
+            {items.length > 0 && (
+              <button
+                type="button"
+                onClick={handleUndoLastItem}
+                className="w-full py-2 rounded-xl text-xs font-bold text-amber-300 bg-amber-950/40 border border-amber-800/50 hover:bg-amber-900/60 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+              >
+                <Undo2 className="w-3.5 h-3.5" /> Xóa Lượt Vừa Nhập Gần Nhất
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Session Items Table & Cumulative Calculation Panel (7 Columns) */}
@@ -582,12 +642,12 @@ TỔNG THÀNH TIỀN: ${totalAmount.toLocaleString('vi-VN')} VNĐ
               <span className="text-[11px] text-gold-400 font-semibold">Trừ bì % tự động</span>
             </div>
 
-            <div className="overflow-x-auto max-h-72">
+            <div className="overflow-x-auto max-h-72 border border-emerald-900/60 rounded-xl">
               <table className="w-full text-left text-xs">
-                <thead className="bg-emerald-950/80 text-emerald-400 uppercase text-[10px] tracking-wider sticky top-0">
+                <thead className="bg-emerald-950/90 text-emerald-400 uppercase text-[10px] tracking-wider sticky top-0">
                   <tr>
-                    <th className="p-2">Lượt</th>
-                    <th className="p-2">Số bao</th>
+                    <th className="p-2 text-center">Lượt</th>
+                    <th className="p-2 text-center">Số bao</th>
                     <th className="p-2 text-right">Cân tươi (kg)</th>
                     <th className="p-2 text-right">Trừ bì (%)</th>
                     <th className="p-2 text-right">Trừ bì (kg)</th>
@@ -598,19 +658,19 @@ TỔNG THÀNH TIỀN: ${totalAmount.toLocaleString('vi-VN')} VNĐ
                 <tbody className="divide-y divide-emerald-900/40">
                   {items.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="text-center py-6 text-slate-400 text-xs">
-                        Chưa có lượt cân nào. Hãy bấm nút Thêm Lượt Cân ở bên trái.
+                      <td colSpan={7} className="p-6 text-center text-slate-400">
+                        Chưa có lượt cân nào. Sử dụng Numpad bên trái để thêm lượt cân.
                       </td>
                     </tr>
                   ) : (
-                    items.map((item) => (
-                      <tr key={item.id} className="hover:bg-emerald-900/30">
-                        <td className="p-2 font-bold text-gold-300">#{item.sequence}</td>
-                        <td className="p-2 font-semibold text-white">{item.bag_count} bao</td>
-                        <td className="p-2 text-right font-bold text-emerald-300">{item.gross_weight} kg</td>
+                    items.map(item => (
+                      <tr key={item.id} className="hover:bg-emerald-900/30 transition-colors">
+                        <td className="p-2 text-center font-bold text-slate-300 font-mono">#{item.sequence}</td>
+                        <td className="p-2 text-center font-bold text-gold-300">{item.bag_count} bao</td>
+                        <td className="p-2 text-right font-bold text-emerald-300 font-mono">{item.gross_weight} kg</td>
                         <td className="p-2 text-right font-bold text-gold-400">{item.tare_percent}%</td>
-                        <td className="p-2 text-right text-slate-300">{item.tare_weight} kg</td>
-                        <td className="p-2 text-right font-extrabold text-white">{item.net_weight} kg</td>
+                        <td className="p-2 text-right text-slate-300 font-mono">{item.tare_weight} kg</td>
+                        <td className="p-2 text-right font-extrabold text-white font-mono">{item.net_weight} kg</td>
                         <td className="p-2 text-center">
                           <button
                             onClick={() => handleRemoveItem(item.id)}
@@ -634,7 +694,7 @@ TỔNG THÀNH TIỀN: ${totalAmount.toLocaleString('vi-VN')} VNĐ
               className="py-3 px-3 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-extrabold text-xs shadow-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer"
             >
               <Save className="w-4 h-4 text-gold-400" />
-              <span>Ghi Nhập</span>
+              <span>Lưu Phiên Cân</span>
             </button>
 
             <button
@@ -650,7 +710,7 @@ TỔNG THÀNH TIỀN: ${totalAmount.toLocaleString('vi-VN')} VNĐ
               className="py-3 px-3 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-extrabold text-xs shadow-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer"
             >
               <FileImage className="w-4 h-4" />
-              <span>Xuất Ảnh</span>
+              <span>Xuất Ảnh PNG</span>
             </button>
 
             <button
@@ -658,7 +718,7 @@ TỔNG THÀNH TIỀN: ${totalAmount.toLocaleString('vi-VN')} VNĐ
               className="py-3 px-3 rounded-xl bg-gold-500 hover:bg-gold-400 text-brand-dark font-extrabold text-xs shadow-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer"
             >
               <Printer className="w-4 h-4" />
-              <span>In Phiếu</span>
+              <span>In Phiếu Nhiệt</span>
             </button>
           </div>
 
@@ -666,9 +726,9 @@ TỔNG THÀNH TIỀN: ${totalAmount.toLocaleString('vi-VN')} VNĐ
 
       </div>
 
-      {/* Hidden Printable Thermal Receipt Ticket */}
+      {/* Printable Thermal Receipt Ticket */}
       <div className="mt-8">
-        <h3 className="text-xs font-bold text-slate-400 mb-2">Xem Trước Phiếu Cân Nhiệt (Receipt Preview):</h3>
+        <h3 className="text-xs font-bold text-slate-400 mb-2">Xem Trước Phiếu Cân Nhiệt (Thermal Receipt Preview):</h3>
 
         <div
           ref={ticketRef}
@@ -678,17 +738,17 @@ TỔNG THÀNH TIỀN: ${totalAmount.toLocaleString('vi-VN')} VNĐ
           <div className="text-center border-b border-black pb-2">
             <h2 className="font-extrabold text-base tracking-wider">HỢP TÁC XÃ NÔNG NGHIỆP RICE OS</h2>
             <p className="text-[10px]">PHIẾU CÂN LÚA THU MUA TẠI RUỘNG</p>
-            <p className="text-[10px] font-bold mt-0.5">Mã: {sessionCode || 'PC-20260812-DEMO'}</p>
+            <p className="text-[10px] font-bold mt-0.5">Mã: {sessionCode || 'PC-20260813-MỚI'}</p>
           </div>
 
           <div className="space-y-1 text-[11px]">
-            <p><strong>Chủ lúa:</strong> {currentFarmer?.name}</p>
+            <p><strong>Hộ sản xuất:</strong> {currentFarmer?.name}</p>
             <p><strong>SĐT:</strong> {currentFarmer?.phone}</p>
             <p><strong>Cán bộ cân:</strong> {currentStaff?.full_name}</p>
             <p><strong>Xe nhận:</strong> {currentTruck?.license_plate} ({currentTruck?.driver_name})</p>
             <p><strong>Giống lúa:</strong> {currentVariety?.name}</p>
             <p><strong>Xứ đồng:</strong> {fieldRegion} - {lot}</p>
-            <p><strong>Ngày cân:</strong> {new Date().toLocaleDateString('vi-VN')} {new Date().toLocaleTimeString('vi-VN')}</p>
+            <p><strong>Thời gian:</strong> {new Date().toLocaleDateString('vi-VN')} {new Date().toLocaleTimeString('vi-VN')}</p>
           </div>
 
           <table className="w-full border-t border-b border-black text-[10px] my-2 text-left">
@@ -719,7 +779,7 @@ TỔNG THÀNH TIỀN: ${totalAmount.toLocaleString('vi-VN')} VNĐ
           <div className="space-y-1 text-right font-bold text-[11px]">
             <p>TỔNG SỐ BAO: <span className="text-sm">{totalBags} bao</span></p>
             <p>SẢN LƯỢNG TƯƠI: {totalFreshWeight.toLocaleString('vi-VN')} kg</p>
-            <p>TỔNG TRỪ BÌ: {totalTareWeight.toLocaleString('vi-VN')} kg</p>
+            <p>TỔNG TRỪ BÌ ({tarePercentInput}%): {totalTareWeight.toLocaleString('vi-VN')} kg</p>
             <p>SẢN LƯỢNG KHÔ: <span className="text-sm underline">{totalDryWeight.toLocaleString('vi-VN')} kg</span></p>
             <p>ĐƠN GIÁ MUA: {unitPrice.toLocaleString('vi-VN')} VNĐ/kg</p>
             <div className="border-t-2 border-black pt-1 mt-1 text-sm font-black">
@@ -729,7 +789,7 @@ TỔNG THÀNH TIỀN: ${totalAmount.toLocaleString('vi-VN')} VNĐ
 
           <div className="text-center text-[9px] pt-2 border-t border-dashed border-black">
             <p>Cảm ơn bà con nông dân đã tin tưởng hợp tác!</p>
-            <p>Cán bộ cân & Chủ lúa ký xác nhận</p>
+            <p>Cán bộ cân & Hộ sản xuất ký xác nhận</p>
           </div>
         </div>
       </div>

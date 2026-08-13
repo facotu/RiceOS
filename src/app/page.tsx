@@ -242,20 +242,20 @@ export default function Home() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
         {/* Card 1 */}
-        <div className="glass-card p-6 rounded-3xl border border-emerald-800/40 relative overflow-hidden space-y-3">
+        <Link href="/weighing" className="glass-card p-6 rounded-3xl border border-emerald-800/40 hover:border-emerald-500/80 relative overflow-hidden space-y-3 block transition-all group">
           <div className="flex items-center justify-between">
-            <div className="w-10 h-10 rounded-2xl bg-sky-500/20 text-sky-400 border border-sky-500/40 flex items-center justify-center">
-              <Zap className="w-5 h-5" />
+            <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Scale className="w-5 h-5 text-gold-400" />
             </div>
-            <span className="px-2.5 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/30 text-[10px] font-bold">
-              Cấp tốc
+            <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-bold">
+              Tính năng chính
             </span>
           </div>
-          <h3 className="text-base font-extrabold text-white">Kiểm phiếu & Cân lúa siêu tốc Enter x2</h3>
+          <h3 className="text-base font-extrabold text-white group-hover:text-gold-300 transition-colors">Tạo Phiên Cân Lúa Siêu Tốc</h3>
           <p className="text-xs text-slate-300 leading-relaxed">
-            Phím bấm Numpad 1, 2, 3 bao trực quan, tự động tính tổng cân tươi, trừ bì và chuyển mã cân tiếp theo chỉ với phím Enter.
+            Phím bấm Numpad 1, 2, 3 bao trực quan, tự động tính tổng cân tươi, trừ bì % chính xác và chuyển mã cân tiếp theo chỉ với phím Enter.
           </p>
-        </div>
+        </Link>
 
         {/* Card 2 */}
         <div className="glass-card p-6 rounded-3xl border border-emerald-800/40 relative overflow-hidden space-y-3">
