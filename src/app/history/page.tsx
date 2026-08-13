@@ -15,7 +15,8 @@ import {
   Trash2,
   X,
   Save,
-  Plus
+  Plus,
+  Printer
 } from 'lucide-react';
 import Link from 'next/link';
 import { WeighingSession } from '@/types/database.types';
