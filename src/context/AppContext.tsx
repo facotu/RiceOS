@@ -413,7 +413,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   };
 
   // Session Management (Strictly isolated by created_by for members)
-  const createSession = (sessionData: Omit<WeighingSession, 'id' | 'session_code' | 'total_fresh_weight' | 'total_tare_weight' | 'total_dry_weight' | 'total_bags' | 'total_amount' | 'status' | 'started_at' | 'items'>) => {
+  const createSession = (sessionData: Partial<WeighingSession> & { farmer_id: string; staff_id: string; truck_id: string; variety_id: string; field_region: string; lot: string; unit_price: number }) => {
     const farmer = farmers.find(f => f.id === sessionData.farmer_id);
     const staff = staffMembers.find(s => s.id === sessionData.staff_id);
     const truck = trucks.find(t => t.id === sessionData.truck_id);
@@ -427,14 +427,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       ...sessionData,
       id: `ses-${Date.now()}`,
       session_code: code,
-      total_fresh_weight: 0,
-      total_tare_weight: 0,
-      total_dry_weight: 0,
-      total_bags: 0,
-      total_amount: 0,
-      status: 'in_progress',
+      total_fresh_weight: sessionData.total_fresh_weight || 0,
+      total_tare_weight: sessionData.total_tare_weight || 0,
+      total_dry_weight: sessionData.total_dry_weight || 0,
+      total_bags: sessionData.total_bags || 0,
+      total_amount: sessionData.total_amount || 0,
+      status: sessionData.status || 'in_progress',
       started_at: now.toISOString(),
-      items: [],
+      items: sessionData.items || [],
       farmer,
       staff,
       truck,

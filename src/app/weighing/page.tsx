@@ -247,31 +247,24 @@ export default function WeighingPage() {
     playBeep(600, 0.15);
   };
 
-  // Save / Record Session & Switch to Next Farmer
-  const handleSaveAndNextFarmer = () => {
-    handleSaveSession();
-    setIsPickerOpen(true);
-  };
-
-  // Cumulative Totals
-  const totalBags = items.reduce((sum, item) => sum + item.bag_count, 0);
-  const totalFreshWeight = Math.round(items.reduce((sum, item) => sum + item.gross_weight, 0) * 100) / 100;
-  const totalTareWeight = Math.round(items.reduce((sum, item) => sum + item.tare_weight, 0) * 100) / 100;
-  const totalDryWeight = Math.max(0, Math.round((totalFreshWeight - totalTareWeight) * 100) / 100);
-  const totalAmount = Math.round(totalDryWeight * unitPrice);
-
-  // Selected entities info
-  const currentFarmer = farmers.find(f => f.id === selectedFarmerId) || farmers[0];
-  const currentStaff = staffMembers.find(s => s.id === selectedStaffId) || staffMembers[0];
-  const currentTruck = trucks.find(t => t.id === selectedTruckId) || trucks[0];
-  const currentVariety = varieties.find(v => v.id === selectedVarietyId) || varieties[0];
-
-  // Save / Record Session
-  const handleSaveSession = () => {
+  // Save / Record Session to Database
+  const handleSaveSession = (): boolean => {
     if (items.length === 0) {
       alert('Chưa có lượt cân nào để lưu!');
-      return;
+      return false;
     }
+
+    const formattedItems = items.map(it => ({
+      id: it.id,
+      session_id: '',
+      sequence: it.sequence,
+      bag_count: it.bag_count,
+      gross_weight: it.gross_weight,
+      tare_percent: it.tare_percent,
+      tare_weight: it.tare_weight,
+      net_weight: it.net_weight,
+      weighed_at: new Date().toISOString()
+    }));
 
     const sessionData = {
       farmer_id: selectedFarmerId,
@@ -281,6 +274,13 @@ export default function WeighingPage() {
       field_region: fieldRegion,
       lot,
       unit_price: unitPrice,
+      total_bags: totalBags,
+      total_fresh_weight: totalFreshWeight,
+      total_tare_weight: totalTareWeight,
+      total_dry_weight: totalDryWeight,
+      total_amount: totalAmount,
+      status: 'completed' as const,
+      items: formattedItems
     };
 
     const newSes = createSession(sessionData);
@@ -291,6 +291,23 @@ export default function WeighingPage() {
     setSavedSuccess(true);
     playBeep(1200, 0.2);
     setTimeout(() => setSavedSuccess(false), 3500);
+    return true;
+  };
+
+  // Save Session & Switch to Next Farmer (Clear old session form data completely)
+  const handleSaveAndNextFarmer = () => {
+    const success = handleSaveSession();
+    if (!success) return;
+
+    // Clear all old session data to start a clean new session
+    setItems([]);
+    setGrossWeightInput('');
+    setActiveSessionId(null);
+    setSessionCode('');
+    localStorage.removeItem('riceos_active_weighing_session');
+
+    // Open Farmer Picker Modal to select next farmer
+    setIsPickerOpen(true);
   };
 
   // Zalo Text Export & Web Share
