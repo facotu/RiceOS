@@ -14,7 +14,8 @@ export interface Profile {
 
 export interface Farmer {
   id: string;
-  name: string;
+  name: string; // Tên Hộ sản xuất
+  landowner_name?: string; // Tên Chủ ruộng (nếu khác Hộ sản xuất)
   phone: string;
   cccd: string;
   cccd_date?: string;
@@ -22,7 +23,7 @@ export interface Farmer {
   cccd_expiry?: string;
   field_region: string; // Xứ đồng
   lot: string; // Lô
-  area: number; // Diện tích (m2 hoặc ha)
+  area: number; // Diện tích (m2)
   created_at: string;
 }
 

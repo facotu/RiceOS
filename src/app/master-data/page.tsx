@@ -337,7 +337,10 @@ export default function MasterDataPage() {
                         {(currentPage - 1) * itemsPerPage + idx + 1}
                       </td>
                       <td className="p-3 font-bold text-white">
-                        {f.name}
+                        <div>{f.name}</div>
+                        {f.landowner_name && (
+                          <div className="text-[10px] text-slate-400 font-normal">Chủ: {f.landowner_name}</div>
+                        )}
                       </td>
                       <td className="p-3 text-emerald-300 font-mono">{f.phone}</td>
                       <td className="p-3 font-mono text-slate-300">{f.cccd || '---'}</td>

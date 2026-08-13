@@ -55,7 +55,8 @@ export const INITIAL_PROFILES: Profile[] = [
 export const INITIAL_FARMERS: Farmer[] = [
   {
     id: 'TD-001',
-    name: 'Hồ Thị Vân (Chủ: Thái Thị Tuyết)',
+    name: 'Hồ Thị Vân',
+    landowner_name: 'Thái Thị Tuyết',
     phone: '0914126225',
     cccd: '048092356787',
     cccd_date: '2021-05-10',
@@ -68,7 +69,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-002',
-    name: 'Hồ Thị Vân (Chủ: Nguyễn Quang Thơ)',
+    name: 'Hồ Thị Vân',
+    landowner_name: 'Nguyễn Quang Thơ',
     phone: '0914126225',
     cccd: '048092356787',
     cccd_date: '2021-05-10',
@@ -81,7 +83,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-003',
-    name: 'Hồ Thị Vân (Chủ: Nguyễn Thị Tường)',
+    name: 'Hồ Thị Vân',
+    landowner_name: 'Nguyễn Thị Tường',
     phone: '0914126225',
     cccd: '048092356787',
     cccd_date: '2021-05-10',
@@ -94,7 +97,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-004',
-    name: 'Hồ Thị Vân (Chủ: Đặng Hiệp)',
+    name: 'Hồ Thị Vân',
+    landowner_name: 'Đặng Hiệp',
     phone: '0914126225',
     cccd: '048092356787',
     cccd_date: '2021-05-10',
@@ -107,7 +111,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-005',
-    name: 'Hồ Thị Vân (Chủ: Đặng Văn Bảy)',
+    name: 'Hồ Thị Vân',
+    landowner_name: 'Đặng Văn Bảy',
     phone: '0914126225',
     cccd: '048092356787',
     cccd_date: '2021-05-10',
@@ -133,7 +138,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-007',
-    name: 'Nguyễn Thị Liễu (Chủ: Đặng Chinh)',
+    name: 'Nguyễn Thị Liễu',
+    landowner_name: 'Đặng Chinh',
     phone: '0914719176',
     cccd: '048085133326',
     cccd_date: '2021-05-10',
@@ -159,7 +165,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-009',
-    name: 'Đặng Quang - Hoài (Chủ: Võ Thanh Long)',
+    name: 'Đặng Quang - Hoài',
+    landowner_name: 'Võ Thanh Long',
     phone: '0905198246',
     cccd: '048091343962',
     cccd_date: '2021-05-10',
@@ -185,7 +192,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-011',
-    name: 'Nguyễn Thị Bình (Chủ: Võ Văn Vũ)',
+    name: 'Nguyễn Thị Bình',
+    landowner_name: 'Võ Văn Vũ',
     phone: '0905688508',
     cccd: '048091850800',
     cccd_date: '2021-05-10',
@@ -198,7 +206,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-012',
-    name: 'Nguyễn Thị Bình (Chủ: Võ Diên)',
+    name: 'Nguyễn Thị Bình',
+    landowner_name: 'Võ Diên',
     phone: '0905688508',
     cccd: '048091850800',
     cccd_date: '2021-05-10',
@@ -211,7 +220,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-013',
-    name: 'Võ Đình Nguyên (Chủ: Đặng Thị Tâm)',
+    name: 'Võ Đình Nguyên',
+    landowner_name: 'Đặng Thị Tâm',
     phone: '0399331148',
     cccd: '048085717889',
     cccd_date: '2021-05-10',
@@ -224,7 +234,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-014',
-    name: 'Hồ Thị Vân (Chủ: Võ Thị Phước)',
+    name: 'Hồ Thị Vân',
+    landowner_name: 'Võ Thị Phước',
     phone: '0914126225',
     cccd: '048092356787',
     cccd_date: '2021-05-10',
@@ -237,7 +248,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-015',
-    name: 'Hồ Thị Vân (Chủ: Nguyễn Cam)',
+    name: 'Hồ Thị Vân',
+    landowner_name: 'Nguyễn Cam',
     phone: '0914126225',
     cccd: '048092356787',
     cccd_date: '2021-05-10',
@@ -263,7 +275,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-017',
-    name: 'Đặng Toàn (Chủ: Nguyễn Nhơn)',
+    name: 'Đặng Toàn',
+    landowner_name: 'Nguyễn Nhơn',
     phone: '0935832052',
     cccd: '048085456778',
     cccd_date: '2021-05-10',
@@ -289,7 +302,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-019',
-    name: 'Đặng Lào (Chủ: Võ Nhân)',
+    name: 'Đặng Lào',
+    landowner_name: 'Võ Nhân',
     phone: '0977263032',
     cccd: '048091900581',
     cccd_date: '2021-05-10',
@@ -315,7 +329,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-021',
-    name: 'Đặng Toàn (Chủ: Đặng Văn Nhất)',
+    name: 'Đặng Toàn',
+    landowner_name: 'Đặng Văn Nhất',
     phone: '0935832052',
     cccd: '048085456778',
     cccd_date: '2021-05-10',
@@ -328,7 +343,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-022',
-    name: 'Nguyễn Đức Thanh (Chủ: Nguyễn Nghĩa)',
+    name: 'Nguyễn Đức Thanh',
+    landowner_name: 'Nguyễn Nghĩa',
     phone: '0914476417',
     cccd: '048092733052',
     cccd_date: '2021-05-10',
@@ -367,7 +383,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-025',
-    name: 'Hồ Thị Vân (Chủ: Đặng Thử)',
+    name: 'Hồ Thị Vân',
+    landowner_name: 'Đặng Thử',
     phone: '0914126225',
     cccd: '048092356787',
     cccd_date: '2021-05-10',
@@ -380,7 +397,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-026',
-    name: 'Hồ Thị Vân (Chủ: Phạm Rô)',
+    name: 'Hồ Thị Vân',
+    landowner_name: 'Phạm Rô',
     phone: '0914126225',
     cccd: '048092356787',
     cccd_date: '2021-05-10',
@@ -393,7 +411,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-027',
-    name: 'Hồ Thị Vân (Chủ: Phạm Thị Liên)',
+    name: 'Hồ Thị Vân',
+    landowner_name: 'Phạm Thị Liên',
     phone: '0914126225',
     cccd: '048092356787',
     cccd_date: '2021-05-10',
@@ -406,7 +425,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-028',
-    name: 'Hồ Thị Vân (Chủ: Phạm Thị Lang)',
+    name: 'Hồ Thị Vân',
+    landowner_name: 'Phạm Thị Lang',
     phone: '0914126225',
     cccd: '048092356787',
     cccd_date: '2021-05-10',
@@ -419,7 +439,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-029',
-    name: 'Hồ Thị Vân (Chủ: Phan Lan)',
+    name: 'Hồ Thị Vân',
+    landowner_name: 'Phan Lan',
     phone: '0914126225',
     cccd: '048092356787',
     cccd_date: '2021-05-10',
@@ -432,7 +453,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-030',
-    name: 'Phạm Mười (Chủ: Đinh Lương)',
+    name: 'Phạm Mười',
+    landowner_name: 'Đinh Lương',
     phone: '0914678856',
     cccd: '048092969693',
     cccd_date: '2021-05-10',
@@ -445,7 +467,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-031',
-    name: 'Phạm Mười (Chủ: Phạm Thị Chức)',
+    name: 'Phạm Mười',
+    landowner_name: 'Phạm Thị Chức',
     phone: '0914678856',
     cccd: '048092969693',
     cccd_date: '2021-05-10',
@@ -497,7 +520,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-035',
-    name: 'Lê Minh Cảnh (Chủ: Đặng Thị Thi)',
+    name: 'Lê Minh Cảnh',
+    landowner_name: 'Đặng Thị Thi',
     phone: '0977183667',
     cccd: '048091205907',
     cccd_date: '2021-05-10',
@@ -510,7 +534,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-036',
-    name: 'Lê Minh Cảnh (Chủ: Ngô Thị Xoa)',
+    name: 'Lê Minh Cảnh',
+    landowner_name: 'Ngô Thị Xoa',
     phone: '0977183667',
     cccd: '048091205907',
     cccd_date: '2021-05-10',
@@ -523,7 +548,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-037',
-    name: 'Phạm Xong (Chủ: Võ Thị Huệ)',
+    name: 'Phạm Xong',
+    landowner_name: 'Võ Thị Huệ',
     phone: '0399391476',
     cccd: '048085766563',
     cccd_date: '2021-05-10',
@@ -536,7 +562,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-038',
-    name: 'Nguyễn Lâm (Chủ: Nguyễn Thị Xí)',
+    name: 'Nguyễn Lâm',
+    landowner_name: 'Nguyễn Thị Xí',
     phone: '0388270555',
     cccd: '048092472528',
     cccd_date: '2021-05-10',
@@ -575,7 +602,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-041',
-    name: 'Nguyễn Lâm (Chủ: Võ Kỳ)',
+    name: 'Nguyễn Lâm',
+    landowner_name: 'Võ Kỳ',
     phone: '0388270555',
     cccd: '048092472528',
     cccd_date: '2021-05-10',
@@ -588,7 +616,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-042',
-    name: 'Hồ Thị Vân (Chủ: Đặng Toản)',
+    name: 'Hồ Thị Vân',
+    landowner_name: 'Đặng Toản',
     phone: '0914126225',
     cccd: '048092356787',
     cccd_date: '2021-05-10',
@@ -601,7 +630,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-043',
-    name: 'Hồ Thị Vân (Chủ: Nguyễn Văn Tích)',
+    name: 'Hồ Thị Vân',
+    landowner_name: 'Nguyễn Văn Tích',
     phone: '0914126225',
     cccd: '048092356787',
     cccd_date: '2021-05-10',
@@ -614,7 +644,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-044',
-    name: 'Hồ Thị Vân (Chủ: Lâm Tùng Nghĩa)',
+    name: 'Hồ Thị Vân',
+    landowner_name: 'Lâm Tùng Nghĩa',
     phone: '0914126225',
     cccd: '048092356787',
     cccd_date: '2021-05-10',
@@ -627,7 +658,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-045',
-    name: 'Đặng Quang Viên (Chủ: Phạm Thị Tứ)',
+    name: 'Đặng Quang Viên',
+    landowner_name: 'Phạm Thị Tứ',
     phone: '0914738720',
     cccd: '048091660086',
     cccd_date: '2021-05-10',
@@ -640,7 +672,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-046',
-    name: 'Lê Thị Tằm (Chủ: Bùi Thị Gái)',
+    name: 'Lê Thị Tằm',
+    landowner_name: 'Bùi Thị Gái',
     phone: '0988271339',
     cccd: '048085497887',
     cccd_date: '2021-05-10',
@@ -666,7 +699,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-048',
-    name: 'Lê Thị Tằm (Chủ: Đặng Phước)',
+    name: 'Lê Thị Tằm',
+    landowner_name: 'Đặng Phước',
     phone: '0988271339',
     cccd: '048085497887',
     cccd_date: '2021-05-10',
@@ -679,7 +713,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-049',
-    name: 'Đặng Toàn (Chủ: Võ Long)',
+    name: 'Đặng Toàn',
+    landowner_name: 'Võ Long',
     phone: '0935832052',
     cccd: '048085456778',
     cccd_date: '2021-05-10',
@@ -705,7 +740,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-051',
-    name: 'Đặng Toàn (Chủ: Đặng Thị Đoan)',
+    name: 'Đặng Toàn',
+    landowner_name: 'Đặng Thị Đoan',
     phone: '0935832052',
     cccd: '048085456778',
     cccd_date: '2021-05-10',
@@ -731,7 +767,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-053',
-    name: 'Nguyễn Thị Phượng (Chủ: Võ Diên)',
+    name: 'Nguyễn Thị Phượng',
+    landowner_name: 'Võ Diên',
     phone: '0388983794',
     cccd: '048090340174',
     cccd_date: '2021-05-10',
@@ -744,7 +781,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-054',
-    name: 'Đặng Xí (Chủ: Lê Thị Mẹo)',
+    name: 'Đặng Xí',
+    landowner_name: 'Lê Thị Mẹo',
     phone: '0905944151',
     cccd: '048092520651',
     cccd_date: '2021-05-10',
@@ -757,7 +795,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-055',
-    name: 'Đặng Điền (Chủ: Đặng Thị Tâm)',
+    name: 'Đặng Điền',
+    landowner_name: 'Đặng Thị Tâm',
     phone: '0977169403',
     cccd: '048091694731',
     cccd_date: '2021-05-10',
@@ -770,7 +809,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-056',
-    name: 'Đặng Xí (Chủ: Đặng Đa)',
+    name: 'Đặng Xí',
+    landowner_name: 'Đặng Đa',
     phone: '0905944151',
     cccd: '048092520651',
     cccd_date: '2021-05-10',
@@ -809,7 +849,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-059',
-    name: 'Hồ Thị Vân (Chủ: Võ Thị Mẫn)',
+    name: 'Hồ Thị Vân',
+    landowner_name: 'Võ Thị Mẫn',
     phone: '0914126225',
     cccd: '048092356787',
     cccd_date: '2021-05-10',
@@ -822,7 +863,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-060',
-    name: 'Hồ Thị Vân (Chủ: Lâm Tùng Nghĩa)',
+    name: 'Hồ Thị Vân',
+    landowner_name: 'Lâm Tùng Nghĩa',
     phone: '0914126225',
     cccd: '048092356787',
     cccd_date: '2021-05-10',
@@ -874,7 +916,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-064',
-    name: 'Phạm Văn Tiến (Chủ: Phạm Văn Quang)',
+    name: 'Phạm Văn Tiến',
+    landowner_name: 'Phạm Văn Quang',
     phone: '0399479580',
     cccd: '048091245051',
     cccd_date: '2021-05-10',
@@ -887,7 +930,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-065',
-    name: 'Đặng Hiệp (Chủ: Nguyễn Thị Chuốt)',
+    name: 'Đặng Hiệp',
+    landowner_name: 'Nguyễn Thị Chuốt',
     phone: '0868195325',
     cccd: '048090214975',
     cccd_date: '2021-05-10',
@@ -900,7 +944,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-066',
-    name: 'Đặng Thị Ngọc Bích (Chủ: Nguyễn Kiện)',
+    name: 'Đặng Thị Ngọc Bích',
+    landowner_name: 'Nguyễn Kiện',
     phone: '0935757924',
     cccd: '048091930555',
     cccd_date: '2021-05-10',
@@ -978,7 +1023,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-072',
-    name: 'Phạm Trung (Chủ: Võ Nhân)',
+    name: 'Phạm Trung',
+    landowner_name: 'Võ Nhân',
     phone: '0914814825',
     cccd: '048088887352',
     cccd_date: '2021-05-10',
@@ -991,7 +1037,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-073',
-    name: 'Phạm Rô (Chủ: Phạm Giàu)',
+    name: 'Phạm Rô',
+    landowner_name: 'Phạm Giàu',
     phone: '0977905934',
     cccd: '048092216970',
     cccd_date: '2021-05-10',
@@ -1017,7 +1064,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-075',
-    name: 'Đặng Thiệu (Chủ: Thái Thị Tuyết)',
+    name: 'Đặng Thiệu',
+    landowner_name: 'Thái Thị Tuyết',
     phone: '0977555884',
     cccd: '048091575763',
     cccd_date: '2021-05-10',
@@ -1043,7 +1091,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-077',
-    name: 'Đặng Hoàng Bình (Chủ: Phạm Thị Tứ)',
+    name: 'Đặng Hoàng Bình',
+    landowner_name: 'Phạm Thị Tứ',
     phone: '0905857168',
     cccd: '048092624902',
     cccd_date: '2021-05-10',
@@ -1082,7 +1131,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-080',
-    name: 'Đặng Văn Bảy (Chủ: Phan Thị Thời)',
+    name: 'Đặng Văn Bảy',
+    landowner_name: 'Phan Thị Thời',
     phone: '0977982554',
     cccd: '048088738551',
     cccd_date: '2021-05-10',
@@ -1095,7 +1145,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-081',
-    name: 'Lê Thị Tằm (Chủ: Đặng Phước)',
+    name: 'Lê Thị Tằm',
+    landowner_name: 'Đặng Phước',
     phone: '0988271339',
     cccd: '048085497887',
     cccd_date: '2021-05-10',
@@ -1121,7 +1172,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-083',
-    name: 'Đặng Văn Quang (Chủ: Đặng Văn Đối)',
+    name: 'Đặng Văn Quang',
+    landowner_name: 'Đặng Văn Đối',
     phone: '0988260263',
     cccd: '048092899550',
     cccd_date: '2021-05-10',
@@ -1160,7 +1212,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-086',
-    name: 'Phạm Công Anh (Chủ: Võ Thị Lịch)',
+    name: 'Phạm Công Anh',
+    landowner_name: 'Võ Thị Lịch',
     phone: '0388612340',
     cccd: '048090217301',
     cccd_date: '2021-05-10',
@@ -1173,7 +1226,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-087',
-    name: 'Võ Thị Thủy (Chủ: Đặng Hiền)',
+    name: 'Võ Thị Thủy',
+    landowner_name: 'Đặng Hiền',
     phone: '0388972064',
     cccd: '048092351083',
     cccd_date: '2021-05-10',
@@ -1186,7 +1240,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-088',
-    name: 'Phạm Xong (Chủ: Đặng Đoàn)',
+    name: 'Phạm Xong',
+    landowner_name: 'Đặng Đoàn',
     phone: '0399391476',
     cccd: '048085766563',
     cccd_date: '2021-05-10',
@@ -1199,7 +1254,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-089',
-    name: 'Võ Thị Phước (Chủ: Trần Đình Tân)',
+    name: 'Võ Thị Phước',
+    landowner_name: 'Trần Đình Tân',
     phone: '0905352572',
     cccd: '048088182582',
     cccd_date: '2021-05-10',
@@ -1212,7 +1268,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-090',
-    name: 'Võ Thị Phước (Chủ: Võ Tiến Dũng)',
+    name: 'Võ Thị Phước',
+    landowner_name: 'Võ Tiến Dũng',
     phone: '0905352572',
     cccd: '048088182582',
     cccd_date: '2021-05-10',
@@ -1251,7 +1308,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-093',
-    name: 'Nguyễn Sự (Chủ: Đặng Thị Chi)',
+    name: 'Nguyễn Sự',
+    landowner_name: 'Đặng Thị Chi',
     phone: '0935234628',
     cccd: '048085676510',
     cccd_date: '2021-05-10',
@@ -1277,7 +1335,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-095',
-    name: 'Phạm Xong (Chủ: Đặng Đoàn)',
+    name: 'Phạm Xong',
+    landowner_name: 'Đặng Đoàn',
     phone: '0399391476',
     cccd: '048085766563',
     cccd_date: '2021-05-10',
@@ -1290,7 +1349,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-096',
-    name: 'Võ Thị Thi (Chủ: Võ Di)',
+    name: 'Võ Thị Thi',
+    landowner_name: 'Võ Di',
     phone: '0399322086',
     cccd: '048088891952',
     cccd_date: '2021-05-10',
@@ -1303,7 +1363,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-097',
-    name: 'Nguyễn Đức Thanh (Chủ: Đặng Thị Thu)',
+    name: 'Nguyễn Đức Thanh',
+    landowner_name: 'Đặng Thị Thu',
     phone: '0914476417',
     cccd: '048092733052',
     cccd_date: '2021-05-10',
@@ -1329,7 +1390,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-099',
-    name: 'Đinh Lệ (Chủ: Lê Thị Út)',
+    name: 'Đinh Lệ',
+    landowner_name: 'Lê Thị Út',
     phone: '0988847581',
     cccd: '048092518373',
     cccd_date: '2021-05-10',
@@ -1368,7 +1430,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-102',
-    name: 'Võ Đình Nguyên (Chủ: Võ Tuấn)',
+    name: 'Võ Đình Nguyên',
+    landowner_name: 'Võ Tuấn',
     phone: '0399331148',
     cccd: '048085717889',
     cccd_date: '2021-05-10',
@@ -1394,7 +1457,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-104',
-    name: 'Phạm Xong (Chủ: Võ Long)',
+    name: 'Phạm Xong',
+    landowner_name: 'Võ Long',
     phone: '0399391476',
     cccd: '048085766563',
     cccd_date: '2021-05-10',
@@ -1407,7 +1471,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-105',
-    name: 'Phạm Xong (Chủ: Võ Kỳ)',
+    name: 'Phạm Xong',
+    landowner_name: 'Võ Kỳ',
     phone: '0399391476',
     cccd: '048085766563',
     cccd_date: '2021-05-10',
@@ -1420,7 +1485,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-106',
-    name: 'Đặng Học (Chủ: Đặng Thị Quí)',
+    name: 'Đặng Học',
+    landowner_name: 'Đặng Thị Quí',
     phone: '0988717024',
     cccd: '048091107540',
     cccd_date: '2021-05-10',
@@ -1446,7 +1512,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-108',
-    name: 'Võ Tiến Dũng (Chủ: Võ Hồng Quân)',
+    name: 'Võ Tiến Dũng',
+    landowner_name: 'Võ Hồng Quân',
     phone: '0914842225',
     cccd: '048090340062',
     cccd_date: '2021-05-10',
@@ -1459,7 +1526,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-109',
-    name: 'Võ Tiến Dũng (Chủ: Nguyễn Văn Ích)',
+    name: 'Võ Tiến Dũng',
+    landowner_name: 'Nguyễn Văn Ích',
     phone: '0914842225',
     cccd: '048090340062',
     cccd_date: '2021-05-10',
@@ -1485,7 +1553,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-111',
-    name: 'Võ Tiến Dũng (Chủ: Võ Nhân)',
+    name: 'Võ Tiến Dũng',
+    landowner_name: 'Võ Nhân',
     phone: '0914842225',
     cccd: '048090340062',
     cccd_date: '2021-05-10',
@@ -1511,7 +1580,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-113',
-    name: 'Võ Tiến Dũng (Chủ: Nguyễn Keo)',
+    name: 'Võ Tiến Dũng',
+    landowner_name: 'Nguyễn Keo',
     phone: '0914842225',
     cccd: '048090340062',
     cccd_date: '2021-05-10',
@@ -1524,7 +1594,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-114',
-    name: 'Đặng Xí (Chủ: Đinh Thị Nhí)',
+    name: 'Đặng Xí',
+    landowner_name: 'Đinh Thị Nhí',
     phone: '0905944151',
     cccd: '048092520651',
     cccd_date: '2021-05-10',
@@ -1537,7 +1608,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-115',
-    name: 'Trần Mai Trường (Chủ: Vũ Thị Dung)',
+    name: 'Trần Mai Trường',
+    landowner_name: 'Vũ Thị Dung',
     phone: '0988392004',
     cccd: '048085324643',
     cccd_date: '2021-05-10',
@@ -1550,7 +1622,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-116',
-    name: 'Võ Tiến Dũng (Chủ: Võ Nhân)',
+    name: 'Võ Tiến Dũng',
+    landowner_name: 'Võ Nhân',
     phone: '0914842225',
     cccd: '048090340062',
     cccd_date: '2021-05-10',
@@ -1602,7 +1675,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-120',
-    name: 'Lê Minh Cảnh (Chủ: Nguyễn Thị Tùng)',
+    name: 'Lê Minh Cảnh',
+    landowner_name: 'Nguyễn Thị Tùng',
     phone: '0977183667',
     cccd: '048091205907',
     cccd_date: '2021-05-10',
@@ -1615,7 +1689,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-121',
-    name: 'Lê Thị Tằm (Chủ: Ngô Thị Xoa)',
+    name: 'Lê Thị Tằm',
+    landowner_name: 'Ngô Thị Xoa',
     phone: '0988271339',
     cccd: '048085497887',
     cccd_date: '2021-05-10',
@@ -1628,7 +1703,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-122',
-    name: 'Nguyễn Thị Y (Chủ: Nguyễn Thị Năm)',
+    name: 'Nguyễn Thị Y',
+    landowner_name: 'Nguyễn Thị Năm',
     phone: '0388207175',
     cccd: '048090498382',
     cccd_date: '2021-05-10',
@@ -1641,7 +1717,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-123',
-    name: 'Phạm Công Anh (Chủ: Đặng Thị Khoái)',
+    name: 'Phạm Công Anh',
+    landowner_name: 'Đặng Thị Khoái',
     phone: '0388612340',
     cccd: '048090217301',
     cccd_date: '2021-05-10',
@@ -1667,7 +1744,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-125',
-    name: 'Đặng Thị Hoa (Chủ: Phạm Tấn - Hoa)',
+    name: 'Đặng Thị Hoa',
+    landowner_name: 'Phạm Tấn - Hoa',
     phone: '0399299659',
     cccd: '048090201639',
     cccd_date: '2021-05-10',
@@ -1693,7 +1771,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-127',
-    name: 'Võ Đình Nguyên (Chủ: Võ Thị Bút)',
+    name: 'Võ Đình Nguyên',
+    landowner_name: 'Võ Thị Bút',
     phone: '0399331148',
     cccd: '048085717889',
     cccd_date: '2021-05-10',
@@ -1706,7 +1785,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-128',
-    name: 'Phạm Trung (Chủ: Phạm Lưỡng)',
+    name: 'Phạm Trung',
+    landowner_name: 'Phạm Lưỡng',
     phone: '0914814825',
     cccd: '048088887352',
     cccd_date: '2021-05-10',
@@ -1732,7 +1812,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-130',
-    name: 'Đặng Thị Hồng (Chủ: Đặng Thị Thi)',
+    name: 'Đặng Thị Hồng',
+    landowner_name: 'Đặng Thị Thi',
     phone: '0399471507',
     cccd: '048085531071',
     cccd_date: '2021-05-10',
@@ -1745,7 +1826,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-131',
-    name: 'Nguyễn Cứ (Tổ 5) (Chủ: Đặng Lâng)',
+    name: 'Nguyễn Cứ (Tổ 5)',
+    landowner_name: 'Đặng Lâng',
     phone: '0868864491',
     cccd: '048090806073',
     cccd_date: '2021-05-10',
@@ -1758,7 +1840,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-132',
-    name: 'Đặng Văn Quân (Chủ: Lê Duy Mỹ)',
+    name: 'Đặng Văn Quân',
+    landowner_name: 'Lê Duy Mỹ',
     phone: '0935665579',
     cccd: '048088100599',
     cccd_date: '2021-05-10',
@@ -1771,7 +1854,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-133',
-    name: 'Lê Minh Cảnh (Chủ: Đặng Thị Tựu)',
+    name: 'Lê Minh Cảnh',
+    landowner_name: 'Đặng Thị Tựu',
     phone: '0977183667',
     cccd: '048091205907',
     cccd_date: '2021-05-10',
@@ -1784,7 +1868,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-134',
-    name: 'Lê Minh Cảnh (Chủ: Nguyễn Mai)',
+    name: 'Lê Minh Cảnh',
+    landowner_name: 'Nguyễn Mai',
     phone: '0977183667',
     cccd: '048091205907',
     cccd_date: '2021-05-10',
@@ -1797,7 +1882,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-135',
-    name: 'Lê Minh Cảnh (Chủ: Nguyễn Thị Tùng)',
+    name: 'Lê Minh Cảnh',
+    landowner_name: 'Nguyễn Thị Tùng',
     phone: '0977183667',
     cccd: '048091205907',
     cccd_date: '2021-05-10',
@@ -1823,7 +1909,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-137',
-    name: 'Đặng Thị Bình (Chủ: Đặng Công)',
+    name: 'Đặng Thị Bình',
+    landowner_name: 'Đặng Công',
     phone: '0868249811',
     cccd: '048092246413',
     cccd_date: '2021-05-10',
@@ -1836,7 +1923,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-138',
-    name: 'Đặng Hiệp (Chủ: Lê Trình)',
+    name: 'Đặng Hiệp',
+    landowner_name: 'Lê Trình',
     phone: '0868195325',
     cccd: '048090214975',
     cccd_date: '2021-05-10',
@@ -1849,7 +1937,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-139',
-    name: 'Phạm Nhân (Chủ: Võ Dự)',
+    name: 'Phạm Nhân',
+    landowner_name: 'Võ Dự',
     phone: '0388939482',
     cccd: '048090360735',
     cccd_date: '2021-05-10',
@@ -1862,7 +1951,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-140',
-    name: 'Phạm Nhân (Chủ: Đặng Thị Bạn)',
+    name: 'Phạm Nhân',
+    landowner_name: 'Đặng Thị Bạn',
     phone: '0388939482',
     cccd: '048090360735',
     cccd_date: '2021-05-10',
@@ -1888,7 +1978,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-142',
-    name: 'Võ Thị Huệ (Chủ: Nguyễn Minh Tâm)',
+    name: 'Võ Thị Huệ',
+    landowner_name: 'Nguyễn Minh Tâm',
     phone: '0988299448',
     cccd: '048088570405',
     cccd_date: '2021-05-10',
@@ -1901,7 +1992,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-143',
-    name: 'Võ Đá (Chủ: Võ Khải)',
+    name: 'Võ Đá',
+    landowner_name: 'Võ Khải',
     phone: '0935542374',
     cccd: '048091392075',
     cccd_date: '2021-05-10',
@@ -1927,7 +2019,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-145',
-    name: 'Đặng Thiệu (Chủ: Võ Kỳ)',
+    name: 'Đặng Thiệu',
+    landowner_name: 'Võ Kỳ',
     phone: '0977555884',
     cccd: '048091575763',
     cccd_date: '2021-05-10',
@@ -1940,7 +2033,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-146',
-    name: 'Đặng Thiệu (Chủ: Nguyễn Thị Thu Thanh)',
+    name: 'Đặng Thiệu',
+    landowner_name: 'Nguyễn Thị Thu Thanh',
     phone: '0977555884',
     cccd: '048091575763',
     cccd_date: '2021-05-10',
@@ -1979,7 +2073,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-149',
-    name: 'Lê Thị Bông (Chủ: Phan Lan)',
+    name: 'Lê Thị Bông',
+    landowner_name: 'Phan Lan',
     phone: '0914153045',
     cccd: '048088976638',
     cccd_date: '2021-05-10',
@@ -2018,7 +2113,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-152',
-    name: 'Võ Hoàng Đại Việt (Chủ: Võ Tiến Dũng)',
+    name: 'Võ Hoàng Đại Việt',
+    landowner_name: 'Võ Tiến Dũng',
     phone: '0399161483',
     cccd: '048091497382',
     cccd_date: '2021-05-10',
@@ -2031,7 +2127,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-153',
-    name: 'Nguyễn Đức Thanh (Chủ: Nguyễn Nghĩa)',
+    name: 'Nguyễn Đức Thanh',
+    landowner_name: 'Nguyễn Nghĩa',
     phone: '0914476417',
     cccd: '048092733052',
     cccd_date: '2021-05-10',
@@ -2057,7 +2154,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-155',
-    name: 'Nguyễn Hồng Sơn (Chủ: Nguyễn Hoàng Lâm)',
+    name: 'Nguyễn Hồng Sơn',
+    landowner_name: 'Nguyễn Hoàng Lâm',
     phone: '0905509386',
     cccd: '048092922157',
     cccd_date: '2021-05-10',
@@ -2070,7 +2168,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-156',
-    name: 'Đặng Dốn (Chủ: Võ Long)',
+    name: 'Đặng Dốn',
+    landowner_name: 'Võ Long',
     phone: '0977680099',
     cccd: '048090813328',
     cccd_date: '2021-05-10',
@@ -2109,7 +2208,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-159',
-    name: 'Đặng Dốn (Chủ: Đặng Năng)',
+    name: 'Đặng Dốn',
+    landowner_name: 'Đặng Năng',
     phone: '0977680099',
     cccd: '048090813328',
     cccd_date: '2021-05-10',
@@ -2135,7 +2235,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-161',
-    name: 'Nguyễn Xin (Chủ: Đặng Lâng)',
+    name: 'Nguyễn Xin',
+    landowner_name: 'Đặng Lâng',
     phone: '0388705397',
     cccd: '048091838797',
     cccd_date: '2021-05-10',
@@ -2161,7 +2262,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-163',
-    name: 'Phạm Xong (Chủ: Nguyễn Thị Y)',
+    name: 'Phạm Xong',
+    landowner_name: 'Nguyễn Thị Y',
     phone: '0399391476',
     cccd: '048085766563',
     cccd_date: '2021-05-10',
@@ -2174,7 +2276,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-164',
-    name: 'Đặng Chiến-B (Chủ: Đặng Chiến)',
+    name: 'Đặng Chiến-B',
+    landowner_name: 'Đặng Chiến',
     phone: '0988161324',
     cccd: '048088871476',
     cccd_date: '2021-05-10',
@@ -2200,7 +2303,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-166',
-    name: 'Phạm Xong (Chủ: Phạm Ngữ)',
+    name: 'Phạm Xong',
+    landowner_name: 'Phạm Ngữ',
     phone: '0399391476',
     cccd: '048085766563',
     cccd_date: '2021-05-10',
@@ -2226,7 +2330,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-168',
-    name: 'Đặng Văn Quang (Chủ: Nguyễn Phận)',
+    name: 'Đặng Văn Quang',
+    landowner_name: 'Nguyễn Phận',
     phone: '0988260263',
     cccd: '048092899550',
     cccd_date: '2021-05-10',
@@ -2239,7 +2344,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-169',
-    name: 'Đặng Chiến-B (Chủ: Đặng Chiến)',
+    name: 'Đặng Chiến-B',
+    landowner_name: 'Đặng Chiến',
     phone: '0988161324',
     cccd: '048088871476',
     cccd_date: '2021-05-10',
@@ -2252,7 +2358,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-170',
-    name: 'Đặng Văn Quang (Chủ: Đặng Dốn)',
+    name: 'Đặng Văn Quang',
+    landowner_name: 'Đặng Dốn',
     phone: '0988260263',
     cccd: '048092899550',
     cccd_date: '2021-05-10',
@@ -2278,7 +2385,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-172',
-    name: 'Võ Đình Nguyên (Chủ: Võ Thị Phước)',
+    name: 'Võ Đình Nguyên',
+    landowner_name: 'Võ Thị Phước',
     phone: '0399331148',
     cccd: '048085717889',
     cccd_date: '2021-05-10',
@@ -2317,7 +2425,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-175',
-    name: 'Trần Mai Trường (Chủ: Đặng Hiệp)',
+    name: 'Trần Mai Trường',
+    landowner_name: 'Đặng Hiệp',
     phone: '0988392004',
     cccd: '048085324643',
     cccd_date: '2021-05-10',
@@ -2330,7 +2439,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-176',
-    name: 'Trần Mai Trường (Chủ: Nguyễn Thị Thanh Vĩ)',
+    name: 'Trần Mai Trường',
+    landowner_name: 'Nguyễn Thị Thanh Vĩ',
     phone: '0988392004',
     cccd: '048085324643',
     cccd_date: '2021-05-10',
@@ -2369,7 +2479,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-179',
-    name: 'Đặng Học (Chủ: Đặng Hồng - Học)',
+    name: 'Đặng Học',
+    landowner_name: 'Đặng Hồng - Học',
     phone: '0988717024',
     cccd: '048091107540',
     cccd_date: '2021-05-10',
@@ -2408,7 +2519,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-182',
-    name: 'Đinh Lệ (Chủ: Đặng Văn Mười)',
+    name: 'Đinh Lệ',
+    landowner_name: 'Đặng Văn Mười',
     phone: '0988847581',
     cccd: '048092518373',
     cccd_date: '2021-05-10',
@@ -2421,7 +2533,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-183',
-    name: 'Đặng Lào (Chủ: Nguyễn Đính)',
+    name: 'Đặng Lào',
+    landowner_name: 'Nguyễn Đính',
     phone: '0977263032',
     cccd: '048091900581',
     cccd_date: '2021-05-10',
@@ -2434,7 +2547,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-184',
-    name: 'Hồ Thị Vân (Chủ: Lâm Tùng Nghĩa)',
+    name: 'Hồ Thị Vân',
+    landowner_name: 'Lâm Tùng Nghĩa',
     phone: '0914126225',
     cccd: '048092356787',
     cccd_date: '2021-05-10',
@@ -2460,7 +2574,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-186',
-    name: 'Hồ Hoàng Kiếm (Chủ: Lê Văn Hồng)',
+    name: 'Hồ Hoàng Kiếm',
+    landowner_name: 'Lê Văn Hồng',
     phone: '0988523389',
     cccd: '048090697347',
     cccd_date: '2021-05-10',
@@ -2499,7 +2614,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-189',
-    name: 'Đặng Quang - Hoài (Chủ: Đặng Thị Tâm)',
+    name: 'Đặng Quang - Hoài',
+    landowner_name: 'Đặng Thị Tâm',
     phone: '0905198246',
     cccd: '048091343962',
     cccd_date: '2021-05-10',
@@ -2525,7 +2641,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-191',
-    name: 'Lê Thị Tằm (Chủ: Đặng Phước)',
+    name: 'Lê Thị Tằm',
+    landowner_name: 'Đặng Phước',
     phone: '0988271339',
     cccd: '048085497887',
     cccd_date: '2021-05-10',
@@ -2538,7 +2655,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-192',
-    name: 'Trần Thị Toàn (Chủ: Đặng Sơn)',
+    name: 'Trần Thị Toàn',
+    landowner_name: 'Đặng Sơn',
     phone: '0977883300',
     cccd: '048088549245',
     cccd_date: '2021-05-10',
@@ -2577,7 +2695,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-195',
-    name: 'Nguyễn Thị Được (Chủ: Trần Thị Nga)',
+    name: 'Nguyễn Thị Được',
+    landowner_name: 'Trần Thị Nga',
     phone: '0388373432',
     cccd: '048091802258',
     cccd_date: '2021-05-10',
@@ -2590,7 +2709,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-196',
-    name: 'Đinh Thị Thương (Chủ: Đinh Ngọc Em)',
+    name: 'Đinh Thị Thương',
+    landowner_name: 'Đinh Ngọc Em',
     phone: '0905712554',
     cccd: '048085627276',
     cccd_date: '2021-05-10',
@@ -2603,7 +2723,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-197',
-    name: 'Đặng Dốn (Chủ: Đặng Thị Nhỏ)',
+    name: 'Đặng Dốn',
+    landowner_name: 'Đặng Thị Nhỏ',
     phone: '0977680099',
     cccd: '048090813328',
     cccd_date: '2021-05-10',
@@ -2616,7 +2737,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-198',
-    name: 'Đặng Thử (Chủ: Bùi Thị Gái)',
+    name: 'Đặng Thử',
+    landowner_name: 'Bùi Thị Gái',
     phone: '0905197793',
     cccd: '048091274389',
     cccd_date: '2021-05-10',
@@ -2642,7 +2764,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-200',
-    name: 'Đặng Chiến-B (Chủ: Đặng Chiến)',
+    name: 'Đặng Chiến-B',
+    landowner_name: 'Đặng Chiến',
     phone: '0988161324',
     cccd: '048088871476',
     cccd_date: '2021-05-10',
@@ -2655,7 +2778,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-201',
-    name: 'Phạm Thị Chín (Chủ: Phạm Mười)',
+    name: 'Phạm Thị Chín',
+    landowner_name: 'Phạm Mười',
     phone: '0935804318',
     cccd: '048092579434',
     cccd_date: '2021-05-10',
@@ -2681,7 +2805,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-203',
-    name: 'Nguyễn Côi (Chủ: Phạm Thị Hiệp)',
+    name: 'Nguyễn Côi',
+    landowner_name: 'Phạm Thị Hiệp',
     phone: '0868751332',
     cccd: '048088204837',
     cccd_date: '2021-05-10',
@@ -2694,7 +2819,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-204',
-    name: 'Võ Đình Nguyên (Chủ: Nguyễn Thị Năm)',
+    name: 'Võ Đình Nguyên',
+    landowner_name: 'Nguyễn Thị Năm',
     phone: '0399331148',
     cccd: '048085717889',
     cccd_date: '2021-05-10',
@@ -2707,7 +2833,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-205',
-    name: 'Võ Văn Vũ (Chủ: Võ Diên)',
+    name: 'Võ Văn Vũ',
+    landowner_name: 'Võ Diên',
     phone: '0914663750',
     cccd: '048091630458',
     cccd_date: '2021-05-10',
@@ -2746,7 +2873,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-208',
-    name: 'Hồ Thị Vân (Chủ: Đặng Văn Đối)',
+    name: 'Hồ Thị Vân',
+    landowner_name: 'Đặng Văn Đối',
     phone: '0914126225',
     cccd: '048092356787',
     cccd_date: '2021-05-10',
@@ -2759,7 +2887,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-209',
-    name: 'Võ Đình Nguyên (Chủ: Võ Sang)',
+    name: 'Võ Đình Nguyên',
+    landowner_name: 'Võ Sang',
     phone: '0399331148',
     cccd: '048085717889',
     cccd_date: '2021-05-10',
@@ -2772,7 +2901,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-210',
-    name: 'Nguyễn Tám (Chủ: Nguyễn Khanh)',
+    name: 'Nguyễn Tám',
+    landowner_name: 'Nguyễn Khanh',
     phone: '0988487477',
     cccd: '048092265409',
     cccd_date: '2021-05-10',
@@ -2785,7 +2915,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-211',
-    name: 'Nguyễn Côi (Chủ: Nguyễn Thị Sở)',
+    name: 'Nguyễn Côi',
+    landowner_name: 'Nguyễn Thị Sở',
     phone: '0868751332',
     cccd: '048088204837',
     cccd_date: '2021-05-10',
@@ -2811,7 +2942,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-213',
-    name: 'Đặng Lào (Chủ: Nguyễn Hồng)',
+    name: 'Đặng Lào',
+    landowner_name: 'Nguyễn Hồng',
     phone: '0977263032',
     cccd: '048091900581',
     cccd_date: '2021-05-10',
@@ -2824,7 +2956,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-214',
-    name: 'Võ Thị Thu (Chủ: Trần Đình Tân)',
+    name: 'Võ Thị Thu',
+    landowner_name: 'Trần Đình Tân',
     phone: '0977741390',
     cccd: '048088108203',
     cccd_date: '2021-05-10',
@@ -2837,7 +2970,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-215',
-    name: 'Nguyễn Xuân (Chủ: Nguyễn Xin)',
+    name: 'Nguyễn Xuân',
+    landowner_name: 'Nguyễn Xin',
     phone: '0977795613',
     cccd: '048090240814',
     cccd_date: '2021-05-10',
@@ -2863,7 +2997,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-217',
-    name: 'Đặng Thị Xuân (Chủ: Đặng Xuân Nhân)',
+    name: 'Đặng Thị Xuân',
+    landowner_name: 'Đặng Xuân Nhân',
     phone: '0977221035',
     cccd: '048090878480',
     cccd_date: '2021-05-10',
@@ -2889,7 +3024,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-219',
-    name: 'Đặng Hoàng Bình (Chủ: Phạm Thị Tứ)',
+    name: 'Đặng Hoàng Bình',
+    landowner_name: 'Phạm Thị Tứ',
     phone: '0905857168',
     cccd: '048092624902',
     cccd_date: '2021-05-10',
@@ -2915,7 +3051,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-221',
-    name: 'Đặng Học (Chủ: Nguyễn Thị Chuốt)',
+    name: 'Đặng Học',
+    landowner_name: 'Nguyễn Thị Chuốt',
     phone: '0988717024',
     cccd: '048091107540',
     cccd_date: '2021-05-10',
@@ -2954,7 +3091,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-224',
-    name: 'Hồ Thị Vân (Chủ: Lâm Tùng Nghĩa)',
+    name: 'Hồ Thị Vân',
+    landowner_name: 'Lâm Tùng Nghĩa',
     phone: '0914126225',
     cccd: '048092356787',
     cccd_date: '2021-05-10',
@@ -2993,7 +3131,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-227',
-    name: 'Đặng Dốn (Chủ: Nguyễn Đính)',
+    name: 'Đặng Dốn',
+    landowner_name: 'Nguyễn Đính',
     phone: '0977680099',
     cccd: '048090813328',
     cccd_date: '2021-05-10',
@@ -3006,7 +3145,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-228',
-    name: 'Lê Thị Bông (Chủ: Phan Lan)',
+    name: 'Lê Thị Bông',
+    landowner_name: 'Phan Lan',
     phone: '0914153045',
     cccd: '048088976638',
     cccd_date: '2021-05-10',
@@ -3019,7 +3159,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-229',
-    name: 'Đặng Dốn (Chủ: Đặng Văn Quang)',
+    name: 'Đặng Dốn',
+    landowner_name: 'Đặng Văn Quang',
     phone: '0977680099',
     cccd: '048090813328',
     cccd_date: '2021-05-10',
@@ -3058,7 +3199,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-232',
-    name: 'Đặng Lào (Chủ: Lâm Tùng Nghĩa)',
+    name: 'Đặng Lào',
+    landowner_name: 'Lâm Tùng Nghĩa',
     phone: '0977263032',
     cccd: '048091900581',
     cccd_date: '2021-05-10',
@@ -3071,7 +3213,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-233',
-    name: 'Đặng Lào (Chủ: Phạm Xong)',
+    name: 'Đặng Lào',
+    landowner_name: 'Phạm Xong',
     phone: '0977263032',
     cccd: '048091900581',
     cccd_date: '2021-05-10',
@@ -3084,7 +3227,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-234',
-    name: 'Đặng Lào (Chủ: Đặng Văn Mười)',
+    name: 'Đặng Lào',
+    landowner_name: 'Đặng Văn Mười',
     phone: '0977263032',
     cccd: '048091900581',
     cccd_date: '2021-05-10',
@@ -3097,7 +3241,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-235',
-    name: 'Bùi Hiếu Mạnh (Chủ: Nguyễn Thị Thanh Vĩ)',
+    name: 'Bùi Hiếu Mạnh',
+    landowner_name: 'Nguyễn Thị Thanh Vĩ',
     phone: '0988852470',
     cccd: '048092313487',
     cccd_date: '2021-05-10',
@@ -3149,7 +3294,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-239',
-    name: 'Nguyễn Nho (Chủ: Nguyễn Đính)',
+    name: 'Nguyễn Nho',
+    landowner_name: 'Nguyễn Đính',
     phone: '0905884309',
     cccd: '048092159942',
     cccd_date: '2021-05-10',
@@ -3188,7 +3334,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-242',
-    name: 'Đặng Xuân Lư (Chủ: Đặng Xuân Nhân)',
+    name: 'Đặng Xuân Lư',
+    landowner_name: 'Đặng Xuân Nhân',
     phone: '0905196781',
     cccd: '048085969634',
     cccd_date: '2021-05-10',
@@ -3201,7 +3348,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-243',
-    name: 'Đặng Mau (Chủ: Đặng Năng)',
+    name: 'Đặng Mau',
+    landowner_name: 'Đặng Năng',
     phone: '0977146228',
     cccd: '048090449759',
     cccd_date: '2021-05-10',
@@ -3253,7 +3401,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-247',
-    name: 'Bùi Hiếu Tàu (Chủ: Nguyễn Thị Xuân Hương)',
+    name: 'Bùi Hiếu Tàu',
+    landowner_name: 'Nguyễn Thị Xuân Hương',
     phone: '0905217308',
     cccd: '048090824586',
     cccd_date: '2021-05-10',
@@ -3266,7 +3415,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-248',
-    name: 'Bùi Hiếu Tàu (Chủ: Bùi Đức)',
+    name: 'Bùi Hiếu Tàu',
+    landowner_name: 'Bùi Đức',
     phone: '0905217308',
     cccd: '048090824586',
     cccd_date: '2021-05-10',
@@ -3279,7 +3429,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-249',
-    name: 'Đặng Mau (Chủ: Nguyễn Hồng Sơn)',
+    name: 'Đặng Mau',
+    landowner_name: 'Nguyễn Hồng Sơn',
     phone: '0977146228',
     cccd: '048090449759',
     cccd_date: '2021-05-10',
@@ -3318,7 +3469,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-252',
-    name: 'Đặng Lạc (Chủ: Nguyễn Ngọc Ngân)',
+    name: 'Đặng Lạc',
+    landowner_name: 'Nguyễn Ngọc Ngân',
     phone: '0935672092',
     cccd: '048090975136',
     cccd_date: '2021-05-10',
@@ -3357,7 +3509,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-255',
-    name: 'Đặng Thị Tương (Chủ: Nguyễn Ngọc Ngân)',
+    name: 'Đặng Thị Tương',
+    landowner_name: 'Nguyễn Ngọc Ngân',
     phone: '0399233636',
     cccd: '048090423232',
     cccd_date: '2021-05-10',
@@ -3383,7 +3536,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-257',
-    name: 'Bùi Hiếu Mạnh (Chủ: Nguyễn Thị Xuân Hương)',
+    name: 'Bùi Hiếu Mạnh',
+    landowner_name: 'Nguyễn Thị Xuân Hương',
     phone: '0988852470',
     cccd: '048092313487',
     cccd_date: '2021-05-10',
@@ -3422,7 +3576,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-260',
-    name: 'Hồ Hoàng Kiếm (Chủ: Lê Văn Hồng)',
+    name: 'Hồ Hoàng Kiếm',
+    landowner_name: 'Lê Văn Hồng',
     phone: '0988523389',
     cccd: '048090697347',
     cccd_date: '2021-05-10',
@@ -3461,7 +3616,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-263',
-    name: 'Võ Tiến Dũng (Chủ: Trương Thị Thu Trang)',
+    name: 'Võ Tiến Dũng',
+    landowner_name: 'Trương Thị Thu Trang',
     phone: '0914842225',
     cccd: '048090340062',
     cccd_date: '2021-05-10',
@@ -3487,7 +3643,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-265',
-    name: 'Võ Thị Phước (Chủ: Đặng Thị Đoan)',
+    name: 'Võ Thị Phước',
+    landowner_name: 'Đặng Thị Đoan',
     phone: '0905352572',
     cccd: '048088182582',
     cccd_date: '2021-05-10',
@@ -3500,7 +3657,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-266',
-    name: 'Đặng Thị Ngọc Bích (Chủ: Nguyễn Kiện)',
+    name: 'Đặng Thị Ngọc Bích',
+    landowner_name: 'Nguyễn Kiện',
     phone: '0935757924',
     cccd: '048091930555',
     cccd_date: '2021-05-10',
@@ -3513,7 +3671,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-267',
-    name: 'Võ Hoàng (Chủ: Võ Thiệu)',
+    name: 'Võ Hoàng',
+    landowner_name: 'Võ Thiệu',
     phone: '0399725380',
     cccd: '048090503457',
     cccd_date: '2021-05-10',
@@ -3526,7 +3685,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-268',
-    name: 'Đinh Thị Thương (Chủ: Đặng Đa)',
+    name: 'Đinh Thị Thương',
+    landowner_name: 'Đặng Đa',
     phone: '0905712554',
     cccd: '048085627276',
     cccd_date: '2021-05-10',
@@ -3539,7 +3699,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-269',
-    name: 'Võ Thị Phước (Chủ: Trần Đình Tân)',
+    name: 'Võ Thị Phước',
+    landowner_name: 'Trần Đình Tân',
     phone: '0905352572',
     cccd: '048088182582',
     cccd_date: '2021-05-10',
@@ -3552,7 +3713,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-270',
-    name: 'Phạm Văn Tiến (Chủ: Phạm Thước)',
+    name: 'Phạm Văn Tiến',
+    landowner_name: 'Phạm Thước',
     phone: '0399479580',
     cccd: '048091245051',
     cccd_date: '2021-05-10',
@@ -3565,7 +3727,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-271',
-    name: 'Hồ Thị Vân (Chủ: Hồ Liền)',
+    name: 'Hồ Thị Vân',
+    landowner_name: 'Hồ Liền',
     phone: '0914126225',
     cccd: '048092356787',
     cccd_date: '2021-05-10',
@@ -3578,7 +3741,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-272',
-    name: 'Hồ Thị Vân (Chủ: Phạm Kim Sơn)',
+    name: 'Hồ Thị Vân',
+    landowner_name: 'Phạm Kim Sơn',
     phone: '0914126225',
     cccd: '048092356787',
     cccd_date: '2021-05-10',
@@ -3604,7 +3768,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-274',
-    name: 'Nguyễn Tàu (Chủ: Lê Thị Mẹo)',
+    name: 'Nguyễn Tàu',
+    landowner_name: 'Lê Thị Mẹo',
     phone: '0914470858',
     cccd: '048088526117',
     cccd_date: '2021-05-10',
@@ -3617,7 +3782,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-275',
-    name: 'Phạm Mười (Chủ: Phạm Ngữ)',
+    name: 'Phạm Mười',
+    landowner_name: 'Phạm Ngữ',
     phone: '0914678856',
     cccd: '048092969693',
     cccd_date: '2021-05-10',
@@ -3630,7 +3796,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-276',
-    name: 'Nguyễn Văn Lợi (Chủ: Trần Thị Ân)',
+    name: 'Nguyễn Văn Lợi',
+    landowner_name: 'Trần Thị Ân',
     phone: '0988707040',
     cccd: '048088141672',
     cccd_date: '2021-05-10',
@@ -3643,7 +3810,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-277',
-    name: 'Phạm Xong (Chủ: Võ Nha)',
+    name: 'Phạm Xong',
+    landowner_name: 'Võ Nha',
     phone: '0399391476',
     cccd: '048085766563',
     cccd_date: '2021-05-10',
@@ -3747,7 +3915,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-285',
-    name: 'Đặng Hiệp (Chủ: Đặng Thị Quí)',
+    name: 'Đặng Hiệp',
+    landowner_name: 'Đặng Thị Quí',
     phone: '0868195325',
     cccd: '048090214975',
     cccd_date: '2021-05-10',
@@ -3773,7 +3942,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-287',
-    name: 'Nguyễn Thị Bốn (Chủ: Nguyễn Nghĩa)',
+    name: 'Nguyễn Thị Bốn',
+    landowner_name: 'Nguyễn Nghĩa',
     phone: '0935532322',
     cccd: '048090288073',
     cccd_date: '2021-05-10',
@@ -3786,7 +3956,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-288',
-    name: 'Nguyễn Xin (Chủ: Võ Long)',
+    name: 'Nguyễn Xin',
+    landowner_name: 'Võ Long',
     phone: '0388705397',
     cccd: '048091838797',
     cccd_date: '2021-05-10',
@@ -3812,7 +3983,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-290',
-    name: 'Lê Thị Bông (Chủ: Phan Lan)',
+    name: 'Lê Thị Bông',
+    landowner_name: 'Phan Lan',
     phone: '0914153045',
     cccd: '048088976638',
     cccd_date: '2021-05-10',
@@ -3825,7 +3997,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-291',
-    name: 'Nguyễn Tàu (Chủ: Lê Thị Mẹo)',
+    name: 'Nguyễn Tàu',
+    landowner_name: 'Lê Thị Mẹo',
     phone: '0914470858',
     cccd: '048088526117',
     cccd_date: '2021-05-10',
@@ -3851,7 +4024,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-293',
-    name: 'Đinh Tuân (Chủ: Nguyễn Quang Thơ)',
+    name: 'Đinh Tuân',
+    landowner_name: 'Nguyễn Quang Thơ',
     phone: '0388710805',
     cccd: '048088255287',
     cccd_date: '2021-05-10',
@@ -3864,7 +4038,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-294',
-    name: 'Đặng Văn Quân (Chủ: Đặng Hiền)',
+    name: 'Đặng Văn Quân',
+    landowner_name: 'Đặng Hiền',
     phone: '0935665579',
     cccd: '048088100599',
     cccd_date: '2021-05-10',
@@ -3877,7 +4052,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-295',
-    name: 'Đặng Hiệp (Chủ: Võ Nhân)',
+    name: 'Đặng Hiệp',
+    landowner_name: 'Võ Nhân',
     phone: '0868195325',
     cccd: '048090214975',
     cccd_date: '2021-05-10',
@@ -3903,7 +4079,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-297',
-    name: 'Võ Văn Vũ (Chủ: Võ Diên)',
+    name: 'Võ Văn Vũ',
+    landowner_name: 'Võ Diên',
     phone: '0914663750',
     cccd: '048091630458',
     cccd_date: '2021-05-10',
@@ -3929,7 +4106,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-299',
-    name: 'Phạm Phú Quốc (Chủ: Đặng Thị Khoái)',
+    name: 'Phạm Phú Quốc',
+    landowner_name: 'Đặng Thị Khoái',
     phone: '0388920391',
     cccd: '048085941204',
     cccd_date: '2021-05-10',
@@ -3942,7 +4120,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-300',
-    name: 'Hồ Thị Vân (Chủ: Lâm Tùng Nghĩa)',
+    name: 'Hồ Thị Vân',
+    landowner_name: 'Lâm Tùng Nghĩa',
     phone: '0914126225',
     cccd: '048092356787',
     cccd_date: '2021-05-10',
@@ -3968,7 +4147,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-302',
-    name: 'Đặng Thị Tương (Chủ: Võ Thị Mẫn)',
+    name: 'Đặng Thị Tương',
+    landowner_name: 'Võ Thị Mẫn',
     phone: '0399233636',
     cccd: '048090423232',
     cccd_date: '2021-05-10',
@@ -3981,7 +4161,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-303',
-    name: 'Phạm Trung (Chủ: Đặng Văn Đối)',
+    name: 'Phạm Trung',
+    landowner_name: 'Đặng Văn Đối',
     phone: '0914814825',
     cccd: '048088887352',
     cccd_date: '2021-05-10',
@@ -4033,7 +4214,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-307',
-    name: 'Đặng Thị Thi (Chủ: Đặng Thị Hồng)',
+    name: 'Đặng Thị Thi',
+    landowner_name: 'Đặng Thị Hồng',
     phone: '0868361941',
     cccd: '048090564656',
     cccd_date: '2021-05-10',
@@ -4046,7 +4228,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-308',
-    name: 'Đặng Thống (Chủ: Nguyễn Thị Tùng)',
+    name: 'Đặng Thống',
+    landowner_name: 'Nguyễn Thị Tùng',
     phone: '0914501124',
     cccd: '048090593554',
     cccd_date: '2021-05-10',
@@ -4098,7 +4281,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-312',
-    name: 'Trần Mai Trường (Chủ: Vũ Thị Dung)',
+    name: 'Trần Mai Trường',
+    landowner_name: 'Vũ Thị Dung',
     phone: '0988392004',
     cccd: '048085324643',
     cccd_date: '2021-05-10',
@@ -4124,7 +4308,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-314',
-    name: 'Phạm Thị Pha (Chủ: Phạm Lưỡng)',
+    name: 'Phạm Thị Pha',
+    landowner_name: 'Phạm Lưỡng',
     phone: '0988309267',
     cccd: '048085466643',
     cccd_date: '2021-05-10',
@@ -4137,7 +4322,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-315',
-    name: 'Võ Hoàng (Chủ: Võ Thiệu)',
+    name: 'Võ Hoàng',
+    landowner_name: 'Võ Thiệu',
     phone: '0399725380',
     cccd: '048090503457',
     cccd_date: '2021-05-10',
@@ -4202,7 +4388,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-320',
-    name: 'Đặng Thị Tạo (Chủ: Đặng Bồi)',
+    name: 'Đặng Thị Tạo',
+    landowner_name: 'Đặng Bồi',
     phone: '0905792094',
     cccd: '048091517821',
     cccd_date: '2021-05-10',
@@ -4215,7 +4402,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-321',
-    name: 'Đặng Thị Tạo (Chủ: Đặng Quang Viên)',
+    name: 'Đặng Thị Tạo',
+    landowner_name: 'Đặng Quang Viên',
     phone: '0905792094',
     cccd: '048091517821',
     cccd_date: '2021-05-10',
@@ -4228,7 +4416,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-322',
-    name: 'Nguyễn Tàu (Chủ: Lê Thị Mẹo)',
+    name: 'Nguyễn Tàu',
+    landowner_name: 'Lê Thị Mẹo',
     phone: '0914470858',
     cccd: '048088526117',
     cccd_date: '2021-05-10',
@@ -4241,7 +4430,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-323',
-    name: 'Trương Thị Tàu (Chủ: Võ Thị Thu Vân)',
+    name: 'Trương Thị Tàu',
+    landowner_name: 'Võ Thị Thu Vân',
     phone: '0914539589',
     cccd: '048088692683',
     cccd_date: '2021-05-10',
@@ -4267,7 +4457,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-325',
-    name: 'Nguyễn Côi (Chủ: Võ Lai)',
+    name: 'Nguyễn Côi',
+    landowner_name: 'Võ Lai',
     phone: '0868751332',
     cccd: '048088204837',
     cccd_date: '2021-05-10',
@@ -4306,7 +4497,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-328',
-    name: 'Đặng Ngọc Tiến (Chủ: Đặng Điện)',
+    name: 'Đặng Ngọc Tiến',
+    landowner_name: 'Đặng Điện',
     phone: '0935708792',
     cccd: '048092140115',
     cccd_date: '2021-05-10',
@@ -4319,7 +4511,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-329',
-    name: 'Đặng Thị Liễu (Chủ: Võ Trợ)',
+    name: 'Đặng Thị Liễu',
+    landowner_name: 'Võ Trợ',
     phone: '0914725550',
     cccd: '048085462479',
     cccd_date: '2021-05-10',
@@ -4345,7 +4538,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-331',
-    name: 'Lê Thị Thanh (Chủ: Nguyễn Hồng)',
+    name: 'Lê Thị Thanh',
+    landowner_name: 'Nguyễn Hồng',
     phone: '0388557592',
     cccd: '048088636265',
     cccd_date: '2021-05-10',
@@ -4371,7 +4565,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-333',
-    name: 'Nguyễn Côi (Chủ: Nguyễn Thị Sở)',
+    name: 'Nguyễn Côi',
+    landowner_name: 'Nguyễn Thị Sở',
     phone: '0868751332',
     cccd: '048088204837',
     cccd_date: '2021-05-10',
@@ -4397,7 +4592,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-335',
-    name: 'Đặng Tấn (Chủ: Đặng Thanh)',
+    name: 'Đặng Tấn',
+    landowner_name: 'Đặng Thanh',
     phone: '0988481913',
     cccd: '048085173372',
     cccd_date: '2021-05-10',
@@ -4449,7 +4645,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-339',
-    name: 'Huỳnh Đức Thuận (Chủ: Nguyễn Thị Mẫn)',
+    name: 'Huỳnh Đức Thuận',
+    landowner_name: 'Nguyễn Thị Mẫn',
     phone: '0399831076',
     cccd: '048092681343',
     cccd_date: '2021-05-10',
@@ -4462,7 +4659,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-340',
-    name: 'Nguyễn Thị Kiêu (Chủ: Đặng Ninh)',
+    name: 'Nguyễn Thị Kiêu',
+    landowner_name: 'Đặng Ninh',
     phone: '0935301158',
     cccd: '048085797229',
     cccd_date: '2021-05-10',
@@ -4475,7 +4673,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-341',
-    name: 'Đặng Thiệu (Chủ: Ngô Nghĩa)',
+    name: 'Đặng Thiệu',
+    landowner_name: 'Ngô Nghĩa',
     phone: '0977555884',
     cccd: '048091575763',
     cccd_date: '2021-05-10',
@@ -4514,7 +4713,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-344',
-    name: 'Vệ Thị Bé (Chủ: Phạm Thị Hiệp)',
+    name: 'Vệ Thị Bé',
+    landowner_name: 'Phạm Thị Hiệp',
     phone: '0905418635',
     cccd: '048092320392',
     cccd_date: '2021-05-10',
@@ -4527,7 +4727,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-345',
-    name: 'Đặng Thành Phương (Chủ: Đặng Thành)',
+    name: 'Đặng Thành Phương',
+    landowner_name: 'Đặng Thành',
     phone: '0399923927',
     cccd: '048088736130',
     cccd_date: '2021-05-10',
@@ -4540,7 +4741,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-346',
-    name: 'Vệ Phú Hải (Chủ: Lê Thị Cúc)',
+    name: 'Vệ Phú Hải',
+    landowner_name: 'Lê Thị Cúc',
     phone: '0388587575',
     cccd: '048085563638',
     cccd_date: '2021-05-10',
@@ -4605,7 +4807,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-351',
-    name: 'Đặng Thị Liễu (Chủ: Đặng Thạch)',
+    name: 'Đặng Thị Liễu',
+    landowner_name: 'Đặng Thạch',
     phone: '0914725550',
     cccd: '048085462479',
     cccd_date: '2021-05-10',
@@ -4631,7 +4834,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-353',
-    name: 'Đặng Ngọc Liên (Chủ: Nguyễn Thị Trung)',
+    name: 'Đặng Ngọc Liên',
+    landowner_name: 'Nguyễn Thị Trung',
     phone: '0977335552',
     cccd: '048091254511',
     cccd_date: '2021-05-10',
@@ -4657,7 +4861,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-355',
-    name: 'Đặng Đào (Chủ: Đặng Tơ)',
+    name: 'Đặng Đào',
+    landowner_name: 'Đặng Tơ',
     phone: '0914577538',
     cccd: '048085760356',
     cccd_date: '2021-05-10',
@@ -4670,7 +4875,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-356',
-    name: 'Đặng Công Khanh (Chủ: Phùng Thị Nga)',
+    name: 'Đặng Công Khanh',
+    landowner_name: 'Phùng Thị Nga',
     phone: '0988853240',
     cccd: '048085618392',
     cccd_date: '2021-05-10',
@@ -4683,7 +4889,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-357',
-    name: 'Nguyễn Hà (L) (Chủ: Đinh Thị Hường)',
+    name: 'Nguyễn Hà (L)',
+    landowner_name: 'Đinh Thị Hường',
     phone: '0399355836',
     cccd: '048091787926',
     cccd_date: '2021-05-10',
@@ -4696,7 +4903,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-358',
-    name: 'Đặng Thị Bích Sơn (Chủ: Đặng Thị Khuyến)',
+    name: 'Đặng Thị Bích Sơn',
+    landowner_name: 'Đặng Thị Khuyến',
     phone: '0905887443',
     cccd: '048090916232',
     cccd_date: '2021-05-10',
@@ -4709,7 +4917,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-359',
-    name: 'Đặng Thị Bích Sơn (Chủ: Trần Văn Minh)',
+    name: 'Đặng Thị Bích Sơn',
+    landowner_name: 'Trần Văn Minh',
     phone: '0905887443',
     cccd: '048090916232',
     cccd_date: '2021-05-10',
@@ -4722,7 +4931,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-360',
-    name: 'Nguyễn Mộng Hùng (Chủ: Nguyễn Thị Hữu)',
+    name: 'Nguyễn Mộng Hùng',
+    landowner_name: 'Nguyễn Thị Hữu',
     phone: '0399329471',
     cccd: '048091943170',
     cccd_date: '2021-05-10',
@@ -4774,7 +4984,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-364',
-    name: 'Nguyễn Anh Phúc (Chủ: Nguyễn Sàng)',
+    name: 'Nguyễn Anh Phúc',
+    landowner_name: 'Nguyễn Sàng',
     phone: '0388891937',
     cccd: '048085742412',
     cccd_date: '2021-05-10',
@@ -4787,7 +4998,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-365',
-    name: 'Võ Thị Sinh (Chủ: Trần Mậu Thức)',
+    name: 'Võ Thị Sinh',
+    landowner_name: 'Trần Mậu Thức',
     phone: '0399970914',
     cccd: '048088567574',
     cccd_date: '2021-05-10',
@@ -4800,7 +5012,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-366',
-    name: 'Nguyễn Thị Loan (Chủ: Nguyễn Sảy)',
+    name: 'Nguyễn Thị Loan',
+    landowner_name: 'Nguyễn Sảy',
     phone: '0935879779',
     cccd: '048085571932',
     cccd_date: '2021-05-10',
@@ -4813,7 +5026,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-367',
-    name: 'Phạm Ngọc Hiệp (Chủ: Đặng Thị Nhường)',
+    name: 'Phạm Ngọc Hiệp',
+    landowner_name: 'Đặng Thị Nhường',
     phone: '0977888295',
     cccd: '048091980660',
     cccd_date: '2021-05-10',
@@ -4826,7 +5040,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-368',
-    name: 'Đặng Văn Quốc (Chủ: Thái Thị Hiệp)',
+    name: 'Đặng Văn Quốc',
+    landowner_name: 'Thái Thị Hiệp',
     phone: '0977903013',
     cccd: '048088608136',
     cccd_date: '2021-05-10',
@@ -4852,7 +5067,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-370',
-    name: 'Đặng Thị Hòa (Chủ: Võ Thị Nam)',
+    name: 'Đặng Thị Hòa',
+    landowner_name: 'Võ Thị Nam',
     phone: '0988387936',
     cccd: '048085181247',
     cccd_date: '2021-05-10',
@@ -4865,7 +5081,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-371',
-    name: 'Đặng Văn Dũng (Tổ 3) (Chủ: Nguyễn Thị Tri)',
+    name: 'Đặng Văn Dũng (Tổ 3)',
+    landowner_name: 'Nguyễn Thị Tri',
     phone: '0399810219',
     cccd: '048091745414',
     cccd_date: '2021-05-10',
@@ -4878,7 +5095,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-372',
-    name: 'Đặng Ký (Chủ: Nguyễn Văn Cường)',
+    name: 'Đặng Ký',
+    landowner_name: 'Nguyễn Văn Cường',
     phone: '0977345884',
     cccd: '048092452161',
     cccd_date: '2021-05-10',
@@ -4904,7 +5122,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-374',
-    name: 'Nguyễn Ngọc Sơn (Chủ: Đặng Nhì)',
+    name: 'Nguyễn Ngọc Sơn',
+    landowner_name: 'Đặng Nhì',
     phone: '0388753425',
     cccd: '048092795612',
     cccd_date: '2021-05-10',
@@ -4917,7 +5136,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-375',
-    name: 'Nguyễn Ngọc Sơn (Chủ: Nguyễn Mộng Hùng)',
+    name: 'Nguyễn Ngọc Sơn',
+    landowner_name: 'Nguyễn Mộng Hùng',
     phone: '0388753425',
     cccd: '048092795612',
     cccd_date: '2021-05-10',
@@ -4930,7 +5150,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-376',
-    name: 'Nguyễn Côi (Chủ: Đặng Tình)',
+    name: 'Nguyễn Côi',
+    landowner_name: 'Đặng Tình',
     phone: '0868751332',
     cccd: '048088204837',
     cccd_date: '2021-05-10',
@@ -4943,7 +5164,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-377',
-    name: 'Huỳnh Đức Thuận (Chủ: Nguyễn Thị Mẫn)',
+    name: 'Huỳnh Đức Thuận',
+    landowner_name: 'Nguyễn Thị Mẫn',
     phone: '0399831076',
     cccd: '048092681343',
     cccd_date: '2021-05-10',
@@ -4956,7 +5178,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-378',
-    name: 'Nguyễn Trung Hiếu (Chủ: Nguyễn Thị Dung)',
+    name: 'Nguyễn Trung Hiếu',
+    landowner_name: 'Nguyễn Thị Dung',
     phone: '0388666390',
     cccd: '048090245095',
     cccd_date: '2021-05-10',
@@ -4995,7 +5218,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-381',
-    name: 'Đặng Văn Lai (Chủ: Đặng Nghĩa)',
+    name: 'Đặng Văn Lai',
+    landowner_name: 'Đặng Nghĩa',
     phone: '0399527398',
     cccd: '048092668969',
     cccd_date: '2021-05-10',
@@ -5008,7 +5232,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-382',
-    name: 'Đặng Liễu (Chủ: Huỳnh Thị Loan)',
+    name: 'Đặng Liễu',
+    landowner_name: 'Huỳnh Thị Loan',
     phone: '0868535970',
     cccd: '048090316881',
     cccd_date: '2021-05-10',
@@ -5047,7 +5272,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-385',
-    name: 'Đặng Ngọc Tiến (Chủ: Đặng Điện)',
+    name: 'Đặng Ngọc Tiến',
+    landowner_name: 'Đặng Điện',
     phone: '0935708792',
     cccd: '048092140115',
     cccd_date: '2021-05-10',
@@ -5060,7 +5286,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-386',
-    name: 'Đặng Thị Liễu (Chủ: Đặng Thạch)',
+    name: 'Đặng Thị Liễu',
+    landowner_name: 'Đặng Thạch',
     phone: '0914725550',
     cccd: '048085462479',
     cccd_date: '2021-05-10',
@@ -5086,7 +5313,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-388',
-    name: 'Đặng Đào (Chủ: Đặng Hồng (Truật))',
+    name: 'Đặng Đào',
+    landowner_name: 'Đặng Hồng (Truật)',
     phone: '0914577538',
     cccd: '048085760356',
     cccd_date: '2021-05-10',
@@ -5099,7 +5327,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-389',
-    name: 'Nguyễn Châu (Chủ: Nguyễn Ân)',
+    name: 'Nguyễn Châu',
+    landowner_name: 'Nguyễn Ân',
     phone: '0868800005',
     cccd: '048088686075',
     cccd_date: '2021-05-10',
@@ -5112,7 +5341,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-390',
-    name: 'Nguyễn Văn Hồng (Chủ: Nguyễn Hồng (Cẩm))',
+    name: 'Nguyễn Văn Hồng',
+    landowner_name: 'Nguyễn Hồng (Cẩm)',
     phone: '0399994905',
     cccd: '048085664365',
     cccd_date: '2021-05-10',
@@ -5138,7 +5368,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-392',
-    name: 'Nguyễn Tư (Chủ: Nguyễn Mười)',
+    name: 'Nguyễn Tư',
+    landowner_name: 'Nguyễn Mười',
     phone: '0399609232',
     cccd: '048090507746',
     cccd_date: '2021-05-10',
@@ -5151,7 +5382,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-393',
-    name: 'Nguyễn Tư (Chủ: Nguyễn Sảy)',
+    name: 'Nguyễn Tư',
+    landowner_name: 'Nguyễn Sảy',
     phone: '0399609232',
     cccd: '048090507746',
     cccd_date: '2021-05-10',
@@ -5177,7 +5409,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-395',
-    name: 'Nguyễn Văn Thành (Chủ: Nguyễn Thị Đủ)',
+    name: 'Nguyễn Văn Thành',
+    landowner_name: 'Nguyễn Thị Đủ',
     phone: '0935981334',
     cccd: '048085233827',
     cccd_date: '2021-05-10',
@@ -5190,7 +5423,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-396',
-    name: 'Nguyễn Văn Vinh (T) (Chủ: Võ Thị Bằng)',
+    name: 'Nguyễn Văn Vinh (T)',
+    landowner_name: 'Võ Thị Bằng',
     phone: '0905513160',
     cccd: '048088691807',
     cccd_date: '2021-05-10',
@@ -5203,7 +5437,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-397',
-    name: 'Nguyễn Văn Vinh (Chủ: Nguyễn Thị Huệ)',
+    name: 'Nguyễn Văn Vinh',
+    landowner_name: 'Nguyễn Thị Huệ',
     phone: '0905188025',
     cccd: '048085242291',
     cccd_date: '2021-05-10',
@@ -5216,7 +5451,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-398',
-    name: 'Nguyễn Mai (Chủ: Ngô Thị Yến)',
+    name: 'Nguyễn Mai',
+    landowner_name: 'Ngô Thị Yến',
     phone: '0868290556',
     cccd: '048090372793',
     cccd_date: '2021-05-10',
@@ -5242,7 +5478,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-400',
-    name: 'Võ Thị Kim Thanh (Chủ: Đặng Thị Phú)',
+    name: 'Võ Thị Kim Thanh',
+    landowner_name: 'Đặng Thị Phú',
     phone: '0388453894',
     cccd: '048085391773',
     cccd_date: '2021-05-10',
@@ -5255,7 +5492,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-401',
-    name: 'Đặng Liễu (Chủ: Phạm Thị Kim)',
+    name: 'Đặng Liễu',
+    landowner_name: 'Phạm Thị Kim',
     phone: '0868535970',
     cccd: '048090316881',
     cccd_date: '2021-05-10',
@@ -5268,7 +5506,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-402',
-    name: 'Võ Văn Phi Hùng (Chủ: Thái Thị Hiệp)',
+    name: 'Võ Văn Phi Hùng',
+    landowner_name: 'Thái Thị Hiệp',
     phone: '0977799287',
     cccd: '048085442027',
     cccd_date: '2021-05-10',
@@ -5281,7 +5520,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-403',
-    name: 'Võ Văn Phi Hùng (Chủ: Võ Kỹ)',
+    name: 'Võ Văn Phi Hùng',
+    landowner_name: 'Võ Kỹ',
     phone: '0977799287',
     cccd: '048085442027',
     cccd_date: '2021-05-10',
@@ -5320,7 +5560,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-406',
-    name: 'Đặng Ngọc Long (Chủ: Nguyễn Thị Thịnh)',
+    name: 'Đặng Ngọc Long',
+    landowner_name: 'Nguyễn Thị Thịnh',
     phone: '0399364525',
     cccd: '048090593152',
     cccd_date: '2021-05-10',
@@ -5333,7 +5574,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-407',
-    name: 'Nguyễn Mười (Chủ: Phạm Thị Nghĩ)',
+    name: 'Nguyễn Mười',
+    landowner_name: 'Phạm Thị Nghĩ',
     phone: '0905885408',
     cccd: '048088154615',
     cccd_date: '2021-05-10',
@@ -5346,7 +5588,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-408',
-    name: 'Nguyễn Văn Vinh (T) (Chủ: Võ Thị Hữu)',
+    name: 'Nguyễn Văn Vinh (T)',
+    landowner_name: 'Võ Thị Hữu',
     phone: '0905513160',
     cccd: '048088691807',
     cccd_date: '2021-05-10',
@@ -5359,7 +5602,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-409',
-    name: 'Đặng Lạc (Chủ: Đặng Huấn)',
+    name: 'Đặng Lạc',
+    landowner_name: 'Đặng Huấn',
     phone: '0935672092',
     cccd: '048090975136',
     cccd_date: '2021-05-10',
@@ -5398,7 +5642,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-412',
-    name: 'Doãn Đình Dương (Chủ: Đặng Huấn)',
+    name: 'Doãn Đình Dương',
+    landowner_name: 'Đặng Huấn',
     phone: '0388335113',
     cccd: '048090919182',
     cccd_date: '2021-05-10',
@@ -5411,7 +5656,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-413',
-    name: 'Nguyễn Anh Phúc (Chủ: Nguyễn Sàng)',
+    name: 'Nguyễn Anh Phúc',
+    landowner_name: 'Nguyễn Sàng',
     phone: '0388891937',
     cccd: '048085742412',
     cccd_date: '2021-05-10',
@@ -5424,7 +5670,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-414',
-    name: 'Nguyễn Văn Vinh (T) (Chủ: Đặng Thị Tuôi)',
+    name: 'Nguyễn Văn Vinh (T)',
+    landowner_name: 'Đặng Thị Tuôi',
     phone: '0905513160',
     cccd: '048088691807',
     cccd_date: '2021-05-10',
@@ -5463,7 +5710,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-417',
-    name: 'Nguyễn Thanh Sơn (Chủ: Nguyễn Thị Cẩm)',
+    name: 'Nguyễn Thanh Sơn',
+    landowner_name: 'Nguyễn Thị Cẩm',
     phone: '0988979995',
     cccd: '048090751517',
     cccd_date: '2021-05-10',
@@ -5489,7 +5737,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-419',
-    name: 'Nguyễn Sơn (Chủ: Phạm Thị Tý)',
+    name: 'Nguyễn Sơn',
+    landowner_name: 'Phạm Thị Tý',
     phone: '0914691364',
     cccd: '048091587623',
     cccd_date: '2021-05-10',
@@ -5502,7 +5751,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-420',
-    name: 'Phạm Ngọc Hiệp (Chủ: Nguyễn Thị Huệ)',
+    name: 'Phạm Ngọc Hiệp',
+    landowner_name: 'Nguyễn Thị Huệ',
     phone: '0977888295',
     cccd: '048091980660',
     cccd_date: '2021-05-10',
@@ -5515,7 +5765,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-421',
-    name: 'Đặng Ký (Chủ: Nguyễn Thị Vọng)',
+    name: 'Đặng Ký',
+    landowner_name: 'Nguyễn Thị Vọng',
     phone: '0977345884',
     cccd: '048092452161',
     cccd_date: '2021-05-10',
@@ -5528,7 +5779,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-422',
-    name: 'Nguyễn Văn Hùng (Chủ: Nguyễn Tàng)',
+    name: 'Nguyễn Văn Hùng',
+    landowner_name: 'Nguyễn Tàng',
     phone: '0977904150',
     cccd: '048092275939',
     cccd_date: '2021-05-10',
@@ -5580,7 +5832,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-426',
-    name: 'Nguyễn Phượng (Chủ: Nguyễn Đức Thắng)',
+    name: 'Nguyễn Phượng',
+    landowner_name: 'Nguyễn Đức Thắng',
     phone: '0988206851',
     cccd: '048092991597',
     cccd_date: '2021-05-10',
@@ -5593,7 +5846,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-427',
-    name: 'Nguyễn Phương (Chủ: Nguyễn Minh)',
+    name: 'Nguyễn Phương',
+    landowner_name: 'Nguyễn Minh',
     phone: '0388801364',
     cccd: '048085859359',
     cccd_date: '2021-05-10',
@@ -5606,7 +5860,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-428',
-    name: 'Nguyễn Phương (Chủ: Phạm Phú Tế)',
+    name: 'Nguyễn Phương',
+    landowner_name: 'Phạm Phú Tế',
     phone: '0388801364',
     cccd: '048085859359',
     cccd_date: '2021-05-10',
@@ -5619,7 +5874,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-429',
-    name: 'Nguyễn Trung Hiếu (Chủ: Nguyễn Thị Thương)',
+    name: 'Nguyễn Trung Hiếu',
+    landowner_name: 'Nguyễn Thị Thương',
     phone: '0388666390',
     cccd: '048090245095',
     cccd_date: '2021-05-10',
@@ -5645,7 +5901,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-431',
-    name: 'Ngô Thanh Hùng (Chủ: Nguyễn Thị Xí)',
+    name: 'Ngô Thanh Hùng',
+    landowner_name: 'Nguyễn Thị Xí',
     phone: '0905464069',
     cccd: '048088549186',
     cccd_date: '2021-05-10',
@@ -5671,7 +5928,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-433',
-    name: 'Trần Thị Huệ (Chủ: Đặng Thị Lan)',
+    name: 'Trần Thị Huệ',
+    landowner_name: 'Đặng Thị Lan',
     phone: '0388172306',
     cccd: '048088778998',
     cccd_date: '2021-05-10',
@@ -5684,7 +5942,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-434',
-    name: 'Lê Thị Bé (Chủ: Lê Phương)',
+    name: 'Lê Thị Bé',
+    landowner_name: 'Lê Phương',
     phone: '0388113266',
     cccd: '048085962276',
     cccd_date: '2021-05-10',
@@ -5697,7 +5956,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-435',
-    name: 'Nguyễn Trường Sơn (Chủ: Đặng Thị Xáng)',
+    name: 'Nguyễn Trường Sơn',
+    landowner_name: 'Đặng Thị Xáng',
     phone: '0868210665',
     cccd: '048085479781',
     cccd_date: '2021-05-10',
@@ -5710,7 +5970,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-436',
-    name: 'Đặng Minh Thành (Chủ: Đặng Minh Hùng)',
+    name: 'Đặng Minh Thành',
+    landowner_name: 'Đặng Minh Hùng',
     phone: '0399508396',
     cccd: '048088829308',
     cccd_date: '2021-05-10',
@@ -5723,7 +5984,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-437',
-    name: 'Phạm Ngọc Hiệp (Chủ: Phùng Thị Nga)',
+    name: 'Phạm Ngọc Hiệp',
+    landowner_name: 'Phùng Thị Nga',
     phone: '0977888295',
     cccd: '048091980660',
     cccd_date: '2021-05-10',
@@ -5762,7 +6024,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-440',
-    name: 'Đặng Thành Phương (Chủ: Phạm Thị Kim)',
+    name: 'Đặng Thành Phương',
+    landowner_name: 'Phạm Thị Kim',
     phone: '0399923927',
     cccd: '048088736130',
     cccd_date: '2021-05-10',
@@ -5801,7 +6064,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-443',
-    name: 'Võ Lai (Chủ: Trương Thị Dạng)',
+    name: 'Võ Lai',
+    landowner_name: 'Trương Thị Dạng',
     phone: '0977238890',
     cccd: '048092172132',
     cccd_date: '2021-05-10',
@@ -5814,7 +6078,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-444',
-    name: 'Đặng Đào (Chủ: Đặng Truật)',
+    name: 'Đặng Đào',
+    landowner_name: 'Đặng Truật',
     phone: '0914577538',
     cccd: '048085760356',
     cccd_date: '2021-05-10',
@@ -5840,7 +6105,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-446',
-    name: 'Đặng Văn Châu (Chủ: Ngô Thị Hình)',
+    name: 'Đặng Văn Châu',
+    landowner_name: 'Ngô Thị Hình',
     phone: '0868587455',
     cccd: '048085965845',
     cccd_date: '2021-05-10',
@@ -5879,7 +6145,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-449',
-    name: 'Nguyễn Tám (Chủ: Nguyễn Khanh)',
+    name: 'Nguyễn Tám',
+    landowner_name: 'Nguyễn Khanh',
     phone: '0988487477',
     cccd: '048092265409',
     cccd_date: '2021-05-10',
@@ -5892,7 +6159,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-450',
-    name: 'Nguyễn Trường Sơn (Chủ: Đặng Hiển)',
+    name: 'Nguyễn Trường Sơn',
+    landowner_name: 'Đặng Hiển',
     phone: '0868210665',
     cccd: '048085479781',
     cccd_date: '2021-05-10',
@@ -5905,7 +6173,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-451',
-    name: 'Nguyễn Trường Sơn (Chủ: Nguyễn Thị Liều)',
+    name: 'Nguyễn Trường Sơn',
+    landowner_name: 'Nguyễn Thị Liều',
     phone: '0868210665',
     cccd: '048085479781',
     cccd_date: '2021-05-10',
@@ -5918,7 +6187,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-452',
-    name: 'Vệ Phú Hải (Chủ: Nguyễn Thị Liều)',
+    name: 'Vệ Phú Hải',
+    landowner_name: 'Nguyễn Thị Liều',
     phone: '0388587575',
     cccd: '048085563638',
     cccd_date: '2021-05-10',
@@ -5944,7 +6214,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-454',
-    name: 'Nguyễn Thị Hiếu (Chủ: Nguyễn Thị Đinh)',
+    name: 'Nguyễn Thị Hiếu',
+    landowner_name: 'Nguyễn Thị Đinh',
     phone: '0977437960',
     cccd: '048091971084',
     cccd_date: '2021-05-10',
@@ -5970,7 +6241,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-456',
-    name: 'Nguyễn Thị Loan (Chủ: Nguyễn Anh Phương)',
+    name: 'Nguyễn Thị Loan',
+    landowner_name: 'Nguyễn Anh Phương',
     phone: '0935879779',
     cccd: '048085571932',
     cccd_date: '2021-05-10',
@@ -5983,7 +6255,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-457',
-    name: 'Nguyễn Thị Hường (Chủ: Nguyễn Nhí)',
+    name: 'Nguyễn Thị Hường',
+    landowner_name: 'Nguyễn Nhí',
     phone: '0905890870',
     cccd: '048090359295',
     cccd_date: '2021-05-10',
@@ -6022,7 +6295,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-460',
-    name: 'Phạm Xong (Chủ: Đặng Kế)',
+    name: 'Phạm Xong',
+    landowner_name: 'Đặng Kế',
     phone: '0399391476',
     cccd: '048085766563',
     cccd_date: '2021-05-10',
@@ -6243,7 +6517,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-477',
-    name: 'Phạm Xong (Chủ: Nguyễn Minh)',
+    name: 'Phạm Xong',
+    landowner_name: 'Nguyễn Minh',
     phone: '0399391476',
     cccd: '048085766563',
     cccd_date: '2021-05-10',
@@ -6256,7 +6531,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-478',
-    name: 'Phạm Xong (Chủ: Đặng Tơ)',
+    name: 'Phạm Xong',
+    landowner_name: 'Đặng Tơ',
     phone: '0399391476',
     cccd: '048085766563',
     cccd_date: '2021-05-10',
@@ -6269,7 +6545,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-479',
-    name: 'Phạm Xong (Chủ: Nguyễn Xí)',
+    name: 'Phạm Xong',
+    landowner_name: 'Nguyễn Xí',
     phone: '0399391476',
     cccd: '048085766563',
     cccd_date: '2021-05-10',
@@ -6295,7 +6572,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-481',
-    name: 'Nguyễn Trung Hiếu (Chủ: Nguyễn Thị Thương)',
+    name: 'Nguyễn Trung Hiếu',
+    landowner_name: 'Nguyễn Thị Thương',
     phone: '0388666390',
     cccd: '048090245095',
     cccd_date: '2021-05-10',
@@ -6308,7 +6586,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-482',
-    name: 'Nguyễn Trung Hiếu (Chủ: Nguyễn Thị Thương)',
+    name: 'Nguyễn Trung Hiếu',
+    landowner_name: 'Nguyễn Thị Thương',
     phone: '0388666390',
     cccd: '048090245095',
     cccd_date: '2021-05-10',
@@ -6334,7 +6613,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-484',
-    name: 'Phạm Xong (Chủ: Nguyễn Châu)',
+    name: 'Phạm Xong',
+    landowner_name: 'Nguyễn Châu',
     phone: '0399391476',
     cccd: '048085766563',
     cccd_date: '2021-05-10',
@@ -6347,7 +6627,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-485',
-    name: 'Phạm Xong (Chủ: Lê Thị Chát)',
+    name: 'Phạm Xong',
+    landowner_name: 'Lê Thị Chát',
     phone: '0399391476',
     cccd: '048085766563',
     cccd_date: '2021-05-10',
@@ -6386,7 +6667,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-488',
-    name: 'Nguyễn Yên (Chủ: Nguyễn Thị Đủ)',
+    name: 'Nguyễn Yên',
+    landowner_name: 'Nguyễn Thị Đủ',
     phone: '0914854717',
     cccd: '048092631756',
     cccd_date: '2021-05-10',
@@ -6412,7 +6694,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-490',
-    name: 'Phạm Xong (Chủ: Nguyễn Thị Quýt)',
+    name: 'Phạm Xong',
+    landowner_name: 'Nguyễn Thị Quýt',
     phone: '0399391476',
     cccd: '048085766563',
     cccd_date: '2021-05-10',
@@ -6451,7 +6734,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-493',
-    name: 'Phạm Xong (Chủ: Nguyễn Mỹ)',
+    name: 'Phạm Xong',
+    landowner_name: 'Nguyễn Mỹ',
     phone: '0399391476',
     cccd: '048085766563',
     cccd_date: '2021-05-10',
@@ -6477,7 +6761,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-495',
-    name: 'Võ Đình Phú (Chủ: Trương Thị Dạng)',
+    name: 'Võ Đình Phú',
+    landowner_name: 'Trương Thị Dạng',
     phone: '0868680358',
     cccd: '048088460455',
     cccd_date: '2021-05-10',
@@ -6490,7 +6775,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-496',
-    name: 'Võ Đình Phú (Chủ: Trương Thị Dạng)',
+    name: 'Võ Đình Phú',
+    landowner_name: 'Trương Thị Dạng',
     phone: '0868680358',
     cccd: '048088460455',
     cccd_date: '2021-05-10',
@@ -6698,7 +6984,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-512',
-    name: 'Nguyễn Văn Vinh (T) (Chủ: Võ Thị Hoa)',
+    name: 'Nguyễn Văn Vinh (T)',
+    landowner_name: 'Võ Thị Hoa',
     phone: '0905513160',
     cccd: '048088691807',
     cccd_date: '2021-05-10',
@@ -6763,7 +7050,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-517',
-    name: 'Đặng Thị Bích Sơn (Chủ: Đặng Thị Khuyến)',
+    name: 'Đặng Thị Bích Sơn',
+    landowner_name: 'Đặng Thị Khuyến',
     phone: '0905887443',
     cccd: '048090916232',
     cccd_date: '2021-05-10',
@@ -6776,7 +7064,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-518',
-    name: 'Đặng Văn Em (Chủ: Đặng Văn Đông)',
+    name: 'Đặng Văn Em',
+    landowner_name: 'Đặng Văn Đông',
     phone: '0868152657',
     cccd: '048088361303',
     cccd_date: '2021-05-10',
@@ -6789,7 +7078,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-519',
-    name: 'Đặng Tân (Chủ: Nguyễn Đức Thắng)',
+    name: 'Đặng Tân',
+    landowner_name: 'Nguyễn Đức Thắng',
     phone: '0905842411',
     cccd: '048088232731',
     cccd_date: '2021-05-10',
@@ -6802,7 +7092,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-520',
-    name: 'Đặng Tân (Chủ: Huỳnh Thị Loan)',
+    name: 'Đặng Tân',
+    landowner_name: 'Huỳnh Thị Loan',
     phone: '0905842411',
     cccd: '048088232731',
     cccd_date: '2021-05-10',
@@ -6815,7 +7106,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-521',
-    name: 'Đặng Tân (Chủ: Đặng Thạch)',
+    name: 'Đặng Tân',
+    landowner_name: 'Đặng Thạch',
     phone: '0905842411',
     cccd: '048088232731',
     cccd_date: '2021-05-10',
@@ -6828,7 +7120,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-522',
-    name: 'Đặng Tân (Chủ: Nguyễn Tàu)',
+    name: 'Đặng Tân',
+    landowner_name: 'Nguyễn Tàu',
     phone: '0905842411',
     cccd: '048088232731',
     cccd_date: '2021-05-10',
@@ -6841,7 +7134,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-523',
-    name: 'Nguyễn Trung Hiếu (Chủ: Đặng Thị Mười)',
+    name: 'Nguyễn Trung Hiếu',
+    landowner_name: 'Đặng Thị Mười',
     phone: '0388666390',
     cccd: '048090245095',
     cccd_date: '2021-05-10',
@@ -6867,7 +7161,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-525',
-    name: 'Nguyễn Trung Hiếu (Chủ: Thái Thị Hiệp)',
+    name: 'Nguyễn Trung Hiếu',
+    landowner_name: 'Thái Thị Hiệp',
     phone: '0388666390',
     cccd: '048090245095',
     cccd_date: '2021-05-10',
@@ -6880,7 +7175,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-526',
-    name: 'Nguyễn Trung Hiếu (Chủ: Nguyễn Văn Thành)',
+    name: 'Nguyễn Trung Hiếu',
+    landowner_name: 'Nguyễn Văn Thành',
     phone: '0388666390',
     cccd: '048090245095',
     cccd_date: '2021-05-10',
@@ -6893,7 +7189,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-527',
-    name: 'Nguyễn Trung Hiếu (Chủ: Võ Thị Bằng)',
+    name: 'Nguyễn Trung Hiếu',
+    landowner_name: 'Võ Thị Bằng',
     phone: '0388666390',
     cccd: '048090245095',
     cccd_date: '2021-05-10',
@@ -6906,7 +7203,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-528',
-    name: 'Nguyễn Trung Hiếu (Chủ: Nguyễn Minh)',
+    name: 'Nguyễn Trung Hiếu',
+    landowner_name: 'Nguyễn Minh',
     phone: '0388666390',
     cccd: '048090245095',
     cccd_date: '2021-05-10',
@@ -6919,7 +7217,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-529',
-    name: 'Nguyễn Trung Hiếu (Chủ: Nguyễn Đức Thắng)',
+    name: 'Nguyễn Trung Hiếu',
+    landowner_name: 'Nguyễn Đức Thắng',
     phone: '0388666390',
     cccd: '048090245095',
     cccd_date: '2021-05-10',
@@ -6932,7 +7231,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-530',
-    name: 'Nguyễn Trung Hiếu (Chủ: Nguyễn Mộng Hùng)',
+    name: 'Nguyễn Trung Hiếu',
+    landowner_name: 'Nguyễn Mộng Hùng',
     phone: '0388666390',
     cccd: '048090245095',
     cccd_date: '2021-05-10',
@@ -6945,7 +7245,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-531',
-    name: 'Nguyễn Trung Hiếu (Chủ: Lê Thị Thanh)',
+    name: 'Nguyễn Trung Hiếu',
+    landowner_name: 'Lê Thị Thanh',
     phone: '0388666390',
     cccd: '048090245095',
     cccd_date: '2021-05-10',
@@ -6958,7 +7259,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-532',
-    name: 'Đặng Tân (Chủ: Nguyễn Ngọc Sơn)',
+    name: 'Đặng Tân',
+    landowner_name: 'Nguyễn Ngọc Sơn',
     phone: '0905842411',
     cccd: '048088232731',
     cccd_date: '2021-05-10',
@@ -6971,7 +7273,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-533',
-    name: 'Đặng Tân (Chủ: Huỳnh Thị Loan)',
+    name: 'Đặng Tân',
+    landowner_name: 'Huỳnh Thị Loan',
     phone: '0905842411',
     cccd: '048088232731',
     cccd_date: '2021-05-10',
@@ -6984,7 +7287,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-534',
-    name: 'Nguyễn Trung Hiếu (Chủ: Nguyễn Mộng Hùng)',
+    name: 'Nguyễn Trung Hiếu',
+    landowner_name: 'Nguyễn Mộng Hùng',
     phone: '0388666390',
     cccd: '048090245095',
     cccd_date: '2021-05-10',
@@ -6997,7 +7301,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-535',
-    name: 'Nguyễn Thị Hường (Chủ: Nguyễn Nhí)',
+    name: 'Nguyễn Thị Hường',
+    landowner_name: 'Nguyễn Nhí',
     phone: '0905890870',
     cccd: '048090359295',
     cccd_date: '2021-05-10',
@@ -7010,7 +7315,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-536',
-    name: 'Nguyễn Anh Phúc (Chủ: Nguyễn Sàng)',
+    name: 'Nguyễn Anh Phúc',
+    landowner_name: 'Nguyễn Sàng',
     phone: '0388891937',
     cccd: '048085742412',
     cccd_date: '2021-05-10',
@@ -7023,7 +7329,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-537',
-    name: 'Đặng Ngọc Liên (Chủ: Nguyễn Thị Trung)',
+    name: 'Đặng Ngọc Liên',
+    landowner_name: 'Nguyễn Thị Trung',
     phone: '0977335552',
     cccd: '048091254511',
     cccd_date: '2021-05-10',
@@ -7049,7 +7356,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-539',
-    name: 'Nguyễn Thị Hường (Chủ: Nguyễn Nhí)',
+    name: 'Nguyễn Thị Hường',
+    landowner_name: 'Nguyễn Nhí',
     phone: '0905890870',
     cccd: '048090359295',
     cccd_date: '2021-05-10',
@@ -7075,7 +7383,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-541',
-    name: 'Đặng Ngọc Liên (Chủ: Nguyễn Thị Trung)',
+    name: 'Đặng Ngọc Liên',
+    landowner_name: 'Nguyễn Thị Trung',
     phone: '0977335552',
     cccd: '048091254511',
     cccd_date: '2021-05-10',
@@ -7088,7 +7397,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-542',
-    name: 'Đặng Lạc (Chủ: Trần Mậu Thức)',
+    name: 'Đặng Lạc',
+    landowner_name: 'Trần Mậu Thức',
     phone: '0935672092',
     cccd: '048090975136',
     cccd_date: '2021-05-10',
@@ -7127,7 +7437,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-545',
-    name: 'Đặng Tân (Chủ: Nguyễn Trường Sơn)',
+    name: 'Đặng Tân',
+    landowner_name: 'Nguyễn Trường Sơn',
     phone: '0905842411',
     cccd: '048088232731',
     cccd_date: '2021-05-10',
@@ -7153,7 +7464,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-547',
-    name: 'Đặng Tiếu (Chủ: CBB)',
+    name: 'Đặng Tiếu',
+    landowner_name: 'CBB',
     phone: '0388128941',
     cccd: '048090373903',
     cccd_date: '2021-05-10',
@@ -7166,7 +7478,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-548',
-    name: 'Đặng Tiếu (Chủ: CBB)',
+    name: 'Đặng Tiếu',
+    landowner_name: 'CBB',
     phone: '0388128941',
     cccd: '048090373903',
     cccd_date: '2021-05-10',
@@ -7192,7 +7505,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-550',
-    name: 'Nguyễn Trung Hiếu (Chủ: Nguyễn Hà)',
+    name: 'Nguyễn Trung Hiếu',
+    landowner_name: 'Nguyễn Hà',
     phone: '0388666390',
     cccd: '048090245095',
     cccd_date: '2021-05-10',
@@ -7218,7 +7532,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-552',
-    name: 'Nguyễn Trung Hiếu (Chủ: Nguyễn Mười)',
+    name: 'Nguyễn Trung Hiếu',
+    landowner_name: 'Nguyễn Mười',
     phone: '0388666390',
     cccd: '048090245095',
     cccd_date: '2021-05-10',
@@ -7244,7 +7559,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-554',
-    name: 'Nguyễn Văn Vinh (T) (Chủ: Võ Thị Bằng)',
+    name: 'Nguyễn Văn Vinh (T)',
+    landowner_name: 'Võ Thị Bằng',
     phone: '0905513160',
     cccd: '048088691807',
     cccd_date: '2021-05-10',
@@ -7270,7 +7586,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-556',
-    name: 'Đặng Đào (Chủ: Đặng Truật)',
+    name: 'Đặng Đào',
+    landowner_name: 'Đặng Truật',
     phone: '0914577538',
     cccd: '048085760356',
     cccd_date: '2021-05-10',
@@ -7309,7 +7626,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-559',
-    name: 'Nguyễn Châu (Chủ: Nguyễn Thị Lan)',
+    name: 'Nguyễn Châu',
+    landowner_name: 'Nguyễn Thị Lan',
     phone: '0868800005',
     cccd: '048088686075',
     cccd_date: '2021-05-10',
@@ -7322,7 +7640,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-560',
-    name: 'Nguyễn Văn Vinh (T) (Chủ: Võ Thị Bằng)',
+    name: 'Nguyễn Văn Vinh (T)',
+    landowner_name: 'Võ Thị Bằng',
     phone: '0905513160',
     cccd: '048088691807',
     cccd_date: '2021-05-10',
@@ -7335,7 +7654,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-561',
-    name: 'Nguyễn Anh Phúc (Chủ: Nguyễn Sàng)',
+    name: 'Nguyễn Anh Phúc',
+    landowner_name: 'Nguyễn Sàng',
     phone: '0388891937',
     cccd: '048085742412',
     cccd_date: '2021-05-10',
@@ -7348,7 +7668,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-562',
-    name: 'Nguyễn Anh Phúc (Chủ: Nguyễn Sàng)',
+    name: 'Nguyễn Anh Phúc',
+    landowner_name: 'Nguyễn Sàng',
     phone: '0388891937',
     cccd: '048085742412',
     cccd_date: '2021-05-10',
@@ -7413,7 +7734,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-567',
-    name: 'Nguyễn Trung Hiếu (Chủ: Nguyễn Thị Lan)',
+    name: 'Nguyễn Trung Hiếu',
+    landowner_name: 'Nguyễn Thị Lan',
     phone: '0388666390',
     cccd: '048090245095',
     cccd_date: '2021-05-10',
@@ -7426,7 +7748,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-568',
-    name: 'Nguyễn Trung Hiếu (Chủ: Phạm Thị Tý)',
+    name: 'Nguyễn Trung Hiếu',
+    landowner_name: 'Phạm Thị Tý',
     phone: '0388666390',
     cccd: '048090245095',
     cccd_date: '2021-05-10',
@@ -7439,7 +7762,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-569',
-    name: 'Nguyễn Trung Hiếu (Chủ: Đặng Thị Mười)',
+    name: 'Nguyễn Trung Hiếu',
+    landowner_name: 'Đặng Thị Mười',
     phone: '0388666390',
     cccd: '048090245095',
     cccd_date: '2021-05-10',
@@ -7465,7 +7789,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-571',
-    name: 'Nguyễn Trung Hiếu (Chủ: Đặng Tơ)',
+    name: 'Nguyễn Trung Hiếu',
+    landowner_name: 'Đặng Tơ',
     phone: '0388666390',
     cccd: '048090245095',
     cccd_date: '2021-05-10',
@@ -7478,7 +7803,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-572',
-    name: 'Nguyễn Trung Hiếu (Chủ: Đặng Truật)',
+    name: 'Nguyễn Trung Hiếu',
+    landowner_name: 'Đặng Truật',
     phone: '0388666390',
     cccd: '048090245095',
     cccd_date: '2021-05-10',
@@ -7504,7 +7830,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-574',
-    name: 'Vệ Thị Bé (Chủ: Đặng Thị Lự)',
+    name: 'Vệ Thị Bé',
+    landowner_name: 'Đặng Thị Lự',
     phone: '0905418635',
     cccd: '048092320392',
     cccd_date: '2021-05-10',
@@ -7517,7 +7844,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-575',
-    name: 'Nguyễn Hà (L) (Chủ: Nguyễn Hà)',
+    name: 'Nguyễn Hà (L)',
+    landowner_name: 'Nguyễn Hà',
     phone: '0399355836',
     cccd: '048091787926',
     cccd_date: '2021-05-10',
@@ -7543,7 +7871,8 @@ export const INITIAL_FARMERS: Farmer[] = [
   },
   {
     id: 'TD-577',
-    name: 'Đặng Tân (Chủ: Võ Trợ)',
+    name: 'Đặng Tân',
+    landowner_name: 'Võ Trợ',
     phone: '0905842411',
     cccd: '048088232731',
     cccd_date: '2021-05-10',
@@ -7951,7 +8280,7 @@ export const INITIAL_SESSIONS: WeighingSession[] = [
     status: 'completed',
     started_at: '2026-08-12T07:30:00Z',
     completed_at: '2026-08-12T08:45:00Z',
-    notes: 'Phiên cân mẫu Hộ Hồ Thị Vân (Chủ: Thái Thị Tuyết) - Thớt 1',
+    notes: 'Phiên cân mẫu Hộ Hồ Thị Vân - Thớt 1',
     created_by: 'usr-admin-01',
     farmer: INITIAL_FARMERS[0],
     staff: INITIAL_STAFF[0],
