@@ -386,7 +386,7 @@ Trạng thái: ${remainingBalance === 0 ? 'ĐÃ HOÀN THÀNH TẤT TOÁN 100%' :
                     </span>
                   </div>
                   <div className="flex justify-between items-center mt-2 text-[11px]">
-                    <span className="text-slate-400">{f.field_region} ({f.lo})</span>
+                    <span className="text-slate-400">{f.field_region} ({f.lot})</span>
                     <span className="font-extrabold text-emerald-300 font-mono">
                       {fAmount.toLocaleString('vi-VN')} đ
                     </span>
