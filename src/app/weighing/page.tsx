@@ -465,7 +465,7 @@ TỔNG THÀNH TIỀN: ${totalAmount.toLocaleString('vi-VN')} VNĐ
               className="w-full p-2.5 bg-emerald-950/80 border border-emerald-700/60 rounded-xl text-white text-xs font-semibold focus:outline-none"
             >
               {staffMembers.map(s => (
-                <option key={s.id} value={s.id}>{s.full_name} ({s.code})</option>
+                <option key={s.id} value={s.id}>{s.full_name} ({s.phone})</option>
               ))}
             </select>
           </div>
