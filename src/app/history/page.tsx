@@ -37,7 +37,8 @@ export default function HistoryPage() {
   const [selectedFarmerId, setSelectedFarmerId] = useState<string>('all');
   const [selectedVarietyId, setSelectedVarietyId] = useState<string>('all');
 
-  // Edit Modal State
+  // Edit & View Modal State
+  const [viewingSession, setViewingSession] = useState<WeighingSession | null>(null);
   const [editingSession, setEditingSession] = useState<WeighingSession | null>(null);
   const [editForm, setEditForm] = useState({
     farmer_id: '',
@@ -223,6 +224,13 @@ export default function HistoryPage() {
                     <td className="p-3 text-center">
                       <div className="flex justify-center items-center gap-1">
                         <button
+                          onClick={() => setViewingSession(s)}
+                          className="p-1.5 text-sky-400 hover:bg-sky-500/20 rounded transition-colors"
+                          title="Xem & In phiếu nhiệt"
+                        >
+                          <Printer className="w-3.5 h-3.5" />
+                        </button>
+                        <button
                           onClick={() => openEditModal(s)}
                           className="p-1.5 text-gold-400 hover:bg-gold-500/20 rounded transition-colors"
                           title="Sửa phiên cân"
@@ -352,6 +360,57 @@ export default function HistoryPage() {
                 Lưu Cập Nhật Phiên Cân
               </button>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Viewing Session Thermal Ticket Modal */}
+      {viewingSession && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-brand-dark border border-emerald-700/60 rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl animate-in zoom-in-95 relative">
+            <button
+              onClick={() => setViewingSession(null)}
+              className="absolute top-4 right-4 p-2 text-slate-400 hover:text-white rounded-xl bg-emerald-950 border border-emerald-800"
+            >
+              <X className="w-4 h-4" />
+            </button>
+
+            <div className="text-center border-b border-emerald-800/60 pb-3">
+              <span className="text-[10px] font-bold text-gold-400 uppercase tracking-widest block">XEM CHI TIẾT PHIẾU CÂN LÚA</span>
+              <h3 className="text-lg font-black text-white">{viewingSession.session_code}</h3>
+              <p className="text-xs text-slate-300 mt-0.5">Ngày cân: {new Date(viewingSession.started_at).toLocaleString('vi-VN')}</p>
+            </div>
+
+            <div className="bg-white text-black p-4 rounded-2xl font-mono text-[11px] space-y-2 border border-slate-300">
+              <p><strong>Hộ sản xuất:</strong> {viewingSession.farmer?.name}</p>
+              {viewingSession.farmer?.landowner_name && <p><strong>Chủ đất:</strong> {viewingSession.farmer.landowner_name}</p>}
+              <p><strong>Cán bộ cân:</strong> {viewingSession.staff?.full_name}</p>
+              <p><strong>Xe vận chuyển:</strong> {viewingSession.truck?.license_plate}</p>
+              <p><strong>Giống lúa:</strong> {viewingSession.variety?.name}</p>
+              <p><strong>Xứ đồng:</strong> {viewingSession.field_region} - {viewingSession.lot}</p>
+              <div className="border-t border-black pt-2 space-y-1 text-right">
+                <p>Tổng số bao: <strong>{viewingSession.total_bags} bao</strong></p>
+                <p>Lúa tươi: {viewingSession.total_fresh_weight.toLocaleString('vi-VN')} kg</p>
+                <p>Trừ bì: {viewingSession.total_tare_weight.toLocaleString('vi-VN')} kg</p>
+                <p className="text-xs font-bold">LÚA KHÔ: {viewingSession.total_dry_weight.toLocaleString('vi-VN')} kg</p>
+                <p className="text-xs font-black">THÀNH TIỀN: {viewingSession.total_amount.toLocaleString('vi-VN')} VNĐ</p>
+              </div>
+            </div>
+
+            <div className="flex gap-2 pt-2">
+              <button
+                onClick={() => window.print()}
+                className="flex-1 py-2.5 rounded-xl bg-emerald-800 hover:bg-emerald-700 text-white font-extrabold text-xs shadow flex items-center justify-center gap-1.5"
+              >
+                In Phiếu Nhiệt A5
+              </button>
+              <button
+                onClick={() => setViewingSession(null)}
+                className="px-4 py-2.5 rounded-xl bg-emerald-950 text-slate-300 font-bold text-xs hover:bg-emerald-900"
+              >
+                Đóng
+              </button>
+            </div>
           </div>
         </div>
       )}
