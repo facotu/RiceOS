@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useApp } from '@/context/AppContext';
 import {
   Wheat,
@@ -15,81 +15,214 @@ import {
   BarChart3,
   Camera,
   Settings,
-  ChevronRight,
+  Plus,
+  Shield,
   Menu,
-  X
+  X,
+  Users
 } from 'lucide-react';
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const { isAdmin } = useApp();
+  const router = useRouter();
+  const { isAdmin, currentUser } = useApp();
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const navLinks = [
-    { href: '/', label: 'Dashboard', icon: LayoutDashboard },
-    { href: '/weighing', label: 'Phiên Cân Lúa', icon: Scale, highlight: true },
-    { href: '/system', label: 'Hệ Thống', icon: Settings, adminOnly: true },
-    { href: '/master-data', label: 'Dữ Liệu Danh Mục', icon: Database, adminOnly: true },
-    { href: '/settlement', label: 'Quyết Toán Tiền', icon: Receipt },
-    { href: '/trucks', label: 'Xe Nhận Vận Chuyển', icon: Truck },
-    { href: '/history', label: 'Lịch Sử Phiên Cân', icon: History },
-    { href: '/reports', label: 'Báo Cáo Vụ Mùa', icon: BarChart3 },
-    { href: '/ai-camera', label: 'AI Camera Đọc Cân', icon: Camera },
-  ];
-
   const SidebarContent = () => (
-    <div className="flex flex-col h-full bg-brand-dark/95 backdrop-blur-xl border-r border-emerald-800/40 p-4 relative">
+    <div className="flex flex-col h-full bg-[#0b132b] text-slate-200 border-r border-slate-800/60 p-4 relative font-sans">
       
-      {/* Top Branding Logo - Matching user screenshot */}
-      <div className="flex items-center justify-between pb-4 border-b border-emerald-800/40">
+      {/* 1. Top Branding Header - Matching Screenshot */}
+      <div className="pb-4 border-b border-slate-800/60 space-y-3">
         <Link href="/" className="flex items-center gap-3 group">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-brand-600 via-brand-500 to-gold-400 p-0.5 shadow-lg shadow-emerald-950/50 group-hover:scale-105 transition-transform">
-            <div className="w-full h-full bg-brand-dark rounded-[14px] flex items-center justify-center">
-              <Wheat className="w-7 h-7 text-gold-400" />
+          <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-sky-500 to-emerald-500 p-0.5 shadow-lg flex-shrink-0">
+            <div className="w-full h-full bg-[#0b132b] rounded-[14px] flex items-center justify-center">
+              <Wheat className="w-5 h-5 text-sky-400" />
             </div>
           </div>
           <div>
-            <span className="font-extrabold text-xl tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-gold-400 to-emerald-100 block">
-              RICE<span className="text-gold-400">OS</span>
-            </span>
-            <span className="text-xs text-slate-400 font-medium block">Cân Lúa Thông Minh</span>
+            <div className="flex items-center gap-1.5">
+              <span className="font-black text-sm tracking-wide text-white uppercase">CÂN LÚA RICE OS</span>
+              <span className="text-[9px] px-1.5 py-0.2 rounded bg-sky-500/20 text-sky-300 border border-sky-500/30 font-bold font-mono">
+                v1.0 OFFICIAL
+              </span>
+            </div>
+            <span className="text-[10px] text-slate-400 font-medium block">Hệ thống điện tử 3 Cấp</span>
           </div>
         </Link>
+
+        {/* 2. Quick Action Button (+ Thao tác nhanh) */}
+        <button
+          onClick={() => {
+            router.push('/weighing');
+            setMobileOpen(false);
+          }}
+          className="w-full py-2.5 px-4 rounded-2xl bg-gradient-to-r from-sky-500 via-blue-600 to-emerald-600 hover:brightness-110 text-white font-black text-xs shadow-lg shadow-sky-500/20 flex items-center justify-center gap-2 transition-all cursor-pointer"
+        >
+          <Plus className="w-4 h-4" /> Thao tác nhanh
+        </button>
       </div>
 
-      {/* Main Navigation Links List */}
-      <div className="flex-1 py-4 overflow-y-auto space-y-1">
-        <div className="px-3 pb-3 text-xs font-extrabold text-slate-400 uppercase tracking-widest">
-          PHÂN HỆ QUẢN LÝ
+      {/* 3. Grouped Navigation Links */}
+      <div className="flex-1 py-4 overflow-y-auto space-y-5 text-xs font-bold">
+        
+        {/* GROUP 1: DASHBOARD */}
+        <div className="space-y-1.5">
+          <div className="px-3 text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">
+            DASHBOARD
+          </div>
+          <Link
+            href="/"
+            onClick={() => setMobileOpen(false)}
+            className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all ${
+              pathname === '/'
+                ? 'bg-sky-600/30 border border-sky-500/50 text-white font-black shadow-md'
+                : 'text-slate-400 hover:text-white hover:bg-slate-800/40'
+            }`}
+          >
+            <LayoutDashboard className={`w-4 h-4 ${pathname === '/' ? 'text-sky-400' : 'text-slate-400'}`} />
+            <span>DASHBOARD</span>
+          </Link>
         </div>
-        <nav className="space-y-2">
-          {navLinks.map((link) => {
-            if (link.adminOnly && !isAdmin) return null;
-            const isActive = pathname === link.href;
-            const Icon = link.icon;
 
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setMobileOpen(false)}
-                className={`flex items-center justify-between px-3.5 py-3 rounded-xl text-xs font-extrabold transition-all group ${
-                  isActive
-                    ? 'bg-gradient-to-r from-emerald-600 to-brand-600 text-white shadow-lg shadow-emerald-900/40 border border-emerald-400/40'
-                    : link.highlight
-                    ? 'bg-gold-500/10 text-gold-300 border border-gold-500/40 hover:bg-gold-500/20'
-                    : 'text-slate-300 hover:text-white hover:bg-emerald-950/60'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <Icon className={`w-4 h-4 ${isActive ? 'text-white' : link.highlight ? 'text-gold-400' : 'text-emerald-400'}`} />
-                  <span>{link.label}</span>
-                </div>
-                {isActive && <ChevronRight className="w-4 h-4 text-gold-400" />}
-              </Link>
-            );
-          })}
-        </nav>
+        {/* GROUP 2: NGHIỆP VỤ CÂN LÚA */}
+        <div className="space-y-1.5">
+          <div className="px-3 text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">
+            NGHIỆP VỤ CÂN LÚA
+          </div>
+          
+          <Link
+            href="/weighing"
+            onClick={() => setMobileOpen(false)}
+            className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all ${
+              pathname === '/weighing'
+                ? 'bg-sky-600/30 border border-sky-500/50 text-white font-black shadow-md'
+                : 'text-slate-400 hover:text-white hover:bg-slate-800/40'
+            }`}
+          >
+            <Scale className={`w-4 h-4 ${pathname === '/weighing' ? 'text-sky-400' : 'text-slate-400'}`} />
+            <span>KIỂM PHIẾU BẦU CỬ & CÂN LÚA</span>
+          </Link>
+
+          {isAdmin && (
+            <Link
+              href="/master-data"
+              onClick={() => setMobileOpen(false)}
+              className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all ${
+                pathname === '/master-data'
+                  ? 'bg-sky-600/30 border border-sky-500/50 text-white font-black shadow-md'
+                  : 'text-slate-400 hover:text-white hover:bg-slate-800/40'
+              }`}
+            >
+              <Database className={`w-4 h-4 ${pathname === '/master-data' ? 'text-sky-400' : 'text-slate-400'}`} />
+              <span>DỮ LIỆU CÂN LÚA</span>
+            </Link>
+          )}
+
+          <Link
+            href="/settlement"
+            onClick={() => setMobileOpen(false)}
+            className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all ${
+              pathname === '/settlement'
+                ? 'bg-sky-600/30 border border-sky-500/50 text-white font-black shadow-md'
+                : 'text-slate-400 hover:text-white hover:bg-slate-800/40'
+            }`}
+          >
+            <Receipt className={`w-4 h-4 ${pathname === '/settlement' ? 'text-sky-400' : 'text-slate-400'}`} />
+            <span>QUYẾT TOÁN & NÔNG DÂN</span>
+          </Link>
+
+          <Link
+            href="/trucks"
+            onClick={() => setMobileOpen(false)}
+            className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all ${
+              pathname === '/trucks'
+                ? 'bg-sky-600/30 border border-sky-500/50 text-white font-black shadow-md'
+                : 'text-slate-400 hover:text-white hover:bg-slate-800/40'
+            }`}
+          >
+            <Truck className={`w-4 h-4 ${pathname === '/trucks' ? 'text-sky-400' : 'text-slate-400'}`} />
+            <span>XE NHẬN VẬN CHUYỂN</span>
+          </Link>
+
+          <Link
+            href="/history"
+            onClick={() => setMobileOpen(false)}
+            className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all ${
+              pathname === '/history'
+                ? 'bg-sky-600/30 border border-sky-500/50 text-white font-black shadow-md'
+                : 'text-slate-400 hover:text-white hover:bg-slate-800/40'
+            }`}
+          >
+            <History className={`w-4 h-4 ${pathname === '/history' ? 'text-sky-400' : 'text-slate-400'}`} />
+            <span>LỊCH SỬ PHIÊN CÂN</span>
+          </Link>
+
+          <Link
+            href="/reports"
+            onClick={() => setMobileOpen(false)}
+            className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl transition-all ${
+              pathname === '/reports'
+                ? 'bg-sky-600/30 border border-sky-500/50 text-white font-black shadow-md'
+                : 'text-slate-400 hover:text-white hover:bg-slate-800/40'
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <BarChart3 className={`w-4 h-4 ${pathname === '/reports' ? 'text-sky-400' : 'text-slate-400'}`} />
+              <span>BÁO CÁO & KẾT QUẢ</span>
+            </div>
+            <span className="px-1.5 py-0.2 rounded bg-amber-500 text-slate-950 text-[9px] font-black uppercase">
+              HOT
+            </span>
+          </Link>
+
+          <Link
+            href="/ai-camera"
+            onClick={() => setMobileOpen(false)}
+            className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all ${
+              pathname === '/ai-camera'
+                ? 'bg-sky-600/30 border border-sky-500/50 text-white font-black shadow-md'
+                : 'text-slate-400 hover:text-white hover:bg-slate-800/40'
+            }`}
+          >
+            <Camera className={`w-4 h-4 ${pathname === '/ai-camera' ? 'text-sky-400' : 'text-slate-400'}`} />
+            <span>AI CAMERA ĐỌC CÂN</span>
+          </Link>
+        </div>
+
+        {/* GROUP 3: HỆ THỐNG */}
+        {isAdmin && (
+          <div className="space-y-1.5 pt-2">
+            <div className="px-3 text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">
+              HỆ THỐNG
+            </div>
+            <Link
+              href="/system"
+              onClick={() => setMobileOpen(false)}
+              className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all ${
+                pathname === '/system'
+                  ? 'bg-sky-600/40 border border-sky-400/60 text-white font-black shadow-lg shadow-sky-500/20'
+                  : 'text-slate-400 hover:text-white hover:bg-slate-800/40'
+              }`}
+            >
+              <Settings className={`w-4 h-4 ${pathname === '/system' ? 'text-sky-400' : 'text-slate-400'}`} />
+              <span>HỆ THỐNG</span>
+            </Link>
+          </div>
+        )}
+
+      </div>
+
+      {/* 4. Sidebar Footer - Matching Screenshot */}
+      <div className="pt-3 border-t border-slate-800/60 flex items-center gap-2.5">
+        <div className="w-7 h-7 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center justify-center flex-shrink-0">
+          <Shield className="w-4 h-4" />
+        </div>
+        <div className="flex flex-col text-[10px] leading-tight">
+          <span className="font-extrabold text-white uppercase tracking-wider">
+            QUYỀN HẠN: {currentUser?.role?.toUpperCase() || 'ADMIN'}
+          </span>
+          <span className="text-slate-400 font-medium">Phiên làm việc an toàn</span>
+        </div>
       </div>
 
     </div>
@@ -97,48 +230,33 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Desktop Fixed Left Sidebar */}
-      <aside className="hidden lg:block w-64 fixed inset-y-0 left-0 z-40">
-        <SidebarContent />
-      </aside>
-
-      {/* Mobile Top Header with Hamburger toggle */}
-      <header className="lg:hidden sticky top-0 z-40 bg-brand-dark/95 backdrop-blur-md border-b border-emerald-800/40 px-4 py-3 flex items-center justify-between text-white">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-brand-600 to-gold-400 flex items-center justify-center shadow-md">
-            <Wheat className="w-5 h-5 text-gold-400" />
-          </div>
-          <span className="font-extrabold text-lg tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-gold-400 to-emerald-100">
-            RICE<span className="text-gold-400">OS</span>
-          </span>
+      {/* Mobile Top Navbar Header Toggle */}
+      <div className="lg:hidden bg-[#0b132b] text-white p-3 border-b border-slate-800 flex items-center justify-between sticky top-0 z-40">
+        <Link href="/" className="flex items-center gap-2 font-black text-sm">
+          <Wheat className="w-5 h-5 text-sky-400" />
+          <span>CÂN LÚA RICE OS</span>
         </Link>
+        <button
+          onClick={() => setMobileOpen(!mobileOpen)}
+          className="p-2 rounded-xl bg-slate-800 text-slate-200"
+        >
+          {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+        </button>
+      </div>
 
-        <div className="flex items-center gap-2">
-          <Link
-            href="/weighing"
-            className="px-3 py-1.5 rounded-lg bg-gold-400 text-brand-dark font-extrabold text-xs shadow"
-          >
-            + Cân Mới
-          </Link>
-
-          <button
-            onClick={() => setMobileOpen(!mobileOpen)}
-            className="p-2 rounded-lg bg-emerald-950 border border-emerald-800 text-emerald-300"
-          >
-            {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
-        </div>
-      </header>
-
-      {/* Mobile Sliding Drawer Sidebar */}
+      {/* Mobile Drawer */}
       {mobileOpen && (
-        <div className="lg:hidden fixed inset-0 z-50 flex">
-          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
-          <div className="relative w-72 max-w-full h-full z-10 animate-in slide-in-from-left">
+        <div className="lg:hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md">
+          <div className="w-64 h-full">
             <SidebarContent />
           </div>
         </div>
       )}
+
+      {/* Desktop Fixed Left Sidebar */}
+      <aside className="hidden lg:block fixed left-0 top-0 bottom-0 w-64 z-40">
+        <SidebarContent />
+      </aside>
     </>
   );
 }

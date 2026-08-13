@@ -184,26 +184,6 @@ export default function Navbar() {
 
               {showRoleSwitcher && (
                 <div className="absolute right-0 mt-2 w-56 bg-brand-dark/95 backdrop-blur-2xl border border-emerald-700/60 rounded-2xl shadow-2xl p-2 z-50 animate-in zoom-in-95">
-                  <div className="px-3 py-2 border-b border-emerald-800/50 mb-1">
-                    <p className="text-[10px] text-slate-400 font-semibold uppercase">Chuyển vai trò nhanh</p>
-                  </div>
-                  {(['admin', 'editor', 'staff', 'viewer'] as UserRole[]).map((role) => (
-                    <button
-                      key={role}
-                      onClick={() => {
-                        switchRole(role);
-                        setShowRoleSwitcher(false);
-                      }}
-                      className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold flex items-center justify-between transition-colors ${
-                        currentUser?.role === role
-                          ? 'bg-emerald-600 text-white'
-                          : 'text-slate-300 hover:bg-emerald-900/60'
-                      }`}
-                    >
-                      <span>{roleLabels[role].title}</span>
-                      {currentUser?.role === role && <UserCheck className="w-3.5 h-3.5" />}
-                    </button>
-                  ))}
                   <div className="border-t border-emerald-800/50 mt-1 pt-1">
                     <Link
                       href="/login"

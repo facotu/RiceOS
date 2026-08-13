@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useApp } from '@/context/AppContext';
 import {
   Database,
@@ -18,7 +18,14 @@ import {
   Search,
   CheckCircle2,
   Calendar,
-  CreditCard
+  CreditCard,
+  Download,
+  Upload,
+  FileSpreadsheet,
+  ChevronLeft,
+  ChevronRight,
+  Filter,
+  Layers
 } from 'lucide-react';
 import { Farmer, StaffMember, Truck as TruckType, RiceVariety, GrowingArea } from '@/types/database.types';
 
@@ -34,6 +41,11 @@ export default function MasterDataPage() {
 
   const [activeTab, setActiveTab] = useState<'farmers' | 'staff' | 'trucks' | 'varieties' | 'areas'>('farmers');
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedXuDongFilter, setSelectedXuDongFilter] = useState<string>('all');
+
+  // Pagination for Farmers tab (577 records)
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 20;
 
   // Modal Control
   const [modalOpen, setModalOpen] = useState(false);
@@ -56,9 +68,42 @@ export default function MasterDataPage() {
   // Area Form State
   const [areaForm, setAreaForm] = useState({ field_region: '', lot: '', area: 5000 });
 
+  // Filtered Farmers
+  const filteredFarmers = useMemo(() => {
+    return farmers.filter(f => {
+      const matchSearch =
+        f.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        f.phone.includes(searchQuery) ||
+        (f.cccd && f.cccd.includes(searchQuery)) ||
+        f.field_region.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        f.lot.toLowerCase().includes(searchQuery.toLowerCase());
+
+      const matchXuDong = selectedXuDongFilter === 'all' || f.field_region === selectedXuDongFilter;
+
+      return matchSearch && matchXuDong;
+    });
+  }, [farmers, searchQuery, selectedXuDongFilter]);
+
+  // Unique Xứ Đồng list
+  const uniqueXuDongList = useMemo(() => {
+    return Array.from(new Set(farmers.map(f => f.field_region))).sort();
+  }, [farmers]);
+
+  // Total area calculation
+  const totalAreaFiltered = useMemo(() => {
+    return filteredFarmers.reduce((sum, f) => sum + (f.area || 0), 0);
+  }, [filteredFarmers]);
+
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredFarmers.length / itemsPerPage) || 1;
+  const paginatedFarmers = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return filteredFarmers.slice(start, start + itemsPerPage);
+  }, [filteredFarmers, currentPage]);
+
   const openAddModal = () => {
     setEditId(null);
-    setFarmerForm({ name: '', phone: '', cccd: '', cccd_date: '2021-05-10', cccd_place: 'Công an TP. Đà Nẵng', cccd_expiry: '2031-05-10', field_region: 'Xứ đồng An Trạch 1', lot: 'Lô A1', area: 5000 });
+    setFarmerForm({ name: '', phone: '', cccd: '', cccd_date: '2021-05-10', cccd_place: 'Công an TP. Đà Nẵng', cccd_expiry: '2031-05-10', field_region: 'Tổ 9', lot: 'Lô 1', area: 5000 });
     setStaffForm({ full_name: '', phone: '' });
     setTruckForm({ driver_name: '', license_plate: '', phone: '' });
     setVarietyForm({ code: '', name: '', default_price: 8500 });
@@ -128,6 +173,15 @@ export default function MasterDataPage() {
     }
   };
 
+  const handleDownloadExcel = () => {
+    const a = document.createElement('a');
+    a.href = '/Book1.xlsx';
+    a.download = 'Book1_RiceOS_MasterData.xlsx';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
   return (
     <div className="space-y-6">
 
@@ -136,45 +190,61 @@ export default function MasterDataPage() {
         <div>
           <div className="flex items-center gap-2">
             <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-xs font-semibold">
-              Phân Hệ Danh Mục Quản Trị
+              Phân Hệ Quản Trị Master Data
+            </span>
+            <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] font-bold">
+              577 Thửa Đất • 39.52 Ha
             </span>
           </div>
           <h1 className="text-2xl font-extrabold text-white mt-1 flex items-center gap-2">
             <Database className="w-6 h-6 text-gold-400" />
-            Quản Lý Dữ Liệu Hệ Thống
+            Quản Lý Dữ Liệu Hệ Thống RiceOS
           </h1>
           <p className="text-xs text-slate-300">
-            {isAdmin
-              ? 'Quyền Admin: Thêm, Sửa, Xóa Chủ ruộng, Cán bộ cân, Xe nhận, Giống lúa & Vùng trồng.'
-              : 'Quyền xem dữ liệu danh mục thu mua.'}
+            Đồng bộ 100% dữ liệu 577 thửa đất, 199 hộ sản xuất, 4 xứ đồng và danh mục vận hành hệ thống.
           </p>
         </div>
 
-        {isAdmin && (
+        <div className="flex flex-wrap items-center gap-2">
           <button
-            onClick={openAddModal}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-gold-400 to-gold-500 hover:brightness-110 text-brand-dark font-extrabold text-xs shadow-lg transition-all cursor-pointer"
+            onClick={handleDownloadExcel}
+            className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-emerald-900/80 hover:bg-emerald-800 border border-emerald-600/50 text-emerald-200 font-bold text-xs shadow transition-all cursor-pointer"
+            title="Tải file Excel Book1.xlsx chuẩn hóa"
           >
-            <Plus className="w-4 h-4" /> Thêm Bản Ghi Mới
+            <FileSpreadsheet className="w-4 h-4 text-emerald-400" />
+            Tải Excel Book1.xlsx
           </button>
-        )}
+
+          {isAdmin && (
+            <button
+              onClick={openAddModal}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-gold-400 to-gold-500 hover:brightness-110 text-brand-dark font-extrabold text-xs shadow-lg transition-all cursor-pointer"
+            >
+              <Plus className="w-4 h-4" /> Thêm Mới
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Tabs Navigation */}
       <div className="flex gap-2 overflow-x-auto pb-2 border-b border-emerald-800/40">
         {[
-          { id: 'farmers', label: 'Chủ Ruộng', icon: Users, count: farmers.length },
+          { id: 'farmers', label: 'Hộ Sản Xuất / Thửa Đất', icon: Users, count: farmers.length },
+          { id: 'areas', label: 'Vùng Trồng (Lô/Xứ Đồng)', icon: MapPin, count: growingAreas.length },
           { id: 'staff', label: 'Cán Bộ Cân', icon: UserCheck, count: staffMembers.length },
-          { id: 'trucks', label: 'Xe Nhận', icon: Truck, count: trucks.length },
-          { id: 'varieties', label: 'Giống Lúa', icon: Wheat, count: varieties.length },
-          { id: 'areas', label: 'Vùng Trồng', icon: MapPin, count: growingAreas.length }
+          { id: 'trucks', label: 'Xe Nhận Vận Chuyển', icon: Truck, count: trucks.length },
+          { id: 'varieties', label: 'Giống Lúa', icon: Wheat, count: varieties.length }
         ].map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
           return (
             <button
               key={tab.id}
-              onClick={() => { setActiveTab(tab.id as any); setSearchQuery(''); }}
+              onClick={() => {
+                setActiveTab(tab.id as any);
+                setSearchQuery('');
+                setCurrentPage(1);
+              }}
               className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all border ${
                 isActive
                   ? 'bg-emerald-600/40 text-emerald-200 border-emerald-500/50 shadow-inner'
@@ -194,36 +264,90 @@ export default function MasterDataPage() {
       {/* Tab Contents */}
       <div className="glass-card p-5 rounded-2xl space-y-4">
 
-        {/* Tab 1: Farmers (Chủ ruộng) */}
+        {/* Tab 1: Farmers (Chủ ruộng / Hộ sản xuất) */}
         {activeTab === 'farmers' && (
           <div className="space-y-4">
-            <h3 className="text-sm font-bold text-white flex items-center justify-between">
-              <span>Danh Sách Chủ Ruộng (Hộ Sản Xuất)</span>
-            </h3>
-            <div className="overflow-x-auto">
+
+            {/* Filter Bar & Summary */}
+            <div className="flex flex-col sm:flex-row gap-3 justify-between items-stretch sm:items-center">
+              <div className="flex flex-wrap items-center gap-2 flex-1">
+                {/* Search Bar */}
+                <div className="relative flex-1 min-w-[200px]">
+                  <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={e => { setSearchQuery(e.target.value); setCurrentPage(1); }}
+                    placeholder="Tìm theo Tên hộ, Chủ ruộng, SĐT, CCCD, Lô..."
+                    className="w-full pl-9 pr-3 py-2 bg-emerald-950/80 border border-emerald-800/80 rounded-xl text-xs text-white placeholder-slate-400 focus:outline-none focus:border-gold-400"
+                  />
+                </div>
+
+                {/* Filter Xứ Đồng */}
+                <div className="flex items-center gap-1 bg-emerald-950/80 border border-emerald-800/80 rounded-xl px-2 py-1">
+                  <Filter className="w-3.5 h-3.5 text-gold-400" />
+                  <select
+                    value={selectedXuDongFilter}
+                    onChange={e => { setSelectedXuDongFilter(e.target.value); setCurrentPage(1); }}
+                    className="bg-transparent text-xs text-slate-200 border-none focus:outline-none cursor-pointer pr-1"
+                  >
+                    <option value="all" className="bg-brand-dark text-white">Tất cả Xứ Đồng (4)</option>
+                    {uniqueXuDongList.map(xd => (
+                      <option key={xd} value={xd} className="bg-brand-dark text-white">{xd}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Stat Pill */}
+              <div className="flex items-center gap-3 text-xs bg-emerald-900/40 border border-emerald-700/50 px-3 py-1.5 rounded-xl self-end sm:self-auto">
+                <div>
+                  <span className="text-slate-400">Kết quả: </span>
+                  <span className="font-extrabold text-gold-300">{filteredFarmers.length} thửa</span>
+                </div>
+                <div className="h-4 w-[1px] bg-emerald-700/60" />
+                <div>
+                  <span className="text-slate-400">Diện tích: </span>
+                  <span className="font-extrabold text-emerald-300">
+                    {totalAreaFiltered.toLocaleString('vi-VN')} m² ({(totalAreaFiltered/10000).toFixed(2)} ha)
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Farmers Table */}
+            <div className="overflow-x-auto rounded-xl border border-emerald-900/60">
               <table className="w-full text-left text-xs text-slate-300">
-                <thead className="bg-emerald-950 text-emerald-400 uppercase text-[10px]">
+                <thead className="bg-emerald-950 text-emerald-400 uppercase text-[10px] font-bold">
                   <tr>
-                    <th className="p-3">Họ Tên</th>
-                    <th className="p-3">SĐT</th>
+                    <th className="p-3 text-center w-12">STT</th>
+                    <th className="p-3">Hộ Sản Xuất / Chủ Ruộng</th>
+                    <th className="p-3">Số Điện Thoại</th>
                     <th className="p-3">Số CCCD</th>
-                    <th className="p-3">Ngày Cấp / Nơi Cấp</th>
-                    <th className="p-3">Xứ Đồng - Lô</th>
+                    <th className="p-3">Xứ Đồng</th>
+                    <th className="p-3">Lô</th>
                     <th className="p-3 text-right">Diện Tích (m²)</th>
                     {isAdmin && <th className="p-3 text-center">Thao Tác</th>}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-emerald-900/40">
-                  {farmers.map(f => (
-                    <tr key={f.id} className="hover:bg-emerald-900/30">
-                      <td className="p-3 font-bold text-white">{f.name}</td>
-                      <td className="p-3 text-emerald-300">{f.phone}</td>
-                      <td className="p-3 font-mono">{f.cccd}</td>
-                      <td className="p-3 text-slate-400">
-                        {f.cccd_date} • {f.cccd_place}
+                  {paginatedFarmers.map((f, idx) => (
+                    <tr key={f.id} className="hover:bg-emerald-900/30 transition-colors">
+                      <td className="p-3 text-center font-mono text-slate-400">
+                        {(currentPage - 1) * itemsPerPage + idx + 1}
                       </td>
-                      <td className="p-3 font-medium text-gold-300">{f.field_region} ({f.lot})</td>
-                      <td className="p-3 text-right font-extrabold text-emerald-400">
+                      <td className="p-3 font-bold text-white">
+                        {f.name}
+                      </td>
+                      <td className="p-3 text-emerald-300 font-mono">{f.phone}</td>
+                      <td className="p-3 font-mono text-slate-300">{f.cccd || '---'}</td>
+                      <td className="p-3 font-medium text-sky-300">
+                        <span className="px-2 py-0.5 rounded-full bg-sky-950 border border-sky-800 text-[11px]">
+                          {f.field_region}
+                        </span>
+                      </td>
+                      <td className="p-3 font-medium text-gold-300">{f.lot}</td>
+                      <td className="p-3 text-right font-extrabold text-emerald-400 font-mono">
                         {f.area.toLocaleString('vi-VN')} m²
                       </td>
                       {isAdmin && (
@@ -240,17 +364,96 @@ export default function MasterDataPage() {
                       )}
                     </tr>
                   ))}
+                  {paginatedFarmers.length === 0 && (
+                    <tr>
+                      <td colSpan={8} className="p-8 text-center text-slate-400">
+                        Không tìm thấy thửa đất nào phù hợp với điều kiện tìm kiếm.
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
+            </div>
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="flex flex-col sm:flex-row justify-between items-center gap-3 pt-2">
+                <p className="text-xs text-slate-400">
+                  Hiển thị <span className="font-bold text-white">{(currentPage - 1) * itemsPerPage + 1}</span> - {' '}
+                  <span className="font-bold text-white">{Math.min(currentPage * itemsPerPage, filteredFarmers.length)}</span> trên {' '}
+                  <span className="font-bold text-gold-300">{filteredFarmers.length}</span> thửa đất
+                </p>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    disabled={currentPage === 1}
+                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                    className="p-1.5 rounded-lg bg-emerald-950 border border-emerald-800 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-emerald-900 text-slate-200"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+
+                  <span className="text-xs font-bold text-emerald-300 px-3 py-1 bg-emerald-950/80 rounded-lg border border-emerald-800">
+                    Trang {currentPage} / {totalPages}
+                  </span>
+
+                  <button
+                    disabled={currentPage === totalPages}
+                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                    className="p-1.5 rounded-lg bg-emerald-950 border border-emerald-800 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-emerald-900 text-slate-200"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            )}
+
+          </div>
+        )}
+
+        {/* Tab 2: Growing Areas (Vùng trồng - 38 Lô) */}
+        {activeTab === 'areas' && (
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-gold-400" />
+                Danh Sách 38 Vùng Trồng Canh Tác (Xứ Đồng & Lô)
+              </h3>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+              {growingAreas.map(a => (
+                <div key={a.id} className="p-4 rounded-xl bg-emerald-950/60 border border-emerald-800/60 flex justify-between items-center hover:border-emerald-600 transition-all">
+                  <div>
+                    <span className="px-2 py-0.5 rounded-full bg-sky-950 border border-sky-800 text-[10px] text-sky-300 font-bold">
+                      {a.field_region}
+                    </span>
+                    <p className="font-extrabold text-sm text-gold-300 mt-1">{a.lot}</p>
+                    <p className="text-xs text-emerald-400 font-semibold">{a.area.toLocaleString('vi-VN')} m²</p>
+                  </div>
+                  {isAdmin && (
+                    <div className="flex gap-1">
+                      <button onClick={() => openEditModal(a.id, a)} className="p-1.5 text-gold-400 hover:bg-gold-500/20 rounded">
+                        <Edit2 className="w-3.5 h-3.5" />
+                      </button>
+                      <button onClick={() => handleDelete(a.id)} className="p-1.5 text-red-400 hover:bg-red-500/20 rounded">
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           </div>
         )}
 
-        {/* Tab 2: Staff (Cán bộ cân) */}
+        {/* Tab 3: Staff (Cán bộ cân) */}
         {activeTab === 'staff' && (
           <div className="space-y-4">
-            <h3 className="text-sm font-bold text-white">Danh Sách Cán Bộ Phụ Trách Cân</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+            <h3 className="text-sm font-bold text-white flex items-center gap-2">
+              <UserCheck className="w-4 h-4 text-gold-400" />
+              Danh Sách Cán Bộ Cân Đồng & Quản Trị Viên
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {staffMembers.map(s => (
                 <div key={s.id} className="p-4 rounded-xl bg-emerald-950/60 border border-emerald-800/60 flex justify-between items-center">
                   <div className="flex items-center gap-3">
@@ -278,10 +481,13 @@ export default function MasterDataPage() {
           </div>
         )}
 
-        {/* Tab 3: Trucks (Xe nhận) */}
+        {/* Tab 4: Trucks (Xe nhận) */}
         {activeTab === 'trucks' && (
           <div className="space-y-4">
-            <h3 className="text-sm font-bold text-white">Danh Sách Xe Nhận Vận Chuyển Lúa</h3>
+            <h3 className="text-sm font-bold text-white flex items-center gap-2">
+              <Truck className="w-4 h-4 text-gold-400" />
+              Danh Sách Đội Xe Nhận Vận Chuyển Lúa Tươi
+            </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
               {trucks.map(t => (
                 <div key={t.id} className="p-4 rounded-xl bg-emerald-950/60 border border-emerald-800/60 flex justify-between items-center">
@@ -311,13 +517,16 @@ export default function MasterDataPage() {
           </div>
         )}
 
-        {/* Tab 4: Rice Varieties (Giống lúa) */}
+        {/* Tab 5: Rice Varieties (Giống lúa) */}
         {activeTab === 'varieties' && (
           <div className="space-y-4">
-            <h3 className="text-sm font-bold text-white">Danh Mục Giống Lúa Thu Mua</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+            <h3 className="text-sm font-bold text-white flex items-center gap-2">
+              <Wheat className="w-4 h-4 text-gold-400" />
+              Danh Mục Giống Lúa & Đơn Giá Thu Mua Mặc Định
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
               {varieties.map(v => (
-                <div key={v.id} className="p-4 rounded-xl bg-emerald-950/60 border border-emerald-800/60 space-y-2">
+                <div key={v.id} className="p-4 rounded-xl bg-emerald-950/60 border border-emerald-800/60 space-y-2 hover:border-emerald-600 transition-all">
                   <div className="flex justify-between items-start">
                     <span className="px-2 py-0.5 rounded bg-gold-500/20 text-gold-300 font-extrabold text-xs border border-gold-500/40">
                       {v.code}
@@ -334,37 +543,9 @@ export default function MasterDataPage() {
                     )}
                   </div>
                   <p className="font-bold text-sm text-white">{v.name}</p>
-                  <p className="text-xs text-emerald-400 font-semibold">
-                    Đơn giá mua: {v.default_price.toLocaleString('vi-VN')} đ/kg
+                  <p className="text-xs text-emerald-400 font-bold">
+                    {v.default_price.toLocaleString('vi-VN')} VNĐ/kg
                   </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Tab 5: Growing Areas (Vùng trồng) */}
-        {activeTab === 'areas' && (
-          <div className="space-y-4">
-            <h3 className="text-sm font-bold text-white">Danh Sách Vùng Trồng Lúa</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              {growingAreas.map(a => (
-                <div key={a.id} className="p-4 rounded-xl bg-emerald-950/60 border border-emerald-800/60 flex justify-between items-center">
-                  <div>
-                    <p className="font-bold text-sm text-emerald-300">{a.field_region}</p>
-                    <p className="text-xs text-white">Lô: {a.lot}</p>
-                    <p className="text-xs text-gold-400 font-semibold">{a.area.toLocaleString('vi-VN')} m²</p>
-                  </div>
-                  {isAdmin && (
-                    <div className="flex gap-1">
-                      <button onClick={() => openEditModal(a.id, a)} className="p-1.5 text-gold-400 hover:bg-gold-500/20 rounded">
-                        <Edit2 className="w-3.5 h-3.5" />
-                      </button>
-                      <button onClick={() => handleDelete(a.id)} className="p-1.5 text-red-400 hover:bg-red-500/20 rounded">
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  )}
                 </div>
               ))}
             </div>
@@ -391,7 +572,7 @@ export default function MasterDataPage() {
               {activeTab === 'farmers' && (
                 <>
                   <div>
-                    <label className="text-xs font-semibold text-slate-300">Tên chủ lúa *</label>
+                    <label className="text-xs font-semibold text-slate-300">Tên hộ sản xuất / Chủ ruộng *</label>
                     <input
                       type="text" required value={farmerForm.name}
                       onChange={e => setFarmerForm({ ...farmerForm, name: e.target.value })}
@@ -416,24 +597,6 @@ export default function MasterDataPage() {
                       />
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div>
-                      <label className="text-xs font-semibold text-slate-300">Ngày cấp</label>
-                      <input
-                        type="date" value={farmerForm.cccd_date}
-                        onChange={e => setFarmerForm({ ...farmerForm, cccd_date: e.target.value })}
-                        className="w-full p-2 bg-emerald-950 border border-emerald-800 rounded-lg text-xs text-white"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-xs font-semibold text-slate-300">Nơi cấp</label>
-                      <input
-                        type="text" value={farmerForm.cccd_place}
-                        onChange={e => setFarmerForm({ ...farmerForm, cccd_place: e.target.value })}
-                        className="w-full p-2 bg-emerald-950 border border-emerald-800 rounded-lg text-xs text-white"
-                      />
-                    </div>
-                  </div>
                   <div className="grid grid-cols-3 gap-2">
                     <div>
                       <label className="text-xs font-semibold text-slate-300">Xứ đồng</label>
@@ -452,7 +615,7 @@ export default function MasterDataPage() {
                       />
                     </div>
                     <div>
-                      <label className="text-xs font-semibold text-slate-300">Diện tích m²</label>
+                      <label className="text-xs font-semibold text-slate-300">Diện tích (m²)</label>
                       <input
                         type="number" value={farmerForm.area}
                         onChange={e => setFarmerForm({ ...farmerForm, area: parseFloat(e.target.value) || 0 })}
@@ -491,13 +654,12 @@ export default function MasterDataPage() {
                     <input
                       type="text" required value={truckForm.license_plate}
                       onChange={e => setTruckForm({ ...truckForm, license_plate: e.target.value })}
-                      placeholder="92C-123.45"
                       className="w-full p-2 bg-emerald-950 border border-emerald-800 rounded-lg text-xs text-white"
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <label className="text-xs font-semibold text-slate-300">Họ tên tài xế *</label>
+                      <label className="text-xs font-semibold text-slate-300">Tên tài xế *</label>
                       <input
                         type="text" required value={truckForm.driver_name}
                         onChange={e => setTruckForm({ ...truckForm, driver_name: e.target.value })}
@@ -505,7 +667,7 @@ export default function MasterDataPage() {
                       />
                     </div>
                     <div>
-                      <label className="text-xs font-semibold text-slate-300">Số điện thoại *</label>
+                      <label className="text-xs font-semibold text-slate-300">SĐT tài xế *</label>
                       <input
                         type="text" required value={truckForm.phone}
                         onChange={e => setTruckForm({ ...truckForm, phone: e.target.value })}
@@ -524,14 +686,13 @@ export default function MasterDataPage() {
                       <input
                         type="text" required value={varietyForm.code}
                         onChange={e => setVarietyForm({ ...varietyForm, code: e.target.value })}
-                        placeholder="ST25"
                         className="w-full p-2 bg-emerald-950 border border-emerald-800 rounded-lg text-xs text-white"
                       />
                     </div>
                     <div>
-                      <label className="text-xs font-semibold text-slate-300">Đơn giá gợi ý (đ/kg)</label>
+                      <label className="text-xs font-semibold text-slate-300">Đơn giá mặc định (VNĐ/kg) *</label>
                       <input
-                        type="number" value={varietyForm.default_price}
+                        type="number" required value={varietyForm.default_price}
                         onChange={e => setVarietyForm({ ...varietyForm, default_price: parseFloat(e.target.value) || 0 })}
                         className="w-full p-2 bg-emerald-950 border border-emerald-800 rounded-lg text-xs text-white"
                       />
@@ -542,7 +703,6 @@ export default function MasterDataPage() {
                     <input
                       type="text" required value={varietyForm.name}
                       onChange={e => setVarietyForm({ ...varietyForm, name: e.target.value })}
-                      placeholder="Lúa ST25 Thượng Hạng"
                       className="w-full p-2 bg-emerald-950 border border-emerald-800 rounded-lg text-xs text-white"
                     />
                   </div>
@@ -580,13 +740,20 @@ export default function MasterDataPage() {
                 </>
               )}
 
-              <button
-                type="submit"
-                className="w-full py-2.5 rounded-xl font-bold text-xs text-brand-dark bg-gold-400 hover:bg-gold-300 transition-colors shadow-lg mt-3"
-              >
-                Lưu Thay Đổi
-              </button>
-
+              <div className="flex justify-end gap-2 pt-3">
+                <button
+                  type="button" onClick={() => setModalOpen(false)}
+                  className="px-4 py-2 bg-emerald-950 text-slate-300 rounded-lg text-xs font-semibold hover:bg-emerald-900"
+                >
+                  Hủy Thao Tác
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-gradient-to-r from-gold-400 to-gold-500 text-brand-dark rounded-lg text-xs font-extrabold shadow hover:brightness-110"
+                >
+                  Lưu Thông Tin
+                </button>
+              </div>
             </form>
           </div>
         </div>
