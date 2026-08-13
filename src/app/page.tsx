@@ -29,7 +29,12 @@ import {
   EyeOff,
   Zap,
   Shield,
-  FileSpreadsheet
+  FileSpreadsheet,
+  MapPin,
+  History,
+  ArrowRight,
+  Database,
+  Printer
 } from 'lucide-react';
 
 export default function Home() {
@@ -39,11 +44,15 @@ export default function Home() {
     logoutUser,
     registerNewUser,
     sessions,
-    isAdmin,
-    profiles
+    farmers,
+    growingAreas,
+    trucks,
+    staffMembers,
+    varieties,
+    isAdmin
   } = useApp();
 
-  // Auth Modal Popup State (as shown in user screenshot)
+  // Auth Modal Popup State
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authTab, setAuthTab] = useState<'login' | 'register' | 'forgot'>('login');
   const [showPassword, setShowPassword] = useState(false);
@@ -51,12 +60,10 @@ export default function Home() {
   // Form Inputs
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
-
   const [regName, setRegName] = useState('');
   const [regEmail, setRegEmail] = useState('');
   const [regPhone, setRegPhone] = useState('');
   const [regPassword, setRegPassword] = useState('');
-
   const [forgotEmail, setForgotEmail] = useState('');
 
   // Status Alerts inside Modal
@@ -97,28 +104,35 @@ export default function Home() {
 
   const handleForgotSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setForgotEmail('');
     setAuthAlert({
       type: 'success',
       msg: `Đã gửi liên kết khôi phục mật khẩu tới ${forgotEmail}. Vui lòng kiểm tra hộp thư.`
     });
-    setForgotEmail('');
   };
 
-  // Session stats for logged-in user
-  const relevantSessions = !isAdmin
-    ? sessions.filter(s => s.created_by === currentUser?.id || s.staff?.user_id === currentUser?.id || s.staff?.full_name.includes(currentUser?.full_name || ''))
-    : sessions;
+  // Global Operations Aggregations
+  const totalBags = sessions.reduce((sum, s) => sum + s.total_bags, 0);
+  const totalFreshWeight = sessions.reduce((sum, s) => sum + s.total_fresh_weight, 0);
+  const totalTareWeight = sessions.reduce((sum, s) => sum + s.total_tare_weight, 0);
+  const totalDryWeight = sessions.reduce((sum, s) => sum + s.total_dry_weight, 0);
+  const totalValue = sessions.reduce((sum, s) => sum + s.total_amount, 0);
 
-  const totalSessionsCount = relevantSessions.length;
-  const totalFreshWeight = relevantSessions.reduce((sum, s) => sum + s.total_fresh_weight, 0);
-  const totalDryWeight = relevantSessions.reduce((sum, s) => sum + s.total_dry_weight, 0);
-  const totalBags = relevantSessions.reduce((sum, s) => sum + s.total_bags, 0);
+  // Regional breakdown
+  const regionalStats = ['Tổ 9', 'Tổ 10', 'Gò ổi', 'LB Tây'].map(region => {
+    const regPlots = farmers.filter(f => f.field_region === region);
+    const regSessions = sessions.filter(s => s.field_region === region);
+    const areaSum = regPlots.reduce((sum, f) => sum + (f.area || 0), 0);
+    const drySum = regSessions.reduce((sum, s) => sum + s.total_dry_weight, 0);
+    const valSum = regSessions.reduce((sum, s) => sum + s.total_amount, 0);
+    return { region, plotsCount: regPlots.length, areaSum, drySum, valSum, sessionsCount: regSessions.length };
+  });
 
   return (
-    <div className="space-y-10 min-h-screen text-slate-100">
+    <div className="space-y-8 min-h-screen text-slate-100 pb-12">
 
-      {/* TOP NAVBAR HEADER - Matching User Screenshot */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-2xl bg-brand-dark/80 border border-emerald-800/40 backdrop-blur-xl shadow-lg">
+      {/* TOP BAR HEADER */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-2xl bg-brand-dark/90 border border-emerald-800/50 backdrop-blur-xl shadow-lg">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-500 to-gold-400 p-0.5 shadow-lg flex items-center justify-center">
             <div className="w-full h-full bg-brand-dark rounded-[10px] flex items-center justify-center">
@@ -128,204 +142,243 @@ export default function Home() {
           <div>
             <div className="flex items-center gap-2">
               <h1 className="text-base font-black text-white tracking-wider">CÂN LÚA RICE OS</h1>
-              <span className="text-[9px] px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/30 font-bold font-mono">
-                v1.0 OFFICIAL
+              <span className="text-[9px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold font-mono">
+                577 THỬA ĐẤT • VỤ ĐÔNG XUÂN
               </span>
             </div>
-            <p className="text-[11px] text-slate-400">Hệ thống Quản lý Cân lúa & Thu mua Nông sản 3 Cấp</p>
+            <p className="text-[11px] text-slate-300">HTX Nông Nghiệp An Trạch - Hòa Tiến, Hòa Vang, Đà Nẵng</p>
           </div>
         </div>
 
-        {/* Right CTA Buttons */}
         <div className="flex items-center gap-2">
           {currentUser ? (
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-emerald-300 px-3 py-1.5 rounded-xl bg-emerald-950/80 border border-emerald-800/60">
-                👤 {currentUser.full_name}
+                👤 {currentUser.full_name} ({currentUser.role === 'admin' ? 'Admin' : 'Cán bộ cân'})
               </span>
               <button
                 onClick={logoutUser}
-                className="px-4 py-2 rounded-xl bg-red-950/80 hover:bg-red-900 border border-red-700/60 text-red-200 text-xs font-bold transition-all"
+                className="px-3.5 py-1.5 rounded-xl bg-red-950/80 hover:bg-red-900 border border-red-700/60 text-red-200 text-xs font-bold transition-all"
               >
                 Đăng xuất
               </button>
             </div>
           ) : (
-            <>
+            <div className="flex items-center gap-2">
               <button
                 onClick={() => handleOpenAuth('login')}
-                className="px-4 py-2 rounded-xl bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-800/60 text-slate-200 text-xs font-bold flex items-center gap-1.5 transition-all shadow"
+                className="px-4 py-2 rounded-xl bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-800/60 text-slate-200 text-xs font-bold flex items-center gap-1.5 shadow"
               >
                 <LogIn className="w-4 h-4 text-emerald-400" /> Đăng nhập
               </button>
               <button
                 onClick={() => handleOpenAuth('register')}
-                className="px-4 py-2 rounded-xl bg-gradient-to-r from-sky-500 to-emerald-600 hover:from-sky-400 hover:to-emerald-500 text-white text-xs font-black flex items-center gap-1.5 shadow-lg shadow-sky-500/20 transition-all"
+                className="px-4 py-2 rounded-xl bg-gradient-to-r from-sky-500 to-emerald-600 hover:from-sky-400 hover:to-emerald-500 text-white text-xs font-black flex items-center gap-1.5 shadow-lg shadow-sky-500/20"
               >
                 <UserPlus className="w-4 h-4" /> Đăng ký cấp quyền
               </button>
-            </>
+            </div>
           )}
         </div>
       </div>
 
-      {/* HERO SECTION - Exact Structure from User Screenshot */}
-      <div className="relative rounded-3xl p-8 sm:p-14 bg-gradient-to-b from-emerald-950/60 via-brand-dark to-brand-dark border border-emerald-800/40 text-center space-y-6 overflow-hidden shadow-2xl">
-        
-        {/* Background Glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-sky-500/10 blur-[120px] rounded-full pointer-events-none" />
+      {/* DASHBOARD HERO BANNER */}
+      <div className="relative rounded-3xl p-6 sm:p-10 bg-gradient-to-b from-emerald-950/70 via-brand-dark to-brand-dark border border-emerald-800/50 space-y-6 shadow-2xl overflow-hidden">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-gold-400/10 blur-[100px] rounded-full pointer-events-none" />
 
-        {/* Top Badge Pill */}
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-bold tracking-wide shadow">
-          <Sparkles className="w-4 h-4 text-gold-400" />
-          <span>ÁP DỤNG THỰC TẾ CHO TẤT CẢ CÁC ĐỒNG RUỘNG & THU MUA LÚA TOÀN QUỐC</span>
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-bold">
+              <Sparkles className="w-3.5 h-3.5 text-gold-400" />
+              <span>BẢNG ĐIỀU HÀNH & THỐNG KÊ VẬN HÀNH THU MUA THỜI GIAN THỰC</span>
+            </div>
+            <h2 className="text-2xl sm:text-4xl font-black text-white mt-2">
+              Hệ Thống Thu Mua & Cân Lúa <span className="text-gold-400">RiceOS</span>
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-300 mt-1 max-w-2xl">
+              Đồng bộ dữ liệu 577 thửa đất, 199 hộ sản xuất và 4 xứ đồng. Hỗ trợ tạo phiên cân 1-chạm, tự động trừ bì 12%, gộp phiếu quyết toán hộ gia đình và xuất báo cáo Zalo/Excel.
+            </p>
+          </div>
+
+          <Link
+            href="/weighing"
+            className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-gold-400 via-gold-500 to-amber-500 text-slate-950 font-black text-sm shadow-xl shadow-gold-500/30 flex items-center gap-2 hover:scale-105 transition-transform self-stretch md:self-auto justify-center"
+          >
+            <Scale className="w-5 h-5" /> Vào Phiên Cân Lúa Ngay
+          </Link>
         </div>
 
-        {/* Main Headline */}
-        <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight max-w-4xl mx-auto">
-          HỆ THỐNG CÂN LÚA THU MUA NÔNG SẢN <br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-emerald-300 to-gold-400">
-            THỜI GIAN THỰC
-          </span>
-        </h2>
+        {/* 6 SYSTEM OPERATIONAL METRICS CARDS */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 pt-2">
+          
+          <div className="p-3.5 rounded-2xl bg-emerald-950/80 border border-emerald-800/60 space-y-1">
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">THỬA ĐẤT & DIỆN TÍCH</span>
+            <p className="text-lg font-black text-white">577 <span className="text-xs font-bold text-emerald-400">thửa</span></p>
+            <p className="text-[11px] text-emerald-300 font-bold">39.52 ha (395.200 m²)</p>
+          </div>
 
-        {/* Sub-headline description */}
-        <p className="text-xs sm:text-sm text-slate-300 max-w-3xl mx-auto leading-relaxed">
-          Giải pháp chuyển đổi số toàn diện cho thương lái, nhà máy và cán bộ cân lúa. Tích hợp AI Camera đọc màn hình cân, Numpad 1-3 bao, % Trừ bì tự động và xuất báo cáo Zalo & Excel (.xlsx).
-        </p>
+          <div className="p-3.5 rounded-2xl bg-emerald-950/80 border border-emerald-800/60 space-y-1">
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">HỘ SẢN XUẤT</span>
+            <p className="text-lg font-black text-gold-300">199 <span className="text-xs font-bold text-gold-400">hộ</span></p>
+            <p className="text-[11px] text-slate-300">4 Xứ đồng canh tác</p>
+          </div>
 
-        {/* Feature Badges Row */}
-        <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-          <span className="px-3.5 py-1.5 rounded-xl bg-emerald-950/80 border border-emerald-800/60 text-xs font-bold text-emerald-300 flex items-center gap-1.5">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400" /> Chính xác tuyệt đối 100%
-          </span>
-          <span className="px-3.5 py-1.5 rounded-xl bg-emerald-950/80 border border-emerald-800/60 text-xs font-bold text-gold-300 flex items-center gap-1.5">
-            <Zap className="w-4 h-4 text-gold-400" /> Xử lý siêu tốc ngoài đồng
-          </span>
-          <span className="px-3.5 py-1.5 rounded-xl bg-emerald-950/80 border border-emerald-800/60 text-xs font-bold text-sky-300 flex items-center gap-1.5">
-            <FileSpreadsheet className="w-4 h-4 text-sky-400" /> Xuất Zalo & Excel (.xlsx)
-          </span>
+          <div className="p-3.5 rounded-2xl bg-emerald-950/80 border border-emerald-800/60 space-y-1">
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">PHIÊN CÂN ĐÃ TẠO</span>
+            <p className="text-lg font-black text-purple-300">{sessions.length} <span className="text-xs font-bold text-purple-400">phiên</span></p>
+            <p className="text-[11px] text-purple-200 font-bold">{totalBags.toLocaleString('vi-VN')} bao lúa</p>
+          </div>
+
+          <div className="p-3.5 rounded-2xl bg-emerald-950/80 border border-emerald-800/60 space-y-1">
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">SẢN LƯỢNG TƯƠI</span>
+            <p className="text-lg font-black text-blue-300">{(totalFreshWeight/1000).toFixed(2)} <span className="text-xs font-bold text-blue-400">tấn</span></p>
+            <p className="text-[11px] text-blue-200 font-bold">{totalFreshWeight.toLocaleString('vi-VN')} kg tươi</p>
+          </div>
+
+          <div className="p-3.5 rounded-2xl bg-emerald-950/80 border border-emerald-800/60 space-y-1">
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">SẢN LƯỢNG KHÔ (NẾT)</span>
+            <p className="text-lg font-black text-emerald-300">{(totalDryWeight/1000).toFixed(2)} <span className="text-xs font-bold text-emerald-400">tấn</span></p>
+            <p className="text-[11px] text-emerald-200 font-bold">{totalDryWeight.toLocaleString('vi-VN')} kg khô</p>
+          </div>
+
+          <div className="p-3.5 rounded-2xl bg-gold-500/20 border border-gold-500/40 space-y-1">
+            <span className="text-[10px] font-bold text-gold-400 uppercase tracking-wider block">TỔNG GIÁ TRỊ MUA</span>
+            <p className="text-lg font-black text-gold-300">{(totalValue/1000000).toFixed(1)} <span className="text-xs font-bold text-gold-400">trđ</span></p>
+            <p className="text-[11px] text-gold-200 font-bold">{totalValue.toLocaleString('vi-VN')} VNĐ</p>
+          </div>
+
         </div>
-
-        {/* Hero CTA Action Buttons */}
-        {!currentUser && (
-          <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
-            <button
-              onClick={() => handleOpenAuth('register')}
-              className="px-8 py-3.5 rounded-2xl bg-gradient-to-r from-sky-500 via-blue-600 to-emerald-600 hover:brightness-110 text-white font-black text-sm shadow-xl shadow-sky-500/25 flex items-center gap-2 transition-all"
-            >
-              <UserPlus className="w-5 h-5" /> Đăng ký cấp quyền
-            </button>
-            <button
-              onClick={() => handleOpenAuth('login')}
-              className="px-8 py-3.5 rounded-2xl bg-emerald-950/90 hover:bg-emerald-900 border border-emerald-700/60 text-white font-black text-sm shadow-lg flex items-center gap-2 transition-all"
-            >
-              <LogIn className="w-5 h-5 text-emerald-400" /> Đăng nhập hệ thống
-            </button>
-          </div>
-        )}
-
-        {currentUser && (
-          <div className="pt-4 flex justify-center">
-            <Link
-              href="/weighing"
-              className="px-8 py-4 rounded-2xl bg-gradient-to-r from-gold-400 via-gold-500 to-amber-500 text-slate-950 font-black text-sm shadow-2xl shadow-gold-500/30 flex items-center gap-2.5 hover:scale-105 transition-all"
-            >
-              <Scale className="w-6 h-6" /> Vào Phiên Cân Lúa Ngay
-            </Link>
-          </div>
-        )}
-
       </div>
 
-      {/* FEATURE CARDS GRID - Matching Screenshot Bottom Row */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {/* QUICK NAVIGATION SHORTCUT MATRIX */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
 
-        {/* Card 1 */}
-        <Link href="/weighing" className="glass-card p-6 rounded-3xl border border-emerald-800/40 hover:border-emerald-500/80 relative overflow-hidden space-y-3 block transition-all group">
-          <div className="flex items-center justify-between">
-            <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <Scale className="w-5 h-5 text-gold-400" />
-            </div>
-            <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-bold">
-              Tính năng chính
-            </span>
+        <Link href="/weighing" className="glass-card p-4 rounded-2xl hover:border-gold-400 transition-all space-y-2 block text-center group">
+          <div className="w-10 h-10 rounded-xl bg-gold-400/20 text-gold-300 flex items-center justify-center mx-auto border border-gold-400/40 group-hover:scale-110 transition-transform">
+            <Scale className="w-5 h-5" />
           </div>
-          <h3 className="text-base font-extrabold text-white group-hover:text-gold-300 transition-colors">Tạo Phiên Cân Lúa Siêu Tốc</h3>
-          <p className="text-xs text-slate-300 leading-relaxed">
-            Phím bấm Numpad 1, 2, 3 bao trực quan, tự động tính tổng cân tươi, trừ bì % chính xác và chuyển mã cân tiếp theo chỉ với phím Enter.
-          </p>
+          <p className="text-xs font-extrabold text-white group-hover:text-gold-300">1. Phiên Cân Lúa</p>
+          <span className="text-[10px] text-slate-400 block">Cân siêu tốc 1-chạm</span>
         </Link>
 
-        {/* Card 2 */}
-        <div className="glass-card p-6 rounded-3xl border border-emerald-800/40 relative overflow-hidden space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="w-10 h-10 rounded-2xl bg-gold-500/20 text-gold-400 border border-gold-500/40 flex items-center justify-center">
-              <Package className="w-5 h-5" />
-            </div>
-            <span className="px-2.5 py-0.5 rounded-full bg-gold-500/20 text-gold-300 border border-gold-500/30 text-[10px] font-bold">
-              Mới
-            </span>
+        <Link href="/master-data" className="glass-card p-4 rounded-2xl hover:border-emerald-400 transition-all space-y-2 block text-center group">
+          <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center mx-auto border border-emerald-500/40 group-hover:scale-110 transition-transform">
+            <Database className="w-5 h-5" />
           </div>
-          <h3 className="text-base font-extrabold text-white">Nhập theo lô hàng loạt</h3>
-          <p className="text-xs text-slate-300 leading-relaxed">
-            Tự động lấy tên Vùng Trồng, Lô ruộng và Xứ đồng. Hỗ trợ nhập danh sách bao lúa cùng mã cân nhanh chóng ngoài đồng ruộng.
-          </p>
+          <p className="text-xs font-extrabold text-white group-hover:text-emerald-300">2. 577 Thửa Đất</p>
+          <span className="text-[10px] text-slate-400 block">199 Hộ & 4 Xứ đồng</span>
+        </Link>
+
+        <Link href="/settlement" className="glass-card p-4 rounded-2xl hover:border-amber-400 transition-all space-y-2 block text-center group">
+          <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-300 flex items-center justify-center mx-auto border border-amber-500/40 group-hover:scale-110 transition-transform">
+            <Coins className="w-5 h-5" />
+          </div>
+          <p className="text-xs font-extrabold text-white group-hover:text-amber-300">3. Quyết Toán Hộ</p>
+          <span className="text-[10px] text-slate-400 block">Chi trả & Xuất phiếu A5</span>
+        </Link>
+
+        <Link href="/history" className="glass-card p-4 rounded-2xl hover:border-sky-400 transition-all space-y-2 block text-center group">
+          <div className="w-10 h-10 rounded-xl bg-sky-500/20 text-sky-300 flex items-center justify-center mx-auto border border-sky-500/40 group-hover:scale-110 transition-transform">
+            <History className="w-5 h-5" />
+          </div>
+          <p className="text-xs font-extrabold text-white group-hover:text-sky-300">4. Lịch Sử Cân</p>
+          <span className="text-[10px] text-slate-400 block">Xem & In lại phiếu</span>
+        </Link>
+
+        <Link href="/trucks" className="glass-card p-4 rounded-2xl hover:border-purple-400 transition-all space-y-2 block text-center group">
+          <div className="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-300 flex items-center justify-center mx-auto border border-purple-500/40 group-hover:scale-110 transition-transform">
+            <Truck className="w-5 h-5" />
+          </div>
+          <p className="text-xs font-extrabold text-white group-hover:text-purple-300">5. Đội Xe Nhận</p>
+          <span className="text-[10px] text-slate-400 block">5 Xe tải thu mua</span>
+        </Link>
+
+        <Link href="/reports" className="glass-card p-4 rounded-2xl hover:border-rose-400 transition-all space-y-2 block text-center group">
+          <div className="w-10 h-10 rounded-xl bg-rose-500/20 text-rose-300 flex items-center justify-center mx-auto border border-rose-500/40 group-hover:scale-110 transition-transform">
+            <FileSpreadsheet className="w-5 h-5" />
+          </div>
+          <p className="text-xs font-extrabold text-white group-hover:text-rose-300">6. Báo Cáo Excel</p>
+          <span className="text-[10px] text-slate-400 block">Thống kê & Xuất CSV</span>
+        </Link>
+
+      </div>
+
+      {/* REGIONAL BREAKDOWN & RECENT WEIGHINGS TABLE */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        {/* Regional Matrix (4 Xứ Đồng) */}
+        <div className="lg:col-span-5 glass-card p-5 rounded-2xl space-y-4">
+          <div className="flex justify-between items-center border-b border-emerald-800/40 pb-2">
+            <h3 className="text-sm font-bold text-white flex items-center gap-2">
+              <MapPin className="w-4 h-4 text-gold-400" /> Tiến Độ Canh Tác Theo 4 Xứ Đồng
+            </h3>
+          </div>
+
+          <div className="space-y-2.5">
+            {regionalStats.map(st => (
+              <div key={st.region} className="p-3 rounded-xl bg-emerald-950/60 border border-emerald-800/60 flex justify-between items-center">
+                <div>
+                  <span className="px-2 py-0.5 rounded-full bg-sky-950 border border-sky-800 text-[10px] text-sky-300 font-bold">
+                    {st.region}
+                  </span>
+                  <p className="text-xs text-white font-extrabold mt-1">{st.plotsCount} thửa đất ({(st.areaSum/10000).toFixed(2)} ha)</p>
+                  <p className="text-[11px] text-slate-400">{st.sessionsCount} phiên cân đã thực hiện</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs font-extrabold text-emerald-400 font-mono">{st.drySum.toLocaleString('vi-VN')} kg khô</p>
+                  <p className="text-[11px] font-extrabold text-gold-300 font-mono">{st.valSum.toLocaleString('vi-VN')} VNĐ</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
 
-        {/* Card 3 */}
-        <div className="glass-card p-6 rounded-3xl border border-emerald-800/40 relative overflow-hidden space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center">
-              <Shield className="w-5 h-5" />
-            </div>
-            <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-bold">
-              Bảo mật
-            </span>
+        {/* Recent Weighings Table */}
+        <div className="lg:col-span-7 glass-card p-5 rounded-2xl space-y-3">
+          <div className="flex justify-between items-center border-b border-emerald-800/40 pb-2">
+            <h3 className="text-sm font-bold text-white flex items-center gap-2">
+              <History className="w-4 h-4 text-gold-400" /> Phiên Cân Lúa Vừa Thực Hiện
+            </h3>
+            <Link href="/history" className="text-xs text-gold-400 hover:underline flex items-center gap-1">
+              Xem tất cả <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
           </div>
-          <h3 className="text-base font-extrabold text-white">Tự động trừ bì % thời gian thực</h3>
-          <p className="text-xs text-slate-300 leading-relaxed">
-            Mặc định trừ bì 12% (tùy chỉnh linh hoạt). Tính toán chính xác trọng lượng lúa khô ngay tại chỗ, chống thất thoát.
-          </p>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs text-slate-300">
+              <thead className="bg-emerald-950 text-emerald-400 uppercase text-[10px] font-bold">
+                <tr>
+                  <th className="p-2.5">Mã phiên</th>
+                  <th className="p-2.5">Hộ sản xuất</th>
+                  <th className="p-2.5">Xứ đồng</th>
+                  <th className="p-2.5 text-right">Số bao</th>
+                  <th className="p-2.5 text-right">Lúa khô</th>
+                  <th className="p-2.5 text-right">Thành tiền</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-emerald-900/40">
+                {sessions.slice(0, 5).map(s => (
+                  <tr key={s.id} className="hover:bg-emerald-900/30">
+                    <td className="p-2.5 font-extrabold text-gold-300">{s.session_code}</td>
+                    <td className="p-2.5 font-bold text-white">{s.farmer?.name}</td>
+                    <td className="p-2.5 text-sky-300">{s.field_region} ({s.lot})</td>
+                    <td className="p-2.5 text-right font-bold text-purple-300">{s.total_bags} bao</td>
+                    <td className="p-2.5 text-right font-extrabold text-emerald-400">{s.total_dry_weight.toLocaleString('vi-VN')} kg</td>
+                    <td className="p-2.5 text-right font-extrabold text-gold-300">{s.total_amount.toLocaleString('vi-VN')} đ</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
 
       </div>
 
-      {/* METRICS FOR LOGGED-IN USERS */}
-      {currentUser && (
-        <div className="glass-card p-6 rounded-3xl space-y-4 border border-emerald-800/50">
-          <h3 className="text-lg font-extrabold text-white flex items-center gap-2">
-            <BarChart3 className="w-5 h-5 text-gold-400" /> Thống Kê Sản Lượng Cá Nhân
-          </h3>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <div className="bg-emerald-950/60 p-4 rounded-2xl border border-emerald-800/40">
-              <span className="text-xs font-bold text-slate-400 block">Số Phiên Cân</span>
-              <p className="text-2xl font-black text-white mt-1">{totalSessionsCount}</p>
-            </div>
-            <div className="bg-emerald-950/60 p-4 rounded-2xl border border-emerald-800/40">
-              <span className="text-xs font-bold text-slate-400 block">Tổng Số Bao</span>
-              <p className="text-2xl font-black text-gold-300 mt-1">{totalBags.toLocaleString('vi-VN')} bao</p>
-            </div>
-            <div className="bg-emerald-950/60 p-4 rounded-2xl border border-emerald-800/40">
-              <span className="text-xs font-bold text-slate-400 block">Lúa Tươi (Kg)</span>
-              <p className="text-2xl font-black text-emerald-300 mt-1">{totalFreshWeight.toLocaleString('vi-VN')} kg</p>
-            </div>
-            <div className="bg-emerald-950/60 p-4 rounded-2xl border border-emerald-800/40">
-              <span className="text-xs font-bold text-slate-400 block">Lúa Khô (Kg)</span>
-              <p className="text-2xl font-black text-sky-300 mt-1">{totalDryWeight.toLocaleString('vi-VN')} kg</p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ========================================================================= */}
-      {/* INTERACTIVE AUTH MODAL POPUP DIALOG - EXACT MATCH TO USER SCREENSHOT      */}
-      {/* ========================================================================= */}
+      {/* AUTH MODAL POPUP DIALOG */}
       {showAuthModal && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
           <div className="bg-brand-dark/95 border border-emerald-700/60 rounded-3xl max-w-md w-full p-6 space-y-5 shadow-2xl relative animate-in zoom-in-95">
 
-            {/* Modal Header */}
             <div className="text-center relative pt-2">
               <button
                 onClick={() => setShowAuthModal(false)}
@@ -334,7 +387,6 @@ export default function Home() {
                 <X className="w-4 h-4" />
               </button>
 
-              {/* Icon Badge Top Center */}
               <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-sky-500 to-emerald-500 p-0.5 shadow-xl mx-auto flex items-center justify-center mb-3">
                 <div className="w-full h-full bg-brand-dark rounded-[14px] flex items-center justify-center">
                   <Scale className="w-6 h-6 text-sky-400" />
@@ -349,7 +401,6 @@ export default function Home() {
               </p>
             </div>
 
-            {/* Tab Switcher inside Modal - Exact Pill Design */}
             <div className="flex bg-emerald-950/90 p-1 rounded-2xl border border-emerald-800/60">
               <button
                 onClick={() => { setAuthTab('login'); setAuthAlert(null); }}
@@ -373,7 +424,6 @@ export default function Home() {
               </button>
             </div>
 
-            {/* Status Alert Box */}
             {authAlert && (
               <div className={`p-3 rounded-xl border text-xs font-bold leading-relaxed animate-in zoom-in-95 ${
                 authAlert.type === 'success'
@@ -386,7 +436,6 @@ export default function Home() {
               </div>
             )}
 
-            {/* TAB 1: LOGIN FORM */}
             {authTab === 'login' && (
               <form onSubmit={handleLoginSubmit} className="space-y-4 text-xs">
                 <div>
@@ -448,7 +497,6 @@ export default function Home() {
               </form>
             )}
 
-            {/* TAB 2: REGISTER FORM */}
             {authTab === 'register' && (
               <form onSubmit={handleRegisterSubmit} className="space-y-3.5 text-xs">
                 <div>
@@ -511,13 +559,9 @@ export default function Home() {
                 >
                   <UserPlus className="w-4 h-4" /> TẠO TÀI KHOẢN MỚI
                 </button>
-                <p className="text-[10px] text-slate-400 text-center leading-relaxed">
-                  * Sau khi đăng ký, thông báo sẽ tự động gửi tới Admin để duyệt và cấp quyền kích hoạt.
-                </p>
               </form>
             )}
 
-            {/* TAB 3: FORGOT PASSWORD */}
             {authTab === 'forgot' && (
               <form onSubmit={handleForgotSubmit} className="space-y-4 text-xs">
                 <div>

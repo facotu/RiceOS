@@ -99,19 +99,29 @@ export default function WeighingPage() {
     }
   }, [soundEnabled]);
 
-  // Restore session items from localStorage on mount
+  // Restore session items from localStorage on mount (Chỉ khôi phục nếu là dữ liệu cân thật của người dùng)
   useEffect(() => {
     try {
       const saved = localStorage.getItem('riceos_active_weighing_session');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed.items) && parsed.items.length > 0) {
-          setItems(parsed.items);
+          // Lọc bỏ nếu chứa lượt cân demo cũ (150kg, 152kg, 98kg)
+          const isLegacyDemo = parsed.items.some((it: any) => it.gross_weight === 150 || it.gross_weight === 152 || it.gross_weight === 98);
+          if (isLegacyDemo) {
+            localStorage.removeItem('riceos_active_weighing_session');
+            setItems([]);
+          } else {
+            setItems(parsed.items);
+          }
+        } else {
+          setItems([]);
         }
-        if (parsed.farmer_id) setSelectedFarmerId(parsed.farmer_id);
+      } else {
+        setItems([]);
       }
     } catch (e) {
-      // Ignore storage errors
+      setItems([]);
     }
   }, []);
 
