@@ -481,7 +481,7 @@ TỔNG THÀNH TIỀN: ${totalAmount.toLocaleString('vi-VN')} VNĐ
               className="w-full p-2.5 bg-emerald-950/80 border border-emerald-700/60 rounded-xl text-white text-xs font-semibold focus:outline-none"
             >
               {trucks.map(t => (
-                <option key={t.id} value={t.id}>{t.license_plate} - {t.driver_name} ({t.capacity} tấn)</option>
+                <option key={t.id} value={t.id}>{t.license_plate} - {t.driver_name} ({t.phone})</option>
               ))}
             </select>
           </div>
