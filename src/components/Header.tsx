@@ -80,9 +80,9 @@ export default function Header() {
         {/* 1. Left Scope Location Pill - Matching Screenshot */}
         <div className="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-sky-50 dark:bg-slate-900/80 border border-sky-200 dark:border-sky-800/50 text-sky-800 dark:text-sky-300 text-xs font-bold shadow-sm">
           <MapPin className="w-4 h-4 text-sky-500 flex-shrink-0" />
-          <span>Vùng trồng lúa số 21 - Xã Hòa Tiến, Thành phố Đà Nẵng</span>
+          <span>Vùng trồng lúa - Xã Hòa Tiến, Thành phố Đà Nẵng</span>
           <span className="text-[9px] px-1.5 py-0.2 rounded bg-sky-200 dark:bg-sky-900 text-sky-900 dark:text-sky-200 font-mono">
-            KHÓA XVT
+            VỤ ĐÔNG XUÂN
           </span>
         </div>
 
@@ -94,7 +94,7 @@ export default function Header() {
               type="text"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              placeholder="Tìm cử tri, ứng cử viên (Mã thẻ / Tên)..."
+              placeholder="Tìm nông hộ, xứ đồng, lô, cán bộ cân..."
               className="w-full pl-9 pr-3 py-1.5 bg-slate-100 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500 text-xs font-medium"
             />
           </div>

@@ -100,7 +100,7 @@ export default function Sidebar() {
             }`}
           >
             <Scale className={`w-4 h-4 ${pathname === '/weighing' ? 'text-sky-400' : 'text-slate-400'}`} />
-            <span>KIỂM PHIẾU BẦU CỬ & CÂN LÚA</span>
+            <span>PHIÊN CÂN LÚA</span>
           </Link>
 
           {isAdmin && (
