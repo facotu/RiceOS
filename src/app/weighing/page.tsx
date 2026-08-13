@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useApp } from '@/context/AppContext';
 import {
   Scale,
@@ -23,7 +23,13 @@ import {
   Camera,
   Percent,
   RefreshCw,
-  Undo2
+  Undo2,
+  Volume2,
+  VolumeX,
+  ArrowRight,
+  Calculator,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 import Link from 'next/link';
 import { toPng } from 'html-to-image';
@@ -53,6 +59,10 @@ export default function WeighingPage() {
   const [lot, setLot] = useState(farmers[0]?.lot || growingAreas[0]?.lot || 'Lô 1');
   const [unitPrice, setUnitPrice] = useState<number>(varieties[0]?.default_price || 8400);
 
+  // Sound Feedback & Keypad drawer
+  const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
+  const [showNumpadOverlay, setShowNumpadOverlay] = useState<boolean>(false);
+
   // Active Session State
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
   const [sessionCode, setSessionCode] = useState<string>('');
@@ -61,12 +71,6 @@ export default function WeighingPage() {
   const [bagCount, setBagCount] = useState<number>(2); // 1, 2, 3, 4 bao
   const [grossWeightInput, setGrossWeightInput] = useState<string>('150'); // Kg lúa tươi lượt này
   const [tarePercentInput, setTarePercentInput] = useState<string>('12'); // Trừ bì % mặc định 12%
-
-  // Calculate current item tare weight & net weight
-  const currentGross = parseFloat(grossWeightInput) || 0;
-  const currentTarePercent = parseFloat(tarePercentInput) || 12;
-  const currentTareKg = Math.round((currentGross * (currentTarePercent / 100)) * 100) / 100;
-  const currentNetKg = Math.max(0, Math.round((currentGross - currentTareKg) * 100) / 100);
 
   // Items table for current weighing
   const [items, setItems] = useState<Array<{ id: string; sequence: number; bag_count: number; gross_weight: number; tare_percent: number; tare_weight: number; net_weight: number }>>([
@@ -78,6 +82,61 @@ export default function WeighingPage() {
   const [savedSuccess, setSavedSuccess] = useState(false);
   const [zaloSuccessMsg, setZaloSuccessMsg] = useState('');
   const ticketRef = useRef<HTMLDivElement>(null);
+  const grossInputRef = useRef<HTMLInputElement>(null);
+
+  // Audio Beep generator using Web Audio API
+  const playBeep = useCallback((freq = 800, duration = 0.08) => {
+    if (!soundEnabled) return;
+    try {
+      const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + duration);
+    } catch (e) {
+      // Audio Context blocked or unavailable
+    }
+  }, [soundEnabled]);
+
+  // Restore session items from localStorage on mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('riceos_active_weighing_session');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed.items) && parsed.items.length > 0) {
+          setItems(parsed.items);
+        }
+        if (parsed.farmer_id) setSelectedFarmerId(parsed.farmer_id);
+      }
+    } catch (e) {
+      // Ignore storage errors
+    }
+  }, []);
+
+  // Autosave active items to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem('riceos_active_weighing_session', JSON.stringify({
+        items,
+        farmer_id: selectedFarmerId,
+        updated_at: new Date().toISOString()
+      }));
+    } catch (e) {
+      // Ignore storage errors
+    }
+  }, [items, selectedFarmerId]);
+
+  // Calculate current item tare weight & net weight
+  const currentGross = parseFloat(grossWeightInput) || 0;
+  const currentTarePercent = parseFloat(tarePercentInput) || 12;
+  const currentTareKg = Math.round((currentGross * (currentTarePercent / 100)) * 100) / 100;
+  const currentNetKg = Math.max(0, Math.round((currentGross - currentTareKg) * 100) / 100);
 
   // Auto update fields when Farmer changes
   const handleFarmerChange = (farmerId: string) => {
@@ -114,12 +173,13 @@ export default function WeighingPage() {
 
   // Numpad button clicks
   const handleNumpadPress = (val: string) => {
+    playBeep(900, 0.04);
     if (val === 'C') {
-      setGrossWeightInput('0');
+      setGrossWeightInput('');
     } else if (val === 'DEL') {
-      setGrossWeightInput(prev => prev.length > 1 ? prev.slice(0, -1) : '0');
+      setGrossWeightInput(prev => prev.length > 1 ? prev.slice(0, -1) : '');
     } else {
-      setGrossWeightInput(prev => prev === '0' ? val : prev + val);
+      setGrossWeightInput(prev => (prev === '0' || prev === '' ? val : prev + val));
     }
   };
 
@@ -145,18 +205,32 @@ export default function WeighingPage() {
     };
 
     setItems(prev => [...prev, newItem]);
+    playBeep(1000, 0.1); // High beep on successful add
     setGrossWeightInput('150'); // reset default for fast repeat
+
+    // Re-focus input for continuous physical keypad entry
+    setTimeout(() => {
+      grossInputRef.current?.focus();
+    }, 50);
+  };
+
+  // Quick Preset Weight Click (+40, +50, +60, +70, +80, +100, +120, +150)
+  const handlePresetWeight = (wt: number) => {
+    setGrossWeightInput(wt.toString());
+    playBeep(850, 0.05);
   };
 
   // Remove individual item
   const handleRemoveItem = (id: string) => {
     setItems(prev => prev.filter(item => item.id !== id).map((item, idx) => ({ ...item, sequence: idx + 1 })));
+    playBeep(400, 0.1);
   };
 
   // Undo last added item
   const handleUndoLastItem = () => {
     if (items.length === 0) return;
     setItems(prev => prev.slice(0, -1));
+    playBeep(400, 0.1);
   };
 
   // Reset & Start New Weighing Session
@@ -169,6 +243,14 @@ export default function WeighingPage() {
     setActiveSessionId(null);
     setSessionCode('');
     setSavedSuccess(false);
+    localStorage.removeItem('riceos_active_weighing_session');
+    playBeep(600, 0.15);
+  };
+
+  // Save / Record Session & Switch to Next Farmer
+  const handleSaveAndNextFarmer = () => {
+    handleSaveSession();
+    setIsPickerOpen(true);
   };
 
   // Cumulative Totals
@@ -207,6 +289,7 @@ export default function WeighingPage() {
     completeSession(newSes.id);
 
     setSavedSuccess(true);
+    playBeep(1200, 0.2);
     setTimeout(() => setSavedSuccess(false), 3500);
   };
 
@@ -233,6 +316,7 @@ TỔNG THÀNH TIỀN: ${totalAmount.toLocaleString('vi-VN')} VNĐ
 
     navigator.clipboard.writeText(text);
     setZaloSuccessMsg('Đã sao chép thông tin phiếu cân gửi Zalo thành công!');
+    playBeep(900, 0.1);
     setTimeout(() => setZaloSuccessMsg(''), 3500);
   };
 
@@ -251,56 +335,61 @@ TỔNG THÀNH TIỀN: ${totalAmount.toLocaleString('vi-VN')} VNĐ
     }
   };
 
-  // Thermal Print
+  // Print Receipt
   const handlePrint = () => {
     window.print();
   };
 
-  // Filtered farmers list for search
-  const filteredFarmers = farmers.filter(f =>
-    f.name.toLowerCase().includes(farmerSearch.toLowerCase()) ||
-    f.phone.includes(farmerSearch) ||
-    (f.landowner_name && f.landowner_name.toLowerCase().includes(farmerSearch.toLowerCase())) ||
-    f.field_region.toLowerCase().includes(farmerSearch.toLowerCase()) ||
-    f.lot.toLowerCase().includes(farmerSearch.toLowerCase())
-  );
-
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
 
-      {/* Page Title & Status Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 glass-card p-4 rounded-2xl">
+      {/* Top Banner Header */}
+      <div className="glass-card p-5 rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-gold-400 to-emerald-500 p-0.5 flex items-center justify-center shadow-lg">
-            <div className="w-full h-full bg-brand-dark rounded-[10px] flex items-center justify-center">
+          <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-emerald-500 via-sky-500 to-gold-400 p-0.5 shadow-lg flex-shrink-0">
+            <div className="w-full h-full bg-[#0b132b] rounded-[14px] flex items-center justify-center">
               <Scale className="w-6 h-6 text-gold-400" />
             </div>
           </div>
+
           <div>
-            <h1 className="text-xl font-extrabold text-white flex items-center gap-2">
-              Phiên Cân Lúa Trực Tiếp (Ngoài Đồng)
+            <div className="flex items-center gap-2">
+              <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-xs font-semibold">
+                Nghiệp Vụ Cân Lúa Siêu Tốc Thực Địa
+              </span>
+              <button
+                type="button"
+                onClick={() => setSoundEnabled(!soundEnabled)}
+                className={`px-2 py-0.5 rounded-full text-[10px] font-bold border flex items-center gap-1 transition-all ${
+                  soundEnabled
+                    ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                    : 'bg-slate-700/40 text-slate-400 border-slate-600'
+                }`}
+                title="Bật/Tắt âm thanh tít khi gõ cân"
+              >
+                {soundEnabled ? <Volume2 className="w-3 h-3 text-emerald-400" /> : <VolumeX className="w-3 h-3 text-slate-400" />}
+                <span>{soundEnabled ? 'Âm thanh: BẬT' : 'Âm thanh: TẮT'}</span>
+              </button>
+            </div>
+            <h1 className="text-xl sm:text-2xl font-extrabold text-white mt-1 flex items-center gap-2">
+              Phiên Cân Lúa Siêu Tốc Ngoài Đồng
               {savedSuccess && (
-                <span className="text-xs bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-2 py-0.5 rounded-full flex items-center gap-1 animate-bounce">
+                <span className="text-xs bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-2.5 py-0.5 rounded-full flex items-center gap-1 animate-bounce">
                   <CheckCircle2 className="w-3.5 h-3.5" /> Đã Lưu Phiên Cân!
-                </span>
-              )}
-              {zaloSuccessMsg && (
-                <span className="text-xs bg-blue-500/20 text-blue-300 border border-blue-500/40 px-2 py-0.5 rounded-full flex items-center gap-1 animate-bounce">
-                  <CheckCircle2 className="w-3.5 h-3.5" /> Đã Sao Chép Zalo!
                 </span>
               )}
             </h1>
             <p className="text-xs text-slate-300">
-              Nhập liệu 1, 2, 3, 4 bao • Trừ bì % linh hoạt (Mặc định {tarePercentInput}%) • Tự động tính lúa khô & thành tiền
+              Phím Enter nhập liệu siêu tốc • Tự động trừ bì {tarePercentInput}% • Tự động lưu không mất dữ liệu 4G
             </p>
           </div>
         </div>
 
-        {/* Quick Action Controls */}
-        <div className="flex items-center gap-2">
+        {/* Action Controls */}
+        <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
           <button
             onClick={handleResetNewSession}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-700/60 text-emerald-300 font-bold text-xs shadow-md transition-colors cursor-pointer"
+            className="flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-700/60 text-emerald-300 font-bold text-xs shadow-md transition-colors cursor-pointer"
             title="Xóa danh sách lượt cân để bắt đầu cân cho hộ tiếp theo"
           >
             <RefreshCw className="w-3.5 h-3.5 text-gold-400" />
@@ -309,7 +398,7 @@ TỔNG THÀNH TIỀN: ${totalAmount.toLocaleString('vi-VN')} VNĐ
 
           <Link
             href="/ai-camera"
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-gold-400 to-gold-500 hover:brightness-110 text-brand-dark font-extrabold text-xs shadow-md transition-all"
+            className="flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-gold-400 to-gold-500 hover:brightness-110 text-brand-dark font-extrabold text-xs shadow-md transition-all"
           >
             <Camera className="w-4 h-4" />
             <span>AI Camera Đọc Cân</span>
@@ -319,9 +408,14 @@ TỔNG THÀNH TIỀN: ${totalAmount.toLocaleString('vi-VN')} VNĐ
 
       {/* Form Selection Section (Chủ hộ sản xuất, Cán bộ, Xe, Giống lúa, Xứ đồng, Lô) */}
       <div className="glass-card p-5 rounded-2xl space-y-4">
-        <h3 className="text-sm font-bold text-emerald-300 flex items-center gap-2 border-b border-emerald-800/40 pb-2">
-          <Wheat className="w-4 h-4 text-gold-400" /> Thông Tin Nông Hộ & Vùng Trồng Thu Mua
-        </h3>
+        <div className="flex justify-between items-center border-b border-emerald-800/40 pb-2">
+          <h3 className="text-sm font-bold text-emerald-300 flex items-center gap-2">
+            <Wheat className="w-4 h-4 text-gold-400" /> Thông Tin Nông Hộ & Vùng Trồng Thu Mua
+          </h3>
+          <span className="text-xs text-slate-400">
+            Hộ sản xuất: <strong className="text-gold-300">{currentFarmer?.name}</strong>
+          </span>
+        </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
 
@@ -363,425 +457,453 @@ TỔNG THÀNH TIỀN: ${totalAmount.toLocaleString('vi-VN')} VNĐ
           {/* Select Staff (Cán bộ cân) */}
           <div className="space-y-1">
             <label className="text-xs font-semibold text-slate-300 flex items-center gap-1">
-              <UserCheck className="w-3.5 h-3.5 text-teal-400" /> Cán Bộ Phụ Trách Cân *
+              <UserCheck className="w-3.5 h-3.5 text-emerald-400" /> Cán Bộ Phụ Trách Cân *
             </label>
             <select
               value={selectedStaffId}
               onChange={(e) => setSelectedStaffId(e.target.value)}
-              className="w-full p-2.5 bg-emerald-950/80 border border-emerald-700/60 rounded-xl text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="w-full p-2.5 bg-emerald-950/80 border border-emerald-700/60 rounded-xl text-white text-xs font-semibold focus:outline-none"
             >
               {staffMembers.map(s => (
-                <option key={s.id} value={s.id}>
-                  {s.full_name} ({s.phone})
-                </option>
+                <option key={s.id} value={s.id}>{s.full_name} ({s.code})</option>
               ))}
             </select>
           </div>
 
-          {/* Select Truck (Xe nhận) */}
+          {/* Select Truck (Xe vận chuyển) */}
           <div className="space-y-1">
             <label className="text-xs font-semibold text-slate-300 flex items-center gap-1">
-              <Truck className="w-3.5 h-3.5 text-amber-400" /> Xe Vận Chuyển Nhận Lúa *
+              <Truck className="w-3.5 h-3.5 text-amber-400" /> Xe Nhận Vận Chuyển *
             </label>
             <select
               value={selectedTruckId}
               onChange={(e) => setSelectedTruckId(e.target.value)}
-              className="w-full p-2.5 bg-emerald-950/80 border border-emerald-700/60 rounded-xl text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="w-full p-2.5 bg-emerald-950/80 border border-emerald-700/60 rounded-xl text-white text-xs font-semibold focus:outline-none"
             >
               {trucks.map(t => (
-                <option key={t.id} value={t.id}>
-                  {t.license_plate} - Tài xế {t.driver_name}
-                </option>
+                <option key={t.id} value={t.id}>{t.license_plate} - {t.driver_name} ({t.capacity_tons} tấn)</option>
               ))}
             </select>
           </div>
 
-          {/* Select Variety (Giống lúa) */}
+          {/* Select Variety & Unit Price */}
           <div className="space-y-1">
             <label className="text-xs font-semibold text-slate-300 flex items-center gap-1">
-              <Wheat className="w-3.5 h-3.5 text-gold-400" /> Chọn Giống Lúa *
+              <Wheat className="w-3.5 h-3.5 text-gold-400" /> Giống Lúa & Giá Mua (VNĐ/kg) *
             </label>
-            <select
-              value={selectedVarietyId}
-              onChange={(e) => handleVarietyChange(e.target.value)}
-              className="w-full p-2.5 bg-emerald-950/80 border border-emerald-700/60 rounded-xl text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
-            >
-              {varieties.map(v => (
-                <option key={v.id} value={v.id}>
-                  {v.name} ({v.code}) - {v.default_price.toLocaleString('vi-VN')}đ/kg
-                </option>
-              ))}
-            </select>
-          </div>
+            <div className="flex gap-2">
+              <select
+                value={selectedVarietyId}
+                onChange={(e) => handleVarietyChange(e.target.value)}
+                className="w-1/2 p-2.5 bg-emerald-950/80 border border-emerald-700/60 rounded-xl text-white text-xs font-semibold focus:outline-none"
+              >
+                {varieties.map(v => (
+                  <option key={v.id} value={v.id}>{v.name}</option>
+                ))}
+              </select>
 
-          {/* Select & Override Xứ đồng & Lô (Dropdown từ Vùng Trồng) */}
-          <div className="space-y-1">
-            <label className="text-xs font-semibold text-slate-300 flex items-center gap-1">
-              <MapPin className="w-3.5 h-3.5 text-rose-400" /> Lựa Chọn Vùng Trồng (Xứ Đồng & Lô) *
-            </label>
-            <select
-              value={selectedAreaId}
-              onChange={(e) => handleAreaSelectChange(e.target.value)}
-              className="w-full p-2.5 bg-emerald-950/80 border border-emerald-700/60 rounded-xl text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
-            >
-              {growingAreas.map(a => (
-                <option key={a.id} value={a.id}>
-                  {a.field_region} - {a.lot} ({a.area.toLocaleString('vi-VN')} m²)
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Unit Price (Giá mua) */}
-          <div className="space-y-1">
-            <label className="text-xs font-semibold text-slate-300 flex items-center gap-1">
-              <Coins className="w-3.5 h-3.5 text-gold-400" /> Đơn Giá Mua (VNĐ / kg) *
-            </label>
-            <input
-              type="number"
-              value={unitPrice}
-              onChange={(e) => setUnitPrice(parseFloat(e.target.value) || 0)}
-              className="w-full p-2.5 bg-emerald-950/80 border border-emerald-700/60 rounded-xl text-gold-300 font-extrabold text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
-            />
-          </div>
-
-        </div>
-      </div>
-
-      {/* Main Weighing Execution Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-
-        {/* Mobile Numpad Data Entry Panel (5 Columns) */}
-        <div className="lg:col-span-5 glass-card p-5 rounded-2xl space-y-4">
-          <div className="flex justify-between items-center border-b border-emerald-800/40 pb-2">
-            <h3 className="text-sm font-bold text-white flex items-center gap-2">
-              <Scale className="w-4 h-4 text-emerald-400" /> Nhập Lượt Cân (Tươi & Trừ Bì %)
-            </h3>
-            <span className="text-[10px] text-gold-400 bg-gold-500/10 px-2 py-0.5 rounded border border-gold-500/30 font-bold">
-              Lần cân thứ {items.length + 1}
-            </span>
-          </div>
-
-          {/* Select Bag Count Option (1, 2, 3, hoặc 4 bao) */}
-          <div>
-            <label className="text-xs font-semibold text-slate-300 block mb-1.5">
-              Chọn số bao lượt này:
-            </label>
-            <div className="grid grid-cols-4 gap-2">
-              {[1, 2, 3, 4].map((count) => (
-                <button
-                  key={count}
-                  type="button"
-                  onClick={() => setBagCount(count)}
-                  className={`py-2 px-1 rounded-xl font-extrabold text-xs border flex items-center justify-center gap-1 transition-all ${
-                    bagCount === count
-                      ? 'bg-emerald-600 border-emerald-400 text-white shadow-lg scale-105'
-                      : 'bg-emerald-950/60 border-emerald-900 text-slate-400 hover:text-white'
-                  }`}
-                >
-                  <Package className="w-3.5 h-3.5" /> {count} Bao
-                </button>
-              ))}
+              <input
+                type="number"
+                value={unitPrice}
+                onChange={(e) => setUnitPrice(parseFloat(e.target.value) || 0)}
+                className="w-1/2 p-2.5 bg-brand-dark border border-gold-500/60 rounded-xl text-gold-300 font-extrabold text-xs focus:outline-none font-mono"
+              />
             </div>
           </div>
 
-          {/* Tare Percentage (%) Setting (Mặc định 12% tùy chỉnh) */}
-          <div>
-            <div className="flex justify-between items-center mb-1">
-              <label className="text-xs font-semibold text-gold-300 flex items-center gap-1">
-                <Percent className="w-3.5 h-3.5 text-gold-400" /> Tỉ lệ trừ bì (%) * (Mặc định 12%):
-              </label>
-              <span className="text-[11px] text-emerald-400 font-bold">
-                = {currentTareKg} kg trừ bì
-              </span>
-            </div>
-            <div className="grid grid-cols-5 gap-1.5">
-              {['10', '11', '12', '13', '15'].map((pct) => (
+          {/* Tare Percentage Config (Trừ Bì %) */}
+          <div className="space-y-1">
+            <label className="text-xs font-semibold text-slate-300 flex items-center gap-1">
+              <Percent className="w-3.5 h-3.5 text-sky-400" /> Cài Đặt Trừ Bì Bao Lúa (%) *
+            </label>
+            <div className="flex gap-1.5">
+              {['10', '11', '12', '13', '15'].map(pct => (
                 <button
                   key={pct}
                   type="button"
                   onClick={() => setTarePercentInput(pct)}
-                  className={`py-1.5 rounded-lg text-xs font-bold border transition-colors ${
+                  className={`flex-1 py-2 rounded-xl text-xs font-black border transition-all ${
                     tarePercentInput === pct
-                      ? 'bg-gold-500/30 border-gold-400 text-gold-300'
-                      : 'bg-emerald-950 border-emerald-900 text-slate-400 hover:text-white'
+                      ? 'bg-sky-600 text-white border-sky-400 shadow'
+                      : 'bg-emerald-950/80 border-emerald-800 text-slate-400 hover:text-white'
                   }`}
                 >
                   {pct}%
                 </button>
               ))}
             </div>
-            <input
-              type="number"
-              step="0.1"
-              value={tarePercentInput}
-              onChange={(e) => setTarePercentInput(e.target.value)}
-              placeholder="12"
-              className="w-full mt-1.5 p-2 bg-brand-dark border border-gold-500/50 rounded-xl text-right font-bold text-gold-300 text-xs focus:outline-none"
-            />
           </div>
 
-          {/* Gross Weight Display & Calculation Preview */}
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="text-[11px] font-semibold text-slate-300 block mb-1">
-                Sản lượng tươi (kg) (Nhấn Enter để thêm)
-              </label>
-              <div className="p-2.5 rounded-xl bg-brand-dark border-2 border-emerald-500/60 flex items-center justify-between">
-                <input
-                  type="number"
-                  value={grossWeightInput}
-                  onChange={(e) => setGrossWeightInput(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      handleAddWeighEntry();
-                    }
-                  }}
-                  className="bg-transparent text-2xl font-black text-emerald-400 tracking-wider text-right w-full focus:outline-none font-mono"
-                  placeholder="0"
-                />
-                <span className="text-xs text-slate-400 ml-1">kg</span>
-              </div>
-            </div>
-
-            <div>
-              <label className="text-[11px] font-semibold text-slate-300 block mb-1">
-                Lúa khô tính toán ({100 - currentTarePercent}%)
-              </label>
-              <div className="p-2.5 rounded-xl bg-brand-dark border border-gold-500/60 text-right">
-                <span className="text-2xl font-black text-gold-300 tracking-wider font-mono">
-                  {currentNetKg}
-                </span>
-                <span className="text-xs text-gold-400 ml-1">kg</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Quick Add Kg Preset Buttons */}
-          <div className="flex gap-2 overflow-x-auto pb-1">
-            {['50', '100', '120', '135', '150', '160', '180'].map((preset) => (
-              <button
-                key={preset}
-                type="button"
-                onClick={() => setGrossWeightInput(preset)}
-                className="px-3 py-1.5 rounded-lg bg-emerald-950 border border-emerald-800 hover:border-emerald-500 text-xs font-bold text-emerald-300 hover:text-white transition-colors"
-              >
-                +{preset}kg
-              </button>
-            ))}
-          </div>
-
-          {/* Mobile Friendly Numpad */}
-          <div className="grid grid-cols-3 gap-2 pt-1">
-            {['1', '2', '3', '4', '5', '6', '7', '8', '9', 'C', '0', 'DEL'].map((btn) => (
-              <button
-                key={btn}
-                type="button"
-                onClick={() => handleNumpadPress(btn)}
-                className={`py-3 rounded-xl font-black text-lg transition-transform active:scale-95 shadow-md ${
-                  btn === 'C'
-                    ? 'bg-red-950/80 text-red-400 border border-red-800/60 hover:bg-red-900'
-                    : btn === 'DEL'
-                    ? 'bg-amber-950/80 text-amber-400 border border-amber-800/60 hover:bg-amber-900'
-                    : 'bg-emerald-950/80 text-white border border-emerald-800/60 hover:bg-emerald-900'
-                }`}
-              >
-                {btn}
-              </button>
-            ))}
-          </div>
-
-          {/* Add Entry & Undo Buttons */}
-          <div className="space-y-2">
-            <button
-              type="button"
-              onClick={handleAddWeighEntry}
-              className="w-full py-3.5 rounded-xl font-extrabold text-sm text-brand-dark bg-gradient-to-r from-emerald-400 via-emerald-300 to-gold-400 hover:brightness-110 shadow-xl shadow-emerald-500/20 flex items-center justify-center gap-2 cursor-pointer transition-all"
+          {/* Area & Lot Location */}
+          <div className="space-y-1">
+            <label className="text-xs font-semibold text-slate-300 flex items-center gap-1">
+              <MapPin className="w-3.5 h-3.5 text-sky-400" /> Xứ Đồng & Lô *
+            </label>
+            <select
+              value={selectedAreaId}
+              onChange={(e) => handleAreaSelectChange(e.target.value)}
+              className="w-full p-2.5 bg-emerald-950/80 border border-emerald-700/60 rounded-xl text-white text-xs font-semibold focus:outline-none"
             >
-              <Plus className="w-5 h-5" /> Thêm Lượt Cân (+{bagCount} Bao • Trừ bì {tarePercentInput}%)
-            </button>
+              {growingAreas.map(a => (
+                <option key={a.id} value={a.id}>{a.field_region} - {a.lot} ({a.area.toLocaleString('vi-VN')} m²)</option>
+              ))}
+            </select>
+          </div>
 
-            {items.length > 0 && (
-              <button
-                type="button"
-                onClick={handleUndoLastItem}
-                className="w-full py-2 rounded-xl text-xs font-bold text-amber-300 bg-amber-950/40 border border-amber-800/50 hover:bg-amber-900/60 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-              >
-                <Undo2 className="w-3.5 h-3.5" /> Xóa Lượt Vừa Nhập Gần Nhất
-              </button>
+        </div>
+      </div>
+
+      {/* Main Weighing Entry Card (Khối Nhập Liệu Cân Trực Tiếp) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+
+        {/* Left Input Control Box */}
+        <div className="lg:col-span-5 space-y-4">
+          <div className="glass-card p-5 rounded-2xl space-y-4 border border-emerald-600/50 shadow-xl">
+            <div className="flex justify-between items-center border-b border-emerald-800/40 pb-2">
+              <h3 className="text-sm font-black text-white flex items-center gap-2">
+                <Scale className="w-4 h-4 text-gold-400" />
+                Cân Lượt Tiếp Theo
+              </h3>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                LƯỢT THỨ #{items.length + 1}
+              </span>
+            </div>
+
+            {/* Bag Count Selector (1 bao, 2 bao, 3 bao, 4 bao, 5 bao) */}
+            <div>
+              <label className="text-xs font-bold text-slate-300 block mb-1.5">
+                1. Chọn Số Bao Lượt Cân Này:
+              </label>
+              <div className="grid grid-cols-5 gap-1.5">
+                {[1, 2, 3, 4, 5].map((count) => (
+                  <button
+                    key={count}
+                    type="button"
+                    onClick={() => { setBagCount(count); playBeep(700, 0.04); }}
+                    className={`py-3 rounded-xl font-extrabold text-xs sm:text-sm border transition-all cursor-pointer ${
+                      bagCount === count
+                        ? 'bg-gradient-to-r from-gold-400 to-gold-500 text-brand-dark border-gold-300 shadow-lg scale-105 font-black'
+                        : 'bg-emerald-950/80 border-emerald-800/80 text-slate-300 hover:bg-emerald-900/60'
+                    }`}
+                  >
+                    {count} Bao
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Weight Input Box with Keyboard Enter Shortcut */}
+            <div>
+              <div className="flex justify-between items-center mb-1.5">
+                <label className="text-xs font-bold text-slate-300">
+                  2. Nhập Sản Lượng Tươi (Kg):
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setShowNumpadOverlay(!showNumpadOverlay)}
+                  className="text-[11px] font-bold text-sky-400 hover:underline flex items-center gap-1"
+                >
+                  <Calculator className="w-3.5 h-3.5" />
+                  {showNumpadOverlay ? 'Ẩn Bàn Phím Số' : 'Hiện Bàn Phím Cảm Ứng'}
+                </button>
+              </div>
+
+              <div className="relative flex gap-2">
+                <div className="relative flex-1">
+                  <input
+                    ref={grossInputRef}
+                    type="number"
+                    step="0.1"
+                    value={grossWeightInput}
+                    onChange={(e) => setGrossWeightInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleAddWeighEntry();
+                      }
+                    }}
+                    placeholder="Gõ kg lúa tươi rồi ấn ENTER..."
+                    className="w-full p-3.5 bg-brand-dark/95 border-2 border-emerald-500 rounded-2xl text-white font-black text-2xl tracking-wider focus:outline-none focus:border-gold-400 shadow-inner font-mono text-center"
+                  />
+                  <span className="absolute right-4 top-4 text-xs font-black text-gold-400">KG TƯƠI</span>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleAddWeighEntry}
+                  className="px-5 rounded-2xl bg-gradient-to-r from-emerald-500 via-emerald-600 to-teal-600 hover:brightness-110 text-white font-black text-sm shadow-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer whitespace-nowrap"
+                >
+                  <Plus className="w-5 h-5" /> THÊM LƯỢT (ENTER)
+                </button>
+              </div>
+            </div>
+
+            {/* Quick Weight Preset Buttons (+40, +50, +60, +70, +80, +100, +120, +150) */}
+            <div>
+              <span className="text-[11px] font-semibold text-slate-400 block mb-1">
+                Gợi ý nhanh kg chuẩn ngoài đồng:
+              </span>
+              <div className="grid grid-cols-4 gap-1.5">
+                {[60, 90, 100, 110, 120, 140, 150, 180].map(wt => (
+                  <button
+                    key={wt}
+                    type="button"
+                    onClick={() => handlePresetWeight(wt)}
+                    className="py-1.5 px-2 rounded-xl bg-emerald-950 border border-emerald-800 hover:border-emerald-600 text-emerald-300 font-bold text-xs font-mono transition-colors"
+                  >
+                    +{wt} kg
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Live Calculation Preview Box */}
+            <div className="p-3.5 rounded-xl bg-emerald-950/80 border border-emerald-800/80 space-y-1.5 text-xs">
+              <div className="flex justify-between items-center">
+                <span className="text-slate-400">Cân tươi lượt này:</span>
+                <strong className="text-white font-mono">{currentGross.toLocaleString('vi-VN')} kg</strong>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-slate-400">Tỷ lệ trừ bì bao lúa ({currentTarePercent}%):</span>
+                <strong className="text-gold-400 font-mono">-{currentTareKg.toLocaleString('vi-VN')} kg</strong>
+              </div>
+              <div className="flex justify-between items-center border-t border-emerald-900/60 pt-1.5">
+                <span className="font-extrabold text-emerald-300">Lúa khô thực tính lượt này:</span>
+                <strong className="text-emerald-400 font-black text-sm font-mono">{currentNetKg.toLocaleString('vi-VN')} kg</strong>
+              </div>
+            </div>
+
+            {/* Numpad Touch Screen Drawer */}
+            {showNumpadOverlay && (
+              <div className="p-3 bg-brand-dark/95 border border-emerald-700/60 rounded-2xl space-y-2 animate-in zoom-in-95">
+                <div className="grid grid-cols-3 gap-2">
+                  {['7', '8', '9', '4', '5', '6', '1', '2', '3', '0', '.', 'C'].map((btn) => (
+                    <button
+                      key={btn}
+                      type="button"
+                      onClick={() => handleNumpadPress(btn)}
+                      className={`p-3 rounded-xl font-black text-lg shadow border transition-all ${
+                        btn === 'C'
+                          ? 'bg-red-500/20 border-red-500/40 text-red-300'
+                          : 'bg-emerald-950 border-emerald-800 text-white hover:bg-emerald-900'
+                      }`}
+                    >
+                      {btn}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleNumpadPress('DEL')}
+                    className="flex-1 py-2 bg-slate-800 border border-slate-700 text-white font-bold rounded-xl text-xs"
+                  >
+                    ⌫ Xóa Ký Tự
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleAddWeighEntry}
+                    className="flex-1 py-2 bg-emerald-600 border border-emerald-500 text-white font-extrabold rounded-xl text-xs"
+                  >
+                    ✓ Nhập Cân Lượt Này
+                  </button>
+                </div>
+              </div>
             )}
           </div>
         </div>
 
-        {/* Session Items Table & Cumulative Calculation Panel (7 Columns) */}
+        {/* Right Weighing Table & Totals */}
         <div className="lg:col-span-7 space-y-4">
+          <div className="glass-card p-5 rounded-2xl space-y-4 flex flex-col h-full justify-between">
 
-          {/* Real-time Summary Cards Header */}
-          <div className="glass-card-gold p-4 rounded-2xl grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
             <div>
-              <span className="text-[10px] uppercase font-bold text-gold-400/80">TỔNG SỐ BAO</span>
-              <p className="text-xl font-black text-gold-300">{totalBags} bao</p>
-            </div>
-            <div>
-              <span className="text-[10px] uppercase font-bold text-gold-400/80">SẢN LƯỢNG TƯƠI</span>
-              <p className="text-xl font-black text-white">{totalFreshWeight.toLocaleString('vi-VN')} kg</p>
-            </div>
-            <div>
-              <span className="text-[10px] uppercase font-bold text-gold-400/80">SẢN LƯỢNG KHÔ</span>
-              <p className="text-xl font-black text-emerald-400">{totalDryWeight.toLocaleString('vi-VN')} kg</p>
-            </div>
-            <div>
-              <span className="text-[10px] uppercase font-bold text-gold-400/80">THÀNH TIỀN</span>
-              <p className="text-lg font-black text-gold-300">{totalAmount.toLocaleString('vi-VN')} đ</p>
-            </div>
-          </div>
+              {/* Header & Undo Toolbar */}
+              <div className="flex justify-between items-center border-b border-emerald-800/40 pb-3 mb-3">
+                <div>
+                  <h3 className="text-sm font-extrabold text-white flex items-center gap-2">
+                    <Package className="w-4 h-4 text-gold-400" />
+                    Danh Sách Các Lượt Cân ({items.length} lượt • {totalBags} bao)
+                  </h3>
+                  <p className="text-[11px] text-slate-400">
+                    Hộ: <strong className="text-gold-300">{currentFarmer?.name}</strong> • Xứ đồng: {fieldRegion} ({lot})
+                  </p>
+                </div>
 
-          {/* Items Table */}
-          <div className="glass-card p-4 rounded-2xl space-y-3">
-            <div className="flex justify-between items-center">
-              <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider">
-                Danh Sách Chi Tiết {items.length} Lượt Cân
-              </h3>
-              <span className="text-[11px] text-gold-400 font-semibold">Trừ bì % tự động</span>
-            </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={handleUndoLastItem}
+                    disabled={items.length === 0}
+                    className="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 font-bold text-xs flex items-center gap-1.5 disabled:opacity-40 transition-all cursor-pointer"
+                    title="Xóa lượt cân vừa nhập nếu gõ nhầm"
+                  >
+                    <Undo2 className="w-3.5 h-3.5" /> Xóa Lượt Vừa Nhập (Undo)
+                  </button>
+                </div>
+              </div>
 
-            <div className="overflow-x-auto max-h-72 border border-emerald-900/60 rounded-xl">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-emerald-950/90 text-emerald-400 uppercase text-[10px] tracking-wider sticky top-0">
-                  <tr>
-                    <th className="p-2 text-center">Lượt</th>
-                    <th className="p-2 text-center">Số bao</th>
-                    <th className="p-2 text-right">Cân tươi (kg)</th>
-                    <th className="p-2 text-right">Trừ bì (%)</th>
-                    <th className="p-2 text-right">Trừ bì (kg)</th>
-                    <th className="p-2 text-right">Cân khô (kg)</th>
-                    <th className="p-2 text-center">Xóa</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-emerald-900/40">
-                  {items.length === 0 ? (
+              {/* Table of items */}
+              <div className="overflow-x-auto max-h-72 overflow-y-auto rounded-xl border border-emerald-900/60">
+                <table className="w-full text-left text-xs text-slate-300">
+                  <thead className="bg-emerald-950 text-emerald-400 uppercase text-[10px] sticky top-0 font-bold">
                     <tr>
-                      <td colSpan={7} className="p-6 text-center text-slate-400">
-                        Chưa có lượt cân nào. Sử dụng Numpad bên trái để thêm lượt cân.
-                      </td>
+                      <th className="p-2.5">Lượt</th>
+                      <th className="p-2.5 text-center">Số bao</th>
+                      <th className="p-2.5 text-right">Kg tươi</th>
+                      <th className="p-2.5 text-right">Trừ bì ({tarePercentInput}%)</th>
+                      <th className="p-2.5 text-right">Kg khô</th>
+                      <th className="p-2.5 text-center">Xóa</th>
                     </tr>
-                  ) : (
-                    items.map(item => (
-                      <tr key={item.id} className="hover:bg-emerald-900/30 transition-colors">
-                        <td className="p-2 text-center font-bold text-slate-300 font-mono">#{item.sequence}</td>
-                        <td className="p-2 text-center font-bold text-gold-300">{item.bag_count} bao</td>
-                        <td className="p-2 text-right font-bold text-emerald-300 font-mono">{item.gross_weight} kg</td>
-                        <td className="p-2 text-right font-bold text-gold-400">{item.tare_percent}%</td>
-                        <td className="p-2 text-right text-slate-300 font-mono">{item.tare_weight} kg</td>
-                        <td className="p-2 text-right font-extrabold text-white font-mono">{item.net_weight} kg</td>
-                        <td className="p-2 text-center">
-                          <button
-                            onClick={() => handleRemoveItem(item.id)}
-                            className="p-1 text-red-400 hover:text-red-300 hover:bg-red-500/20 rounded transition-colors"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
+                  </thead>
+                  <tbody className="divide-y divide-emerald-900/40 font-mono">
+                    {items.length === 0 ? (
+                      <tr>
+                        <td colSpan={6} className="p-8 text-center text-slate-400">
+                          Chưa có lượt cân nào. Hãy gõ kg lúa tươi và ấn ENTER để thêm!
                         </td>
                       </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
+                    ) : (
+                      items.map((item) => (
+                        <tr key={item.id} className="hover:bg-emerald-900/30 transition-colors">
+                          <td className="p-2.5 font-bold text-gold-300">#{item.sequence}</td>
+                          <td className="p-2.5 text-center font-bold text-white">
+                            <span className="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800">
+                              {item.bag_count} bao
+                            </span>
+                          </td>
+                          <td className="p-2.5 text-right text-slate-200">{item.gross_weight.toLocaleString('vi-VN')} kg</td>
+                          <td className="p-2.5 text-right text-gold-400">-{item.tare_weight.toLocaleString('vi-VN')} kg</td>
+                          <td className="p-2.5 text-right font-extrabold text-emerald-400">{item.net_weight.toLocaleString('vi-VN')} kg</td>
+                          <td className="p-2.5 text-center">
+                            <button
+                              onClick={() => handleRemoveItem(item.id)}
+                              className="p-1 text-red-400 hover:bg-red-500/20 rounded transition-colors"
+                              title="Xóa lượt này"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
+
+            {/* Summary Totals Box */}
+            <div className="pt-3 border-t border-emerald-800/40 space-y-3">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-center">
+                <div className="p-2.5 rounded-xl bg-emerald-950/80 border border-emerald-800/60">
+                  <span className="text-[10px] text-slate-400 font-semibold uppercase block">TỔNG BỐI BAO</span>
+                  <span className="text-base font-black text-white font-mono">{totalBags} bao</span>
+                </div>
+
+                <div className="p-2.5 rounded-xl bg-emerald-950/80 border border-emerald-800/60">
+                  <span className="text-[10px] text-slate-400 font-semibold uppercase block">TỔNG TƯƠI</span>
+                  <span className="text-base font-black text-blue-400 font-mono">{totalFreshWeight.toLocaleString('vi-VN')} kg</span>
+                </div>
+
+                <div className="p-2.5 rounded-xl bg-emerald-950/80 border border-emerald-800/60">
+                  <span className="text-[10px] text-slate-400 font-semibold uppercase block">LÚA KHÔ THỰC TÍNH</span>
+                  <span className="text-base font-black text-emerald-400 font-mono">{totalDryWeight.toLocaleString('vi-VN')} kg</span>
+                </div>
+
+                <div className="p-2.5 rounded-xl bg-gold-500/20 border border-gold-500/40">
+                  <span className="text-[10px] text-gold-400 font-bold uppercase block">TỔNG THÀNH TIỀN</span>
+                  <span className="text-base font-black text-gold-300 font-mono">{totalAmount.toLocaleString('vi-VN')} đ</span>
+                </div>
+              </div>
+
+              {/* Action Toolbar */}
+              <div className="flex flex-wrap sm:flex-nowrap gap-2 justify-end pt-1">
+                <button
+                  onClick={handleShareZalo}
+                  className="flex-1 sm:flex-initial py-2.5 px-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs shadow-md flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                >
+                  <Share2 className="w-4 h-4" /> Gửi Zalo Phiếu Cân
+                </button>
+
+                <button
+                  onClick={handlePrint}
+                  className="flex-1 sm:flex-initial py-2.5 px-3.5 rounded-xl bg-emerald-800 hover:bg-emerald-700 text-white font-extrabold text-xs shadow-md flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                >
+                  <Printer className="w-4 h-4 text-gold-400" /> In Phiếu Nhiệt
+                </button>
+
+                <button
+                  onClick={handleSaveSession}
+                  className="flex-1 sm:flex-initial py-2.5 px-4 rounded-xl bg-gradient-to-r from-gold-400 to-gold-500 hover:brightness-110 text-brand-dark font-extrabold text-xs shadow-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                >
+                  <Save className="w-4 h-4" /> Lưu Phiên Cân
+                </button>
+
+                <button
+                  onClick={handleSaveAndNextFarmer}
+                  className="flex-1 sm:flex-initial py-2.5 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:brightness-110 text-white font-extrabold text-xs shadow-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                  title="Lưu phiên cân hiện tại và mở modal chọn hộ tiếp theo"
+                >
+                  <span>Chuyển Hộ Tiếp Theo</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
           </div>
-
-          {/* Primary Action Buttons */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            <button
-              onClick={handleSaveSession}
-              className="py-3 px-3 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-extrabold text-xs shadow-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer"
-            >
-              <Save className="w-4 h-4 text-gold-400" />
-              <span>Lưu Phiên Cân</span>
-            </button>
-
-            <button
-              onClick={handleShareZalo}
-              className="py-3 px-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs shadow-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer"
-            >
-              <Share2 className="w-4 h-4" />
-              <span>Gửi Zalo</span>
-            </button>
-
-            <button
-              onClick={handleExportImage}
-              className="py-3 px-3 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-extrabold text-xs shadow-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer"
-            >
-              <FileImage className="w-4 h-4" />
-              <span>Xuất Ảnh PNG</span>
-            </button>
-
-            <button
-              onClick={handlePrint}
-              className="py-3 px-3 rounded-xl bg-gold-500 hover:bg-gold-400 text-brand-dark font-extrabold text-xs shadow-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer"
-            >
-              <Printer className="w-4 h-4" />
-              <span>In Phiếu Nhiệt</span>
-            </button>
-          </div>
-
         </div>
 
       </div>
 
-      {/* Printable Thermal Receipt Ticket */}
+      {/* Thermal Receipt Ticket Preview (Mẫu phiếu in nhiệt 80mm ngoài đồng) */}
       <div className="mt-8">
-        <h3 className="text-xs font-bold text-slate-400 mb-2">Xem Trước Phiếu Cân Nhiệt (Thermal Receipt Preview):</h3>
+        <h3 className="text-xs font-bold text-slate-400 mb-2">Mẫu Xem Trước Phiếu In Nhiệt Kính Gửi Hộ Dân (80mm Thermal Receipt):</h3>
 
         <div
           ref={ticketRef}
           id="printable-ticket"
-          className="max-w-sm mx-auto bg-white text-black p-4 rounded-xl shadow-2xl font-mono text-xs space-y-3 border border-slate-300"
+          className="max-w-xs mx-auto bg-white text-black p-4 rounded-2xl shadow-2xl font-mono text-[11px] space-y-3 border border-slate-300"
         >
-          <div className="text-center border-b border-black pb-2">
-            <h2 className="font-extrabold text-base tracking-wider">HỢP TÁC XÃ NÔNG NGHIỆP RICE OS</h2>
-            <p className="text-[10px]">PHIẾU CÂN LÚA THU MUA TẠI RUỘNG</p>
-            <p className="text-[10px] font-bold mt-0.5">Mã: {sessionCode || 'PC-20260813-MỚI'}</p>
+          <div className="text-center border-b border-dashed border-black pb-2">
+            <h2 className="font-extrabold text-sm uppercase">PHIẾU CÂN LÚA ĐIỆN TỬ</h2>
+            <p className="text-[10px]">HỢP TÁC XÃ NÔNG NGHIỆP RICE OS</p>
+            <p className="text-[9px] text-gray-600 mt-0.5">Mã phiên: {sessionCode || 'PC-20260813-001'}</p>
           </div>
 
-          <div className="space-y-1 text-[11px]">
+          <div className="space-y-1 text-[10px]">
             <p><strong>Hộ sản xuất:</strong> {currentFarmer?.name}</p>
+            {currentFarmer?.landowner_name && <p><strong>Chủ đất:</strong> {currentFarmer.landowner_name}</p>}
             <p><strong>SĐT:</strong> {currentFarmer?.phone}</p>
             <p><strong>Cán bộ cân:</strong> {currentStaff?.full_name}</p>
-            <p><strong>Xe nhận:</strong> {currentTruck?.license_plate} ({currentTruck?.driver_name})</p>
+            <p><strong>Xe vận chuyển:</strong> {currentTruck?.license_plate}</p>
             <p><strong>Giống lúa:</strong> {currentVariety?.name}</p>
             <p><strong>Xứ đồng:</strong> {fieldRegion} - {lot}</p>
-            <p><strong>Thời gian:</strong> {new Date().toLocaleDateString('vi-VN')} {new Date().toLocaleTimeString('vi-VN')}</p>
+            <p><strong>Thời gian:</strong> {new Date().toLocaleString('vi-VN')}</p>
           </div>
 
-          <table className="w-full border-t border-b border-black text-[10px] my-2 text-left">
+          <table className="w-full border-t border-b border-black text-[10px] text-left">
             <thead>
-              <tr className="border-b border-black">
+              <tr className="border-b border-black font-bold">
                 <th className="py-1">Lượt</th>
-                <th className="py-1">Bao</th>
-                <th className="py-1 text-right">Tươi</th>
-                <th className="py-1 text-right">Trừ bì %</th>
-                <th className="py-1 text-right">Trừ bì kg</th>
-                <th className="py-1 text-right">Khô</th>
+                <th className="py-1 text-center">Bao</th>
+                <th className="py-1 text-right">Kg tươi</th>
+                <th className="py-1 text-right">Kg khô</th>
               </tr>
             </thead>
             <tbody>
-              {items.map(it => (
-                <tr key={it.id}>
-                  <td className="py-0.5">#{it.sequence}</td>
-                  <td className="py-0.5">{it.bag_count}</td>
-                  <td className="py-0.5 text-right">{it.gross_weight}</td>
-                  <td className="py-0.5 text-right">{it.tare_percent}%</td>
-                  <td className="py-0.5 text-right">{it.tare_weight}</td>
-                  <td className="py-0.5 text-right font-bold">{it.net_weight}</td>
+              {items.map((item) => (
+                <tr key={item.id} className="border-b border-gray-200">
+                  <td className="py-1">#{item.sequence}</td>
+                  <td className="py-1 text-center">{item.bag_count}</td>
+                  <td className="py-1 text-right">{item.gross_weight.toLocaleString('vi-VN')}</td>
+                  <td className="py-1 text-right font-bold">{item.net_weight.toLocaleString('vi-VN')}</td>
                 </tr>
               ))}
             </tbody>
           </table>
 
-          <div className="space-y-1 text-right font-bold text-[11px]">
-            <p>TỔNG SỐ BAO: <span className="text-sm">{totalBags} bao</span></p>
+          <div className="space-y-1 text-right text-[10px]">
+            <p>TỔNG SỐ BAO LÚA: <strong>{totalBags} bao</strong></p>
             <p>SẢN LƯỢNG TƯƠI: {totalFreshWeight.toLocaleString('vi-VN')} kg</p>
             <p>TỔNG TRỪ BÌ ({tarePercentInput}%): {totalTareWeight.toLocaleString('vi-VN')} kg</p>
             <p>SẢN LƯỢNG KHÔ: <span className="text-sm underline">{totalDryWeight.toLocaleString('vi-VN')} kg</span></p>
