@@ -247,6 +247,19 @@ export default function WeighingPage() {
     playBeep(600, 0.15);
   };
 
+  // Cumulative Totals
+  const totalBags = items.reduce((sum, item) => sum + item.bag_count, 0);
+  const totalFreshWeight = Math.round(items.reduce((sum, item) => sum + item.gross_weight, 0) * 100) / 100;
+  const totalTareWeight = Math.round(items.reduce((sum, item) => sum + item.tare_weight, 0) * 100) / 100;
+  const totalDryWeight = Math.max(0, Math.round((totalFreshWeight - totalTareWeight) * 100) / 100);
+  const totalAmount = Math.round(totalDryWeight * unitPrice);
+
+  // Selected entities info
+  const currentFarmer = farmers.find(f => f.id === selectedFarmerId) || farmers[0];
+  const currentStaff = staffMembers.find(s => s.id === selectedStaffId) || staffMembers[0];
+  const currentTruck = trucks.find(t => t.id === selectedTruckId) || trucks[0];
+  const currentVariety = varieties.find(v => v.id === selectedVarietyId) || varieties[0];
+
   // Save / Record Session to Database
   const handleSaveSession = (): boolean => {
     if (items.length === 0) {
