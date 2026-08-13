@@ -61,10 +61,11 @@ export default function SettlementPage() {
     return farmers.find(f => f.id === selectedFarmerId) || farmers[0];
   }, [farmers, selectedFarmerId]);
 
-  // All plots belonging to this household
+  // All plots belonging to this household (Gộp theo tên hộ sản xuất chuẩn hóa)
   const householdPlots = useMemo(() => {
     if (!currentFarmer) return [];
-    return farmers.filter(f => f.name === currentFarmer.name);
+    const targetName = currentFarmer.name.trim().toLowerCase();
+    return farmers.filter(f => f.name.trim().toLowerCase() === targetName);
   }, [farmers, currentFarmer]);
 
   const householdPlotIds = useMemo(() => {
@@ -73,8 +74,13 @@ export default function SettlementPage() {
 
   // All weighing sessions for all plots of this household
   const farmerSessions = useMemo(() => {
-    return sessions.filter(s => householdPlotIds.has(s.farmer_id));
-  }, [sessions, householdPlotIds]);
+    if (!currentFarmer) return [];
+    const targetName = currentFarmer.name.trim().toLowerCase();
+    return sessions.filter(s =>
+      householdPlotIds.has(s.farmer_id) ||
+      (s.farmer && s.farmer.name.trim().toLowerCase() === targetName)
+    );
+  }, [sessions, householdPlotIds, currentFarmer]);
 
   // Calculation metrics for selected farmer
   const totalBags = useMemo(() => farmerSessions.reduce((sum, s) => sum + s.total_bags, 0), [farmerSessions]);
@@ -85,8 +91,13 @@ export default function SettlementPage() {
 
   // Existing settlements for all plots of this household
   const farmerSettlements = useMemo(() => {
-    return settlements.filter(st => householdPlotIds.has(st.farmer_id));
-  }, [settlements, householdPlotIds]);
+    if (!currentFarmer) return [];
+    const targetName = currentFarmer.name.trim().toLowerCase();
+    return settlements.filter(st =>
+      householdPlotIds.has(st.farmer_id) ||
+      (st.farmer && st.farmer.name.trim().toLowerCase() === targetName)
+    );
+  }, [settlements, householdPlotIds, currentFarmer]);
 
   const totalPaidSoFar = useMemo(() => {
     return farmerSettlements.reduce((sum, st) => sum + st.paid_amount, 0);
@@ -124,8 +135,9 @@ export default function SettlementPage() {
 
       const matchXuDong = selectedXuDongFilter === 'all' || f.field_region === selectedXuDongFilter;
 
-      const fSessions = sessions.filter(s => s.farmer_id === f.id);
-      const fSettlements = settlements.filter(st => st.farmer_id === f.id);
+      const targetName = f.name.trim().toLowerCase();
+      const fSessions = sessions.filter(s => s.farmer_id === f.id || (s.farmer && s.farmer.name.trim().toLowerCase() === targetName));
+      const fSettlements = settlements.filter(st => st.farmer_id === f.id || (st.farmer && st.farmer.name.trim().toLowerCase() === targetName));
 
       if (settlementStatusFilter === 'has_sessions') {
         return matchSearch && matchXuDong && fSessions.length > 0;
