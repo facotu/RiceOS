@@ -72,12 +72,8 @@ export default function WeighingPage() {
   const [grossWeightInput, setGrossWeightInput] = useState<string>(''); // Khai báo trống cho người dùng gõ từ đầu
   const [tarePercentInput, setTarePercentInput] = useState<string>('12'); // Trừ bì % mặc định 12%
 
-  // Items table for current weighing
-  const [items, setItems] = useState<Array<{ id: string; sequence: number; bag_count: number; gross_weight: number; tare_percent: number; tare_weight: number; net_weight: number }>>([
-    { id: '1', sequence: 1, bag_count: 3, gross_weight: 150, tare_percent: 12, tare_weight: 18, net_weight: 132 },
-    { id: '2', sequence: 2, bag_count: 3, gross_weight: 152, tare_percent: 12, tare_weight: 18.24, net_weight: 133.76 },
-    { id: '3', sequence: 3, bag_count: 2, gross_weight: 98, tare_percent: 12, tare_weight: 11.76, net_weight: 86.24 }
-  ]);
+  // Items table for current weighing (Khởi tạo trống 100% cho người dùng nhập từ đầu)
+  const [items, setItems] = useState<Array<{ id: string; sequence: number; bag_count: number; gross_weight: number; tare_percent: number; tare_weight: number; net_weight: number }>>([]);
 
   const [savedSuccess, setSavedSuccess] = useState(false);
   const [zaloSuccessMsg, setZaloSuccessMsg] = useState('');
@@ -138,7 +134,7 @@ export default function WeighingPage() {
   const currentTareKg = Math.round((currentGross * (currentTarePercent / 100)) * 100) / 100;
   const currentNetKg = Math.max(0, Math.round((currentGross - currentTareKg) * 100) / 100);
 
-  // Auto update fields when Farmer changes
+  // Auto update fields when Farmer changes (Tự động khởi tạo phiên cân sạch 100% cho hộ mới)
   const handleFarmerChange = (farmerId: string) => {
     setSelectedFarmerId(farmerId);
     const f = farmers.find(item => item.id === farmerId);
@@ -150,6 +146,13 @@ export default function WeighingPage() {
         setSelectedAreaId(matchingArea.id);
       }
     }
+
+    // Tự động làm sạch hoàn toàn danh sách lượt cân cũ khi chuyển hộ mới
+    setItems([]);
+    setGrossWeightInput('');
+    setActiveSessionId(null);
+    setSessionCode('');
+    localStorage.removeItem('riceos_active_weighing_session');
   };
 
   // Auto update when Growing Area dropdown changes
@@ -303,6 +306,12 @@ export default function WeighingPage() {
 
     setSavedSuccess(true);
     playBeep(1200, 0.2);
+
+    // Tự động dọn sạch danh sách lượt cân cũ sau khi lưu thành công vào Database
+    setItems([]);
+    setGrossWeightInput('');
+    localStorage.removeItem('riceos_active_weighing_session');
+
     setTimeout(() => setSavedSuccess(false), 3500);
     return true;
   };
