@@ -61,10 +61,20 @@ export default function SettlementPage() {
     return farmers.find(f => f.id === selectedFarmerId) || farmers[0];
   }, [farmers, selectedFarmerId]);
 
-  // All weighing sessions for current selected farmer
+  // All plots belonging to this household
+  const householdPlots = useMemo(() => {
+    if (!currentFarmer) return [];
+    return farmers.filter(f => f.name === currentFarmer.name);
+  }, [farmers, currentFarmer]);
+
+  const householdPlotIds = useMemo(() => {
+    return new Set(householdPlots.map(f => f.id));
+  }, [householdPlots]);
+
+  // All weighing sessions for all plots of this household
   const farmerSessions = useMemo(() => {
-    return sessions.filter(s => s.farmer_id === selectedFarmerId);
-  }, [sessions, selectedFarmerId]);
+    return sessions.filter(s => householdPlotIds.has(s.farmer_id));
+  }, [sessions, householdPlotIds]);
 
   // Calculation metrics for selected farmer
   const totalBags = useMemo(() => farmerSessions.reduce((sum, s) => sum + s.total_bags, 0), [farmerSessions]);
@@ -73,10 +83,10 @@ export default function SettlementPage() {
   const totalDry = useMemo(() => farmerSessions.reduce((sum, s) => sum + s.total_dry_weight, 0), [farmerSessions]);
   const totalAmount = useMemo(() => farmerSessions.reduce((sum, s) => sum + s.total_amount, 0), [farmerSessions]);
 
-  // Existing settlements for selected farmer
+  // Existing settlements for all plots of this household
   const farmerSettlements = useMemo(() => {
-    return settlements.filter(st => st.farmer_id === selectedFarmerId);
-  }, [settlements, selectedFarmerId]);
+    return settlements.filter(st => householdPlotIds.has(st.farmer_id));
+  }, [settlements, householdPlotIds]);
 
   const totalPaidSoFar = useMemo(() => {
     return farmerSettlements.reduce((sum, st) => sum + st.paid_amount, 0);

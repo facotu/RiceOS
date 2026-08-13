@@ -27,6 +27,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { toPng } from 'html-to-image';
+import FarmerPickerModal from '@/components/FarmerPickerModal';
 
 export default function WeighingPage() {
   const {
@@ -41,6 +42,7 @@ export default function WeighingPage() {
   } = useApp();
 
   // Search & Form Selections
+  const [isPickerOpen, setIsPickerOpen] = useState(false);
   const [farmerSearch, setFarmerSearch] = useState('');
   const [selectedFarmerId, setSelectedFarmerId] = useState(farmers[0]?.id || '');
   const [selectedStaffId, setSelectedStaffId] = useState(staffMembers[0]?.id || '');
@@ -323,37 +325,39 @@ TỔNG THÀNH TIỀN: ${totalAmount.toLocaleString('vi-VN')} VNĐ
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
 
-          {/* Search & Select Farmer (Hộ sản xuất) */}
-          <div className="space-y-1">
+          {/* Touch-friendly Smart Farmer & Plot Selector */}
+          <div className="space-y-1 sm:col-span-2 lg:col-span-1">
             <label className="text-xs font-semibold text-slate-300 flex items-center justify-between">
               <span className="flex items-center gap-1">
-                <Search className="w-3.5 h-3.5 text-gold-400" /> Chọn Hộ Sản Xuất *
+                <Search className="w-3.5 h-3.5 text-gold-400" /> Chọn Hộ Sản Xuất & Thửa Đất *
               </span>
               {currentFarmer?.landowner_name && (
                 <span className="text-[10px] text-slate-400 font-normal">Chủ: {currentFarmer.landowner_name}</span>
               )}
             </label>
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Tìm theo tên hộ sản xuất, SĐT, Lô..."
-                value={farmerSearch}
-                onChange={(e) => setFarmerSearch(e.target.value)}
-                className="w-full pl-8 pr-3 py-1.5 bg-brand-dark/90 border border-emerald-800/60 rounded-lg text-white text-xs mb-1 focus:ring-1 focus:ring-emerald-500"
-              />
-              <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />
-            </div>
-            <select
-              value={selectedFarmerId}
-              onChange={(e) => handleFarmerChange(e.target.value)}
-              className="w-full p-2.5 bg-emerald-950/80 border border-emerald-700/60 rounded-xl text-white text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
+
+            <button
+              type="button"
+              onClick={() => setIsPickerOpen(true)}
+              className="w-full text-left p-2.5 bg-emerald-950/90 border border-emerald-600/80 hover:border-gold-400 rounded-xl transition-all flex items-center justify-between group shadow-md cursor-pointer"
             >
-              {filteredFarmers.map(f => (
-                <option key={f.id} value={f.id}>
-                  {f.name} - {f.phone} ({f.field_region} - {f.lot})
-                </option>
-              ))}
-            </select>
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <span className="font-extrabold text-xs text-gold-300 group-hover:text-gold-200">
+                    {currentFarmer?.name}
+                  </span>
+                  {currentFarmer?.landowner_name && (
+                    <span className="text-[10px] text-slate-400 font-normal">(Chủ: {currentFarmer.landowner_name})</span>
+                  )}
+                </div>
+                <p className="text-[11px] text-slate-300 mt-0.5 font-medium">
+                  {fieldRegion} - <strong className="text-gold-300">{lot}</strong> ({currentFarmer?.area.toLocaleString('vi-VN')} m²) • {currentFarmer?.phone}
+                </p>
+              </div>
+              <span className="px-2.5 py-1 rounded-lg bg-emerald-600/40 text-emerald-200 text-[11px] font-bold border border-emerald-500/40 group-hover:bg-emerald-500 group-hover:text-white transition-all whitespace-nowrap">
+                Đổi Hộ 🔍
+              </span>
+            </button>
           </div>
 
           {/* Select Staff (Cán bộ cân) */}
@@ -793,6 +797,15 @@ TỔNG THÀNH TIỀN: ${totalAmount.toLocaleString('vi-VN')} VNĐ
           </div>
         </div>
       </div>
+
+      {/* Smart Farmer & Plot Picker Modal */}
+      <FarmerPickerModal
+        isOpen={isPickerOpen}
+        onClose={() => setIsPickerOpen(false)}
+        farmers={farmers}
+        selectedFarmerId={selectedFarmerId}
+        onSelectFarmer={(f) => handleFarmerChange(f.id)}
+      />
 
     </div>
   );
